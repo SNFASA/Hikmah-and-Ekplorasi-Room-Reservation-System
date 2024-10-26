@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('no_room'); // Primary key
             $table->string('name');
             $table->integer('capacity');
+            $table->string('status');
             $table->unsignedBigInteger('furniture')->index(); // Foreign key to furniture
             $table->unsignedBigInteger('electronicEquipment')->index(); // Foreign key to electronic_equipment
     

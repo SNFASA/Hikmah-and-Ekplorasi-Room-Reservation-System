@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id('no_electronicEquipment'); // Primary key
             $table->string('name');
             $table->string('category');
+            $table->string('status');
             $table->timestamps();
         });
     }
