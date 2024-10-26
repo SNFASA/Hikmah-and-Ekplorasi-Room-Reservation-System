@@ -64,3 +64,17 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+
+
+
+table database :
+student: <no.matriks (pk), name , facultyOffice(index) , course(index)>
+staff : <no.staff (pk), name , facultyOffice(index ),role>
+facultyOffice : <no.facultyOffice (pk), name , department(index)>
+department : <no.department (pk), name>
+course : <no.course (pk), name , department(index)>
+room : <no.room (pk), name , capacity, furniture(index),electric equpment(index)>
+furniture : <no.furniture (pk), name , category>
+electronicEquipment : <no.electronicEquipment (pk), name , category>
