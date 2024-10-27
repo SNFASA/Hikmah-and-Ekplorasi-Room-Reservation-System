@@ -1,138 +1,112 @@
 <?php
 
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\Hash;
+
+use App\Models\Student; // Ensure this is the correct model
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\User;
+use Illuminate\Support\Facades\Hash;
+
 class UsersController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Display a listing of students
     public function index()
     {
-        $users=User::orderBy('id','ASC')->paginate(10);
-        return view('backend.users.index')->with('users',$users);
+        $students = Student::orderBy('id', 'ASC')->paginate(10);
+        return view('backend.users.index')->with('students', $students);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    // Show the form for creating a new student
     public function create()
     {
         return view('backend.users.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    // Store a newly created student in storage
     public function store(Request $request)
     {
-        $this->validate($request,
-        [
-            'name'=>'string|required|max:30',
-            'email'=>'string|required|unique:users',
-            'password'=>'string|required',
-            'role'=>'required|in:admin,user',
-            'status'=>'required|in:active,inactive',
-            'photo'=>'nullable|string',
+        $this->validate($request, [
+            'no_matriks' => 'required|unique:students|max:255',
+            'name' => 'required|max:255',
+            'facultyOffice' => 'required|max:255',
+            'course' => 'required|max:255',
+            'email' => 'required|email|unique:students|max:255',
+            'password' => 'required|min:6|confirmed',
+            'receive_notifications' => 'boolean',
         ]);
-        // dd($request->all());
-        $data=$request->all();
-        $data['password']=Hash::make($request->password);
-        // dd($data);
-        $status=User::create($data);
-        // dd($status);
-        if($status){
-            request()->session()->flash('success','Successfully added user');
-        }
-        else{
-            request()->session()->flash('error','Error occurred while adding user');
-        }
-        return redirect()->route('users.index');
 
+        $data = $request->all();
+        $data['password'] = Hash::make($request->password);
+
+        $status = Student::create($data);
+
+        if ($status) {
+            request()->session()->flash('success', 'Successfully added student');
+        } else {
+            request()->session()->flash('error', 'Error occurred while adding student');
+        }
+        
+        return redirect()->route('users.index'); // Adjust the route name as necessary
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Display the specified student
     public function show($id)
     {
-        //
+        $student = Student::findOrFail($id);
+        return view('backend.users.show')->with('student', $student);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Show the form for editing the specified student
     public function edit($id)
     {
-        $user=User::findOrFail($id);
-        return view('backend.users.edit')->with('user',$user);
+        $student = Student::findOrFail($id);
+        return view('backend.users.edit')->with('student', $student);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Update the specified student in storage
     public function update(Request $request, $id)
     {
-        $user=User::findOrFail($id);
-        $this->validate($request,
-        [
-            'name'=>'string|required|max:30',
-            'email'=>'string|required',
-            'role'=>'required|in:admin,user',
-            'status'=>'required|in:active,inactive',
-            'photo'=>'nullable|string',
-        ]);
-        // dd($request->all());
-        $data=$request->all();
-        // dd($data);
-        
-        $status=$user->fill($data)->save();
-        if($status){
-            request()->session()->flash('success','Successfully updated');
-        }
-        else{
-            request()->session()->flash('error','Error occured while updating');
-        }
-        return redirect()->route('users.index');
+        $student = Student::findOrFail($id);
 
+        $this->validate($request, [
+            'no_matriks' => 'required|max:255|unique:students,no_matriks,' . $id,
+            'name' => 'required|max:255',
+            'facultyOffice' => 'required|max:255',
+            'course' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:students,email,' . $id,
+            'password' => 'nullable|min:6|confirmed',
+            'receive_notifications' => 'boolean',
+        ]);
+
+        $data = $request->all();
+
+        // Update password if provided
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
+
+        $status = $student->fill($data)->save();
+
+        if ($status) {
+            request()->session()->flash('success', 'Successfully updated student');
+        } else {
+            request()->session()->flash('error', 'Error occurred while updating student');
+        }
+        
+        return redirect()->route('users.index'); // Adjust the route name as necessary
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Remove the specified student from storage
     public function destroy($id)
     {
-        $delete=User::findorFail($id);
-        $status=$delete->delete();
-        if($status){
-            request()->session()->flash('success','User Successfully deleted');
+        $student = Student::findOrFail($id);
+        $status = $student->delete();
+
+        if ($status) {
+            request()->session()->flash('success', 'Student successfully deleted');
+        } else {
+            request()->session()->flash('error', 'There was an error while deleting student');
         }
-        else{
-            request()->session()->flash('error','There is an error while deleting users');
-        }
-        return redirect()->route('users.index');
+
+        return redirect()->route('users.index'); // Adjust the route name as necessary
     }
 }
