@@ -1,9 +1,9 @@
 @extends('frontend.layouts.master')
 
-@section('title','E-SHOP || Register Page')
+@section('title','LibraRoom Reservation || Register Page')
 
 @section('main-content')
-	<!-- Breadcrumbs -->
+    <!-- Breadcrumbs -->
     <div class="breadcrumbs">
         <div class="container">
             <div class="row">
@@ -20,7 +20,7 @@
     </div>
     <!-- End Breadcrumbs -->
             
-    <!-- Shop Login -->
+    <!-- Shop Register -->
     <section class="shop login section">
         <div class="container">
             <div class="row"> 
@@ -44,7 +44,7 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Your Email<span>*</span></label>
-                                        <input type="text" name="email" placeholder="" required="required" value="{{old('email')}}">
+                                        <input type="email" name="email" placeholder="" required="required" value="{{old('email')}}">
                                         @error('email')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
@@ -52,8 +52,8 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label>Your Password<span>*</span></label>
-                                        <input type="password" name="password" placeholder="" required="required" value="{{old('password')}}">
+                                        <label>Password<span>*</span></label>
+                                        <input type="password" name="password" placeholder="" required="required">
                                         @error('password')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
@@ -62,20 +62,62 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Confirm Password<span>*</span></label>
-                                        <input type="password" name="password_confirmation" placeholder="" required="required" value="{{old('password_confirmation')}}">
+                                        <input type="password" name="password_confirmation" placeholder="" required="required">
                                         @error('password_confirmation')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
                                     </div>
                                 </div>
                                 <div class="col-12">
+                                    <div class="form-group">
+                                        <label>User Type<span>*</span></label>
+                                        <select name="user_type" required="required">
+                                            <option value="student" {{ old('user_type') == 'student' ? 'selected' : '' }}>Student</option>
+                                            <option value="staff" {{ old('user_type') == 'staff' ? 'selected' : '' }}>Staff</option>
+                                        </select>
+                                        @error('user_type')
+                                            <span class="text-danger">{{$message}}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <!-- Additional fields based on user type -->
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>No. Matriks<span>*</span></label>
+                                        <input type="text" name="no_matriks" placeholder="" required="required" value="{{old('no_matriks')}}">
+                                        @error('no_matriks')
+                                            <span class="text-danger">{{$message}}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Faculty Office<span>*</span></label>
+                                        <input type="text" name="facultyOffice" placeholder="" required="required" value="{{old('facultyOffice')}}">
+                                        @error('facultyOffice')
+                                            <span class="text-danger">{{$message}}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Course (Only for Students)</label>
+                                        <input type="text" name="course" placeholder="" value="{{old('course')}}">
+                                        @error('course')
+                                            <span class="text-danger">{{$message}}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Receive Notifications</label>
+                                        <input type="checkbox" name="receive_notifications" value="1" {{ old('receive_notifications') ? 'checked' : '' }}>
+                                    </div>
+                                </div>
+                                <div class="col-12">
                                     <div class="form-group login-btn">
                                         <button class="btn" type="submit">Register</button>
                                         <a href="{{route('login.form')}}" class="btn">Login</a>
-                                        OR
-                                        <a href="{{route('login.redirect','facebook')}}" class="btn btn-facebook"><i class="ti-facebook"></i></a>
-                                        <a href="{{route('login.redirect','github')}}" class="btn btn-github"><i class="ti-github"></i></a>
-                                        <a href="{{route('login.redirect','google')}}" class="btn btn-google"><i class="ti-google"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -86,8 +128,9 @@
             </div>
         </div>
     </section>
-    <!--/ End Login -->
+    <!--/ End Register -->
 @endsection
+
 
 @push('styles')
 <style>

@@ -7,20 +7,10 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Register Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles the registration of new users as well as their
-    | validation and creation. By default this controller uses a trait to
-    | provide this functionality without requiring any additional code.
-    |
-    */
-
     use RegistersUsers;
 
     /**
@@ -41,6 +31,16 @@ class RegisterController extends Controller
     }
 
     /**
+     * Show the registration form.
+     *
+     * @return \Illuminate\View\View
+     */
+    public function showRegistrationForm()
+    {
+        return view('frontend.pages.register'); // Adjust the view path as needed
+    }
+
+    /**
      * Get a validator for an incoming registration request.
      *
      * @param  array  $data
@@ -52,6 +52,11 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'user_type' => ['required', 'in:student,staff'], // Validate user type
+            'no_matriks' => ['required_if:user_type,student', 'string', 'max:255'],
+            'facultyOffice' => ['required_if:user_type,staff', 'string', 'max:255'],
+            'course' => ['required_if:user_type,student', 'string', 'max:255'], 
+            'receive_notifications' => ['boolean'],
         ]);
     }
 
@@ -67,6 +72,29 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'user_type' => $data['user_type'],             
+            'no_matriks' => $data['no_matriks'] ?? null,   
+            'facultyOffice' => $data['facultyOffice'] ?? null, 
+            'course' => $data['course'] ?? null,           
+            'receive_notifications' => $data['receive_notifications'] ?? false,
         ]);
+    }
+
+    /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $user = $this->create($request->all());
+
+        // Optional: You can log in the user after registration
+        // Auth::login($user);
+
+        return redirect($this->redirectTo)->with('success', 'Registration successful! Welcome, ' . $user->name);
     }
 }

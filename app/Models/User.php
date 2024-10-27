@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -21,6 +20,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_type',             // Indicates if the user is a student or staff
+        'no_matriks',             // Unique identifier for each user (student or staff)
+        'facultyOffice',          // Used for staff
+        'course',                 // Used for students
+        'receive_notifications',  // Notification preference
     ];
 
     /**
@@ -41,5 +45,10 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'receive_notifications' => 'boolean',
     ];
+
+    /**
+     * Additional methods or relationships (if needed) can go here.
+     */
 }
