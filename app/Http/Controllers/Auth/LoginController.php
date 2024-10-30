@@ -44,7 +44,6 @@ class LoginController extends Controller
         return [
             'email' => $request->email,
             'password' => $request->password,
-            'status' => 'active', // Active users only
         ];
     }
 
@@ -101,7 +100,6 @@ class LoginController extends Controller
                 'course' => null,
                 'email' => $userSocial->getEmail(),
                 'password' => Hash::make(Str::random(8)), 
-                'receive_notifications' => true, 
             ]);
 
             // Log in the new user

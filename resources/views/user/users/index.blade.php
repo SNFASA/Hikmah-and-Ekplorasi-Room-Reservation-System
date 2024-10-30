@@ -20,23 +20,21 @@
               <th>S.N.</th>
               <th>Name</th>
               <th>Email</th>
-              <th>Photo</th>
-              <th>Join Date</th>
+              <th>Faculty/Department</th>
+              <th>Course</th>
               <th>Role</th>
-              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-                <th>S.N.</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Photo</th>
-                <th>Join Date</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Action</th>
+              <th>S.N.</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Faculty/Department</th>
+              <th>Course</th>
+              <th>Role</th>
+              <th>Action</th>
               </tr>
           </tfoot>
           <tbody>
@@ -46,21 +44,10 @@
                     <td>{{$user->name}}</td>
                     <td>{{$user->email}}</td>
                     <td>
-                        @if($user->photo)
-                            <img src="{{$user->photo}}" class="img-fluid rounded-circle" style="max-width:50px" alt="{{$user->photo}}">
-                        @else
-                            <img src="{{asset('backend/img/avatar.png')}}" class="img-fluid rounded-circle" style="max-width:50px" alt="avatar.png">
-                        @endif
+                        {{$user->facultyOffice}}
                     </td>
-                    <td>{{(($user->created_at)? $user->created_at->diffForHumans() : '')}}</td>
+                    <td>{{$user->course}}</td>
                     <td>{{$user->role}}</td>
-                    <td>
-                        @if($user->status=='active')
-                            <span class="badge badge-success">{{$user->status}}</span>
-                        @else
-                            <span class="badge badge-warning">{{$user->status}}</span>
-                        @endif
-                    </td>
                     <td>
                         <a href="{{route('users.edit',$user->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
                     <form method="POST" action="{{route('users.destroy',[$user->id])}}">

@@ -22,55 +22,60 @@
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
-
-        <div class="form-group">
-            <label for="inputPassword" class="col-form-label">Password</label>
-          <input id="inputPassword" type="password" name="password" placeholder="Enter password"  value="{{old('password')}}" class="form-control">
-          @error('password')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-
-        <div class="form-group">
-        <label for="inputPhoto" class="col-form-label">Photo</label>
-        <div class="input-group">
-            <span class="input-group-btn">
-                <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-primary">
-                <i class="fa fa-picture-o"></i> Choose
-                </a>
-            </span>
-            <input id="thumbnail" class="form-control" type="text" name="photo" value="{{old('photo')}}">
-        </div>
-        <img id="holder" style="margin-top:15px;max-height:100px;">
-          @error('photo')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-        @php 
-        $roles=DB::table('users')->select('role')->get();
+        @php
+          $roles = DB::table('users')->select('role')->get();
+          $facultyOffices = DB::table('facultyOffice')->select('id', 'name')->get();
+          $courses = DB::table('course')->select('id', 'name')->get();
         @endphp
-        <div class="form-group">
-            <label for="role" class="col-form-label">Role</label>
-            <select name="role" class="form-control">
-                <option value="">-----Select Role-----</option>
-                @foreach($roles as $role)
-                    <option value="{{$role->role}}">{{$role->role}}</option>
-                @endforeach
-            </select>
-          @error('role')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-          </div>
-          <div class="form-group">
-            <label for="status" class="col-form-label">Status</label>
-            <select name="status" class="form-control">
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
-          @error('status')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-          </div>
+    
+    <div class="form-group">
+        <label for="role" class="col-form-label">Role</label>
+        <select name="role" class="form-control">
+            <option value="">-----Select Role-----</option>
+            @foreach($roles as $role)
+                <option value="{{ $role->role }}">{{ $role->role }}</option>
+            @endforeach
+        </select>
+        @error('role')
+        <span class="text-danger">{{ $message }}</span>
+        @enderror
+    </div>
+    
+    <div class="form-group">
+        <label for="facultyOffice" class="col-form-label">Faculty Office</label>
+        <select name="facultyOffice" class="form-control">
+            <option value="">-----Select Faculty Office-----</option>
+            @foreach($facultyOffices as $office)
+                <option value="{{ $office->id }}">{{ $office->name }}</option>
+            @endforeach
+        </select>
+        @error('facultyOffice')
+        <span class="text-danger">{{ $message }}</span>
+        @enderror
+    </div>
+    
+    <div class="form-group">
+        <label for="course" class="col-form-label">Course</label>
+        <select name="course" class="form-control">
+            <option value="">-----Select Course-----</option>
+            @foreach($courses as $course)
+                <option value="{{ $course->id }}">{{ $course->name }}</option>
+            @endforeach
+        </select>
+        @error('course')
+        <span class="text-danger">{{ $message }}</span>
+        @enderror
+    </div>
+
+    <div class="form-group">
+      <label for="inputPassword" class="col-form-label">Password</label>
+    <input id="inputPassword" type="password" name="password" placeholder="Enter password"  value="{{old('password')}}" class="form-control">
+    @error('password')
+    <span class="text-danger">{{$message}}</span>
+    @enderror
+  </div>
+    
+
         <div class="form-group mb-3">
           <button type="reset" class="btn btn-warning">Reset</button>
            <button class="btn btn-success" type="submit">Submit</button>

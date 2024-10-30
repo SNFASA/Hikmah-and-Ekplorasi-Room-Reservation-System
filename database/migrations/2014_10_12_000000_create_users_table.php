@@ -20,10 +20,9 @@ return new class extends Migration
                 $table->string('password');
     
                 // Columns to identify as student or staff
-                $table->enum('user_type', ['student', 'staff'])->index();
+                $table->enum('role', ['student', 'staff'])->index();
                 $table->unsignedBigInteger('facultyOffice')->nullable()->index();
                 $table->unsignedBigInteger('course')->nullable()->index();
-                $table->string('role')->nullable();
     
                 // Foreign keys for related tables
                

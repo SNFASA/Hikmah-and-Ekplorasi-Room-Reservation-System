@@ -26,7 +26,7 @@ class FrontendController extends Controller
     }
     public function loginSubmit(Request $request){
         $data= $request->all();
-        if(Auth::attempt(['email' => $data['email'], 'password' => $data['password'],'status'=>'active'])){
+        if(Auth::attempt(['email' => $data['email'], 'password' => $data['password']])){
             Session::put('user',$data['email']);
             request()->session()->flash('success','Successfully login');
             return redirect()->route('home');
@@ -58,7 +58,6 @@ class FrontendController extends Controller
             'no_matriks' => 'required|unique:users|max:255',
             'facultyOffice' => 'required_if:user_type,staff|max:255',
             'course' => 'required_if:user_type,student|max:255',
-            'receive_notifications' => 'boolean',
         ]);
     
         // Step 2: Prepare data based on the user type
@@ -70,7 +69,6 @@ class FrontendController extends Controller
             'no_matriks' => $request->no_matriks,
             'facultyOffice' => $request->user_type === 'staff' ? $request->facultyOffice : null,
             'course' => $request->user_type === 'student' ? $request->course : null,
-            'receive_notifications' => $request->receive_notifications ?? false,
         ];
     
         // Step 3: Insert into users table
@@ -97,7 +95,6 @@ class FrontendController extends Controller
             'no_matriks' => $data['no_matriks'] ?? null,   
             'facultyOffice' => $data['facultyOffice'] ?? null, 
             'course' => $data['course'] ?? null,           
-            'receive_notifications' => $data['receive_notifications'] ?? false,
         ]);
     }
     

@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student; // Ensure this is the correct model
+use App\Models\User; // Ensure this is the correct model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
 {
-    // Display a listing of students
+    // Display a listing of users
     public function index()
     {
-        $students = Student::orderBy('id', 'ASC')->paginate(10);
-        return view('backend.users.index')->with('students', $students);
+        $users = User::orderBy('id', 'ASC')->paginate(10);
+        return view('backend.users.index')->with('users', $users);
     }
 
     // Show the form for creating a new student
@@ -20,29 +20,29 @@ class UsersController extends Controller
     {
         return view('backend.users.create');
     }
-
+  
     // Store a newly created student in storage
     public function store(Request $request)
     {
         $this->validate($request, [
-            'no_matriks' => 'required|unique:students|max:255',
+            'no_matriks' => 'required|unique|max:255',
             'name' => 'required|max:255',
             'facultyOffice' => 'required|max:255',
             'course' => 'required|max:255',
-            'email' => 'required|email|unique:students|max:255',
+            'email' => 'required|email|unique|max:255',
             'password' => 'required|min:6|confirmed',
-            'receive_notifications' => 'boolean',
+            'role' => 'required',
         ]);
 
         $data = $request->all();
         $data['password'] = Hash::make($request->password);
 
-        $status = Student::create($data);
+        $status = User::create($data);
 
         if ($status) {
-            request()->session()->flash('success', 'Successfully added student');
+            request()->session()->flash('success', 'Successfully added new User');
         } else {
-            request()->session()->flash('error', 'Error occurred while adding student');
+            request()->session()->flash('error', 'Error occurred while adding new user');
         }
         
         return redirect()->route('users.index'); // Adjust the route name as necessary
@@ -51,30 +51,30 @@ class UsersController extends Controller
     // Display the specified student
     public function show($id)
     {
-        $student = Student::findOrFail($id);
-        return view('backend.users.show')->with('student', $student);
+        $users = User::findOrFail($id);
+        return view('backend.users.show')->with('users', $users);
     }
 
     // Show the form for editing the specified student
     public function edit($id)
     {
-        $student = Student::findOrFail($id);
-        return view('backend.users.edit')->with('student', $student);
+        $users = User::findOrFail($id);
+        return view('backend.users.edit')->with('users', $users);
     }
 
     // Update the specified student in storage
     public function update(Request $request, $id)
     {
-        $student = Student::findOrFail($id);
+        $users = User::findOrFail($id);
 
         $this->validate($request, [
-            'no_matriks' => 'required|max:255|unique:students,no_matriks,' . $id,
+            'no_matriks' => 'required|max:255|unique:no_matriks,' . $id,
             'name' => 'required|max:255',
             'facultyOffice' => 'required|max:255',
             'course' => 'required|max:255',
             'email' => 'required|email|max:255|unique:students,email,' . $id,
             'password' => 'nullable|min:6|confirmed',
-            'receive_notifications' => 'boolean',
+            'role' => 'required',
         ]);
 
         $data = $request->all();
@@ -84,12 +84,12 @@ class UsersController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        $status = $student->fill($data)->save();
+        $status = $users->fill($data)->save();
 
         if ($status) {
-            request()->session()->flash('success', 'Successfully updated student');
+            request()->session()->flash('success', 'Successfully updated user');
         } else {
-            request()->session()->flash('error', 'Error occurred while updating student');
+            request()->session()->flash('error', 'Error occurred while updating user');
         }
         
         return redirect()->route('users.index'); // Adjust the route name as necessary
@@ -98,13 +98,13 @@ class UsersController extends Controller
     // Remove the specified student from storage
     public function destroy($id)
     {
-        $student = Student::findOrFail($id);
-        $status = $student->delete();
+        $users = User::findOrFail($id);
+        $status = $users->delete();
 
         if ($status) {
             request()->session()->flash('success', 'Student successfully deleted');
         } else {
-            request()->session()->flash('error', 'There was an error while deleting student');
+            request()->session()->flash('error', 'There was an error while deleting user');
         }
 
         return redirect()->route('users.index'); // Adjust the route name as necessary

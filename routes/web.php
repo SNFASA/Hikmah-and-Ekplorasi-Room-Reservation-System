@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResetPasswordController;
@@ -28,6 +29,9 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+//Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+//    Lfm::routes();
+//});
 
 // CACHE CLEAR ROUTE
 Route::get('cache-clear', function () {
@@ -51,3 +55,17 @@ Auth::routes(['register' => false]);
     Route::get('login/{provider}/callback/', [LoginController::class, 'Callback'])->name('login.callback');
 
     Route::get('/', [FrontendController::class, 'home'])->name('home');
+
+
+
+//User section 
+Route::group(['prefix' => '/user', 'middleware' => ['user']], function () {
+    Route::get('/', [HomeController::class, 'index'])->name('user');
+    // Profile
+    Route::get('/profile', [HomeController::class, 'profile'])->name('user-profile');
+    Route::post('/profile/{id}', [HomeController::class, 'profileUpdate'])->name('user-profile-update');
+    // Password Change
+    Route::get('change-password', [HomeController::class, 'changePassword'])->name('user.change.password.form');
+    Route::post('change-password', [HomeController::class, 'changPasswordStore'])->name('change.password');
+
+});
