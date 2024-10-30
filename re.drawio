@@ -13,10 +13,7 @@
                 <mxCell id="4qRBzfi4ipFG8KXShlsR-3" value="Manages Room" style="ellipse;whiteSpace=wrap;html=1;rounded=0;" parent="4qRBzfi4ipFG8KXShlsR-1" vertex="1">
                     <mxGeometry x="135" y="130" width="120" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="4qRBzfi4ipFG8KXShlsR-4" value="Manages furniture&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;rounded=0;" parent="4qRBzfi4ipFG8KXShlsR-1" vertex="1">
-                    <mxGeometry x="135" y="520" width="120" height="80" as="geometry"/>
-                </mxCell>
-                <mxCell id="4qRBzfi4ipFG8KXShlsR-5" value="Manages electric Equpment&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;rounded=0;" parent="4qRBzfi4ipFG8KXShlsR-1" vertex="1">
+                <mxCell id="4qRBzfi4ipFG8KXShlsR-5" value="Manages&amp;nbsp; room equpment&amp;nbsp;" style="ellipse;whiteSpace=wrap;html=1;rounded=0;" parent="4qRBzfi4ipFG8KXShlsR-1" vertex="1">
                     <mxGeometry x="135" y="420" width="120" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="4qRBzfi4ipFG8KXShlsR-6" value="Manages room Schedule&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;rounded=0;" parent="4qRBzfi4ipFG8KXShlsR-1" vertex="1">
@@ -35,12 +32,6 @@
                     <mxGeometry width="50" height="50" relative="1" as="geometry">
                         <mxPoint x="90" y="140" as="sourcePoint"/>
                         <mxPoint x="140" y="90" as="targetPoint"/>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="4qRBzfi4ipFG8KXShlsR-33" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="4qRBzfi4ipFG8KXShlsR-4" edge="1">
-                    <mxGeometry width="50" height="50" relative="1" as="geometry">
-                        <mxPoint x="495" y="260" as="sourcePoint"/>
-                        <mxPoint x="750" y="298" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="4qRBzfi4ipFG8KXShlsR-34" value="" style="endArrow=classic;startArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="4qRBzfi4ipFG8KXShlsR-5" edge="1">
