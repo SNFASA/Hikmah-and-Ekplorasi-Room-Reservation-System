@@ -17,14 +17,14 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'no_matriks',
         'name',
         'email',
         'password',
-        'user_type',             // Indicates if the user is a student or staff
+        'role',             // Indicates if the user is a student or staff
         'no_matriks',             // Unique identifier for each user (student or staff)
         'facultyOffice',          // Used for staff
         'course',                 // Used for students
-        'receive_notifications',  // Notification preference
     ];
 
     /**
@@ -45,7 +45,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'receive_notifications' => 'boolean',
     ];
 
     /**

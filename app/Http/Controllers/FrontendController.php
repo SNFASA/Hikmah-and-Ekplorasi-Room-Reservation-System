@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\User;
+use App\Models\User;
 use App\Models\Student;
 use App\Models\Staff;
 use Auth;
@@ -51,24 +51,24 @@ class FrontendController extends Controller
     {
         // Step 1: Validate user data, including type-specific fields
         $this->validate($request, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
-            'user_type' => 'required|in:student,staff',
             'no_matriks' => 'required|unique:users|max:255',
-            'facultyOffice' => 'required_if:user_type,staff|max:255',
-            'course' => 'required_if:user_type,student|max:255',
+            'name' => 'required|max:255',
+            'facultyOffice' => 'required|max:255',
+            'course' => 'required|max:255',
+            'email' => 'required|email|unique:users|max:255',
+            'password' => 'required|min:6|confirmed',
+            'role' => 'required',
         ]);
     
         // Step 2: Prepare data based on the user type
         $data = [
+            'no_matriks' => $request->no_matriks,
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'user_type' => $request->user_type,
-            'no_matriks' => $request->no_matriks,
-            'facultyOffice' => $request->user_type === 'staff' ? $request->facultyOffice : null,
-            'course' => $request->user_type === 'student' ? $request->course : null,
+            'role' => $request->role,
+            'facultyOffice' => $request->facultyOffice ?? null,
+            'course' => $request->course ?? null,
         ];
     
         // Step 3: Insert into users table
@@ -83,8 +83,7 @@ class FrontendController extends Controller
             request()->session()->flash('error', 'Please try again!');
             return back();
         }
-    }
-    
+    }    
     public function create(array $data)
     {
         return User::create([

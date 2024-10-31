@@ -7,12 +7,12 @@
                     <!-- Top Left -->
                     <div class="top-left">
                         <ul class="list-main">
-                            <!--@php
-                                $settings=DB::table('settings')->get();
+                            {{--<!--@php
+                               // $settings=DB::table('settings')->get();
                                 
-                            @endphp-->
-                            <li><i class="ti-headphone-alt"></i>@foreach($settings as $data) {{$data->phone}} @endforeach</li>
-                            <li><i class="ti-email"></i> @foreach($settings as $data) {{$data->email}} @endforeach</li>
+                            @endphp-->--}}
+                            <li><i class="ti-headphone-alt"></i>{{--@foreach($settings as $data) {{$data->phone}} @endforeach--}}</li>
+                            <li><i class="ti-email"></i>{{-- @foreach($settings as $data) {{$data->email}} @endforeach--}}</li>
                         </ul>
                     </div>
                     <!--/ End Top Left -->
@@ -21,13 +21,13 @@
                     <!-- Top Right -->
                     <div class="right-content">
                         <ul class="list-main">
-                        <li><i class="ti-location-pin"></i> <a href="{{route('order.track')}}">Track Order</a></li>
+                        {{--<li><i class="ti-location-pin"></i> <a href="{{route('order.track')}}">Track Order</a></li>--}}
                             {{-- <li><i class="ti-alarm-clock"></i> <a href="#">Daily deal</a></li> --}}
                             @auth 
                                 @if(Auth::user()->role=='admin')
-                                    <li><i class="ti-user"></i> <a href="{{route('admin')}}"  target="_blank">Dashboard</a></li>
+                                    <li><i class="ti-user"></i> <a href="{{route('Staff')}}"  target="_blank">Dashboard</a></li>
                                 @else 
-                                    <li><i class="ti-user"></i> <a href="{{route('user')}}"  target="_blank">Dashboard</a></li>
+                                    <li><i class="ti-user"></i> <a href="{{route('Student')}}"  target="_blank">Dashboard</a></li>
                                 @endif
                                 <li><i class="ti-power-off"></i> <a href="{{route('user.logout')}}">Logout</a></li>
 
@@ -47,12 +47,12 @@
             <div class="row">
                 <div class="col-lg-2 col-md-2 col-12">
                     <!-- Logo -->
-                    <div class="logo">
+                   {{--<div class="logo">
                         @php
                             $settings=DB::table('settings')->get();
                         @endphp                    
                         <a href="{{route('home')}}"><img src="@foreach($settings as $data) {{$data->logo}} @endforeach" alt="logo"></a>
-                    </div>
+                    </div>--}}
                     <!--/ End Logo -->
                     <!-- Search Form -->
                     <div class="search-top">
