@@ -5,17 +5,17 @@
 <div class="card">
     <h5 class="card-header">Add Furniture</h5>
     <div class="card-body">
-      <form method="post" action="{{route('post-category.store')}}">
+      <form method="post" action="{{route('furniture.store')}}">
         {{csrf_field()}}
         <div class="form-group">
           <label for="inputTitle" class="col-form-label">Name</label>
-          <input id="inputTitle" type="text" name="title" placeholder="Enter title"  value="{{old('title')}}" class="form-control">
-          @error('title')
+          <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
+          @error('name')
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
         <div class="form-group">
-          <label for="cat_id">Category <span class="text-danger">*</span></label>
+          <label for="cat_id">Category<span class="text-danger">*</span></label>
           <select name="cat_id" id="cat_id" class="form-control">
               <option value="">--Select any category--</option>
               @foreach($categories as $key=>$cat_data)
@@ -29,8 +29,8 @@
         <div class="form-group">
           <label for="status" class="col-form-label">Status</label>
           <select name="status" class="form-control">
-              <option value="active">Active</option>
-              <option value="inactive">Damage</option>
+              <option value="Active">Active</option>
+              <option value="Damage">Damage</option>
           </select>
           @error('status')
           <span class="text-danger">{{$message}}</span>

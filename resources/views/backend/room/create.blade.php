@@ -5,19 +5,19 @@
 <div class="card">
     <h5 class="card-header">Add Room</h5>
     <div class="card-body">
-      <form method="post" action="{{route('category.store')}}">
+      <form method="post" action="{{route('room.store')}}">
         {{csrf_field()}}
         <div class="form-group">
-          <label for="inputTitle" class="col-form-label">Room <span class="text-danger">*</span></label>
-          <input id="inputTitle" type="text" name="title" placeholder="Enter title"  value="{{old('title')}}" class="form-control">
-          @error('title')
+          <label for="inputTitle" class="col-form-label">Room name<span class="text-danger">*</span></label>
+          <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
+          @error('name')
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
         <div class="form-group">
           <label for="stock">Capacity <span class="text-danger">*</span></label>
-          <input id="quantity" type="number" name="stock" min="0" placeholder="Enter quantity"  value="{{$product->stock}}" class="form-control">
-          @error('stock')
+          <input id="quantity" type="number" name="stock" min="0" placeholder="Enter capacity"  value="{{$room->capacity}}" class="form-control">
+          @error('capacity')
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
@@ -26,7 +26,7 @@
           <select name="parent_id" class="form-control">
               <option value="">--Select any furnitre--</option>
               @foreach($parent_cats as $key=>$parent_cat)
-                  <option value='{{$parent_cat->id}}'>{{$parent_cat->title}}</option>
+                  <option value='{{$parent_cat->id}}'>{{$parent_cat->name}}</option>
               @endforeach
           </select>
         </div>
@@ -40,30 +40,12 @@
                   <option value='{{$parent_cat->id}}'>{{$parent_cat->title}}</option>
               @endforeach
           </select>
-        </div>
-
-        <div class="form-group">
-          <label for="inputPhoto" class="col-form-label">Photo</label>
-          <div class="input-group">
-              <span class="input-group-btn">
-                  <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-primary">
-                  <i class="fa fa-picture-o"></i> Choose
-                  </a>
-              </span>
-          <input id="thumbnail" class="form-control" type="text" name="photo" value="{{old('photo')}}">
-        </div>
-        <div id="holder" style="margin-top:15px;max-height:100px;"></div>
-
-          @error('photo')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-        
+        </div>       
         <div class="form-group">
           <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
           <select name="status" class="form-control">
-              <option value="active">Valid</option>
-              <option value="inactive">inValid</option></option>
+              <option value="valid">Valid</option>
+              <option value="invalid">inValid</option></option>
           </select>
           @error('status')
           <span class="text-danger">{{$message}}</span>

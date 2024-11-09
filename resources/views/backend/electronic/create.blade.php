@@ -5,12 +5,12 @@
 <div class="card">
     <h5 class="card-header">Add Electronic equpment</h5>
     <div class="card-body">
-      <form method="post" action="{{route('post-category.store')}}">
+      <form method="post" action="{{route('electronic.store')}}">
         {{csrf_field()}}
         <div class="form-group">
           <label for="inputTitle" class="col-form-label">Name</label>
-          <input id="inputTitle" type="text" name="title" placeholder="Enter title"  value="{{old('title')}}" class="form-control">
-          @error('title')
+          <input id="inputTitle" type="text" name="title" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
+          @error('name')
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
@@ -28,8 +28,8 @@
         <div class="form-group">
           <label for="status" class="col-form-label">Status</label>
           <select name="status" class="form-control">
-              <option value="active">Active</option>
-              <option value="inactive">Damage</option>
+              <option value="Active">Active</option>
+              <option value="Damage">Damage</option>
           </select>
           @error('status')
           <span class="text-danger">{{$message}}</span>

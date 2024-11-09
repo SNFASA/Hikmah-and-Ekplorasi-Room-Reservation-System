@@ -2,8 +2,8 @@
 
     <!-- Sidebar - Brand -->
     <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{route('admin')}}">
-      <div class="sidebar-brand-icon rotate-n-15">
-        <i class="fas fa-laugh-wink"></i>
+      <div class="sidebar-brand-icon ">
+        <i class="fas fa-building"></i>
       </div>
       <div class="sidebar-brand-text mx-3">Admin</div>
     </a>
@@ -23,7 +23,7 @@
 
     <!-- Heading -->
     <div class="sidebar-heading">
-        Banner
+        Media
     </div>
 
     <!-- Nav Item - Pages Collapse Menu -->
@@ -32,20 +32,6 @@
         <a class="nav-link" href="{{route('file-manager')}}">
             <i class="fas fa-fw fa-chart-area"></i>
             <span>Media Manager</span></a>
-    </li>
-
-    <li class="nav-item">
-      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-        <i class="fas fa-image"></i>
-        <span>Banners</span>
-      </a>
-      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-        <div class="bg-white py-2 collapse-inner rounded">
-          <h6 class="collapse-header">Banner Options:</h6>
-          <a class="collapse-item" href="{{route('banner.index')}}">Banners</a>
-          <a class="collapse-item" href="{{route('banner.create')}}">Add Banners</a>
-        </div>
-      </div>
     </li>
     <!-- Divider -->
     <hr class="sidebar-divider">
@@ -56,11 +42,11 @@
 
     <!-- Booking -->
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#categoryCollapse" aria-expanded="true" aria-controls="categoryCollapse">
-          <i class="fas fa-sitemap"></i>
-          <span>Category</span>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#bookingCollapse" aria-expanded="true" aria-controls="bookingCollapse">
+          <i class="fas fa-book"></i>
+          <span>Booking</span>
         </a>
-        <div id="categoryCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="bookingCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Booking Options:</h6>
             <a class="collapse-item" href="{{route('category.index')}}">Booking</a>
@@ -70,11 +56,11 @@
     </li>
     {{-- Room --}}
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#productCollapse" aria-expanded="true" aria-controls="productCollapse">
-          <i class="fas fa-cubes"></i>
-          <span>Products</span>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#roomCollapse" aria-expanded="true" aria-controls="roomCollapse">
+          <i class="fas fa-door-close"></i>
+          <span>Room</span>
         </a>
-        <div id="productCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="roomCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Room Options:</h6>
             <a class="collapse-item" href="{{route('product.index')}}">Romm</a>
@@ -85,11 +71,11 @@
 
     {{-- Furniture --}}
     <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#brandCollapse" aria-expanded="true" aria-controls="brandCollapse">
-          <i class="fas fa-table"></i>
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#furnitureCollapse" aria-expanded="true" aria-controls="furnitureCollapse">
+          <i class="fas fa-chair"></i>
           <span>Furniture</span>
         </a>
-        <div id="brandCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="furnitureCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Furniture Options:</h6>
             <a class="collapse-item" href="{{route('brand.index')}}">Furniture</a>
@@ -97,6 +83,20 @@
           </div>
         </div>
     </li>
+    {{-- Electronic --}}
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#electronicCollapse" aria-expanded="true" aria-controls="electronicCollapse">
+        <i class="fas fa-desktop"></i>
+        <span>Electronic</span>
+      </a>
+      <div id="brandCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+          <h6 class="collapse-header">Electronic Options:</h6>
+          <a class="collapse-item" href="{{route('brand.index')}}">Electronic</a>
+          <a class="collapse-item" href="{{route('brand.create')}}">Add Electronic</a>
+        </div>
+      </div>
+  </li>
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
      <!-- Heading -->

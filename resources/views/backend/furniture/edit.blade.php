@@ -5,13 +5,13 @@
 <div class="card">
     <h5 class="card-header">Edit Furniture</h5>
     <div class="card-body">
-      <form method="post" action="{{route('post-category.update',$postCategory->id)}}">
+      <form method="post" action="{{route('furniture.update',$furnitures->id)}}">
         @csrf 
         @method('PATCH')
         <div class="form-group">
           <label for="inputTitle" class="col-form-label">Name</label>
-          <input id="inputTitle" type="text" name="title" placeholder="Enter title"  value="{{$postCategory->title}}" class="form-control">
-          @error('title')
+          <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{$furnitures->title}}" class="form-control">
+          @error('name')
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
@@ -19,16 +19,16 @@
           <label for="cat_id">Category <span class="text-danger">*</span></label>
           <select name="cat_id" id="cat_id" class="form-control">
               <option value="">--Select any category--</option>
-              @foreach($categories as $key=>$cat_data)
-                  <option value='{{$cat_data->id}}' {{(($product->cat_id==$cat_data->id)? 'selected' : '')}}>{{$cat_data->title}}</option>
+              @foreach($furnitures as $key=>$cat_data)
+                  <option value='{{$cat_data->id}}' {{(($furnitures->cat_id==$cat_data->id)? 'selected' : '')}}>{{$cat_data->name}}</option>
               @endforeach
           </select>
         </div>
         <div class="form-group">
           <label for="status" class="col-form-label">Status</label>
           <select name="status" class="form-control">
-            <option value="active" {{(($postCategory->status=='active') ? 'selected' : '')}}>Active</option>
-            <option value="inactive" {{(($postCategory->status=='inactive') ? 'selected' : '')}}>Damage</option>
+            <option value="Active" {{(($furnitures->status=='active') ? 'selected' : '')}}>Active</option>
+            <option value="Damage" {{(($furnitures->status=='Damage') ? 'selected' : '')}}>Damage</option>
           </select>
           @error('status')
           <span class="text-danger">{{$message}}</span>

@@ -18,10 +18,10 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Booking</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Category::countActiveCategory()}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Category::countActiveBooking()}}</div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-sitemap fa-2x text-gray-300"></i>
+                <i class="fas fa-book fa-2x "></i>
               </div>
             </div>
           </div>
@@ -35,10 +35,10 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Electronic</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Product::countActiveProduct()}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Product::countActiveElectronic()}}</div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-cubes fa-2x text-gray-300"></i>
+                <i class="fas fa-desktop fa-2x text-gray-300"></i>
               </div>
             </div>
           </div>
@@ -54,13 +54,13 @@
                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Furniture</div>
                 <div class="row no-gutters align-items-center">
                   <div class="col-auto">
-                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{\App\Models\Order::countActiveOrder()}}</div>
+                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{\App\Models\Order::countActiveFurniture()}}</div>
                   </div>
                   
                 </div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                <i class="fas fa-chair fa-2x "></i>
               </div>
             </div>
           </div>
@@ -74,10 +74,10 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Room</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Post::countActivePost()}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Post::countActiveRoom()}}</div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-folder fa-2x text-gray-300"></i>
+                <i class="fas fa-door-closed fa-2x"></i>
               </div>
             </div>
           </div>
@@ -144,7 +144,7 @@
 </script>
   {{-- line chart --}}
   <script type="text/javascript">
-    const url = "{{route('product.order.income')}}";
+    const url = "{{route('booking.success.chart')}}";
     // Set new default font family and font color to mimic Bootstrap's default styling
     Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
     Chart.defaults.global.defaultFontColor = '#858796';
@@ -186,7 +186,7 @@
                   data: {
                     labels: data_keys, // ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
                     datasets: [{
-                      label: "Earnings",
+                      label: "Booking",
                       lineTension: 0.3,
                       backgroundColor: "rgba(78, 115, 223, 0.05)",
                       borderColor: "rgba(78, 115, 223, 1)",

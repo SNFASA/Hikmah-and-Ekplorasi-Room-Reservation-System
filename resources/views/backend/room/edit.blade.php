@@ -3,14 +3,14 @@
 @section('main-content')
 
 <div class="card">
-    <h5 class="card-header">Edit Category</h5>
+    <h5 class="card-header">Edit Room</h5>
     <div class="card-body">
-      <form method="post" action="{{route('category.update',$category->id)}}">
+      <form method="post" action="{{route('room.update',$room->id)}}">
         @csrf 
         @method('PATCH')
         <div class="form-group">
-          <label for="inputTitle" class="col-form-label">Title <span class="text-danger">*</span></label>
-          <input id="inputTitle" type="text" name="title" placeholder="Enter title"  value="{{$category->title}}" class="form-control">
+          <label for="inputTitle" class="col-form-label">Room name<span class="text-danger">*</span></label>
+          <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{$room->name}}" class="form-control">
           @error('title')
           <span class="text-danger">{{$message}}</span>
           @enderror
@@ -19,48 +19,32 @@
 
         {{-- {{$parent_cats}} --}}
         {{-- {{$category}} --}}
-        <div class="form-group {{(($category->is_parent==1) ? 'd-none' : '')}}" id='parent_cat_div'>
+        <div class="form-group {{(($room->is_parent==1) ? 'd-none' : '')}}" id='parent_cat_div'>
           <label for="parent_id">Fruniture</label>
           <select name="parent_id" class="form-control">
               <option value="">--Select any Fruniture--</option>
               @foreach($parent_cats as $key=>$parent_cat)
               
-                  <option value='{{$parent_cat->id}}' {{(($parent_cat->id==$category->parent_id) ? 'selected' : '')}}>{{$parent_cat->title}}</option>
+                  <option value='{{$parent_cat->id}}' {{(($parent_cat->id==$room->parent_id) ? 'selected' : '')}}>{{$parent_cat->name}}</option>
               @endforeach
           </select>
         </div>
-      <div class="form-group {{(($category->is_parent==1) ? 'd-none' : '')}}" id='parent_cat_div'>
+      <div class="form-group {{(($room->is_parent==1) ? 'd-none' : '')}}" id='parent_cat_div'>
           <label for="parent_id">Electronic equpment</label>
           <select name="parent_id" class="form-control">
               <option value="">--Select any equpment--</option>
               @foreach($parent_cats as $key=>$parent_cat)
               
-                  <option value='{{$parent_cat->id}}' {{(($parent_cat->id==$category->parent_id) ? 'selected' : '')}}>{{$parent_cat->title}}</option>
+                  <option value='{{$parent_cat->id}}' {{(($parent_cat->id==$room->parent_id) ? 'selected' : '')}}>{{$parent_cat->name}}</option>
               @endforeach
           </select>
-        </div>
-
-        <div class="form-group">
-          <label for="inputPhoto" class="col-form-label">Photo</label>
-          <div class="input-group">
-              <span class="input-group-btn">
-                  <a id="lfm" data-input="thumbnail" data-preview="holder" class="btn btn-primary">
-                  <i class="fa fa-picture-o"></i> Choose
-                  </a>
-              </span>
-          <input id="thumbnail" class="form-control" type="text" name="photo" value="{{$category->photo}}">
-        </div>
-        <div id="holder" style="margin-top:15px;max-height:100px;"></div>
-          @error('photo')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
         </div>
         
         <div class="form-group">
           <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
           <select name="status" class="form-control">
-              <option value="active" {{(($category->status=='valid')? 'selected' : '')}}>valid</option>
-              <option value="inactive" {{(($category->status=='invalid')? 'selected' : '')}}>invalid</option>
+              <option value="valid" {{(($room->status=='valid')? 'selected' : '')}}>valid</option>
+              <option value="invalid" {{(($room->status=='invalid')? 'selected' : '')}}>invalid</option>
           </select>
           @error('status')
           <span class="text-danger">{{$message}}</span>

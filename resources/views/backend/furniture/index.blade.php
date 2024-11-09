@@ -10,11 +10,11 @@
      </div>
     <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary float-left">Furniture Lists</h6>
-      <a href="{{route('post-category.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Post Category</a>
+      <a href="{{route('furniture.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Furniture</a>
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        @if(count($postCategories)>0)
+        @if(count($furnitures)>0)
         <table class="table table-bordered" id="post-category-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
@@ -35,7 +35,7 @@
               </tr>
           </tfoot>
           <tbody>
-            @foreach($postCategories as $data)   
+            @foreach($furnitures as $data)   
                 <tr>
                     <td>{{$data->id}}</td>
                     <td>{{$data->name}}</td>
@@ -48,8 +48,8 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{route('post-category.edit',$data->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                    <form method="POST" action="{{route('post-category.destroy',[$data->id])}}">
+                        <a href="{{route('furniture.edit',$data->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
+                    <form method="POST" action="{{route('furniture.destroy',[$data->id])}}">
                       @csrf 
                       @method('delete')
                           <button class="btn btn-danger btn-sm dltBtn" data-id={{$data->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
@@ -79,7 +79,7 @@
             @endforeach
           </tbody>
         </table>
-        <span style="float:right">{{$postCategories->links()}}</span>
+        <span style="float:right">{{$furnitures->links()}}</span>
         @else
           <h6 class="text-center">No furniture found!!! Please create furniture</h6>
         @endif

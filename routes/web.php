@@ -12,7 +12,7 @@ use App\Http\Controllers\Auth\ConfirmPasswordController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\StudentController;
-
+use App\Http\Controllers\BookingController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -49,7 +49,7 @@ Auth::routes(['register' => false]);
     Route::get('user/register', [FrontendController::class, 'register'])->name('register.form');
     Route::post('user/register', [FrontendController::class, 'registerSubmit'])->name('register.submit');
 // Reset password
-    Route::post('password-reset', [FrontendController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password-reset', [FrontendController::class, 'showResetForm'])->name('password.reset.custom');
 // Socialite
     Route::get('login/{provider}/', [LoginController::class, 'redirect'])->name('login.redirect');
     Route::get('login/{provider}/callback/', [LoginController::class, 'Callback'])->name('login.callback');
@@ -69,3 +69,16 @@ Route::group(['prefix' => '/user', 'middleware' => ['user']], function () {
     Route::post('change-password', [HomeController::class, 'changPasswordStore'])->name('change.password');
 
 });
+
+
+
+Route::prefix('bookings')->group(function () {
+    Route::get('/', [BookingController::class, 'index'])->name('booking.index');
+    Route::get('/create', [BookingController::class, 'create'])->name('booking.create');
+    Route::post('/', [BookingController::class, 'store'])->name('booking.store');
+    Route::get('/{id}', [BookingController::class, 'show'])->name('booking.show');
+    Route::get('/{id}/edit', [BookingController::class, 'edit'])->name('booking.edit');
+    Route::put('/{id}', [BookingController::class, 'update'])->name('booking.update');
+    Route::delete('/{id}', [BookingController::class, 'destroy'])->name('booking.destroy');
+});
+
