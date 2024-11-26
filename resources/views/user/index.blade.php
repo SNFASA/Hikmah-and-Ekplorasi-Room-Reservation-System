@@ -9,6 +9,9 @@
   </div>
 
   <div class="row">
+    @php
+          $bookings = DB::table('bookings')->paginate(10); 
+      @endphp
     <div class="col-xl-12 col-lg-12">
       <table class="table table-bordered" id="booking-dataTable" width="100%" cellspacing="0">
         <thead>
@@ -84,7 +87,7 @@
 
 @push('scripts')
 <script type="text/javascript">
-  const url = "{{ route('user.booking.incomeChart') }}"; // Update to match route for incomeChart
+  const url = "{{ route('user.booking.Chart') }}"; // Update to match route for incomeChart
 
   // Set new default font family and font color to mimic Bootstrap's default styling
   Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';

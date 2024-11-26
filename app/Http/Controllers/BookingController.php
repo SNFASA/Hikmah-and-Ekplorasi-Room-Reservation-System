@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Booking;
+use App\Models\bookings;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use PDF;
 use Carbon\Carbon;
 
@@ -14,7 +15,7 @@ class BookingController extends Controller
     // Display a listing of bookings for the authenticated user
     public function index()
     {
-        $bookings = Booking::whereHas('users', function ($query) {
+        $bookings = bookings::whereHas('users', function ($query) {
             $query->where('user_no_matriks', auth()->user()->no_matriks);
         })->paginate(10);
 
@@ -24,7 +25,7 @@ class BookingController extends Controller
     // Show the form for creating a new booking
     public function create()
     {
-        return view('bookings.create');
+        return view('backend.booking.create');
     }
 
     // Store a newly created booking in storage
@@ -38,7 +39,7 @@ class BookingController extends Controller
             'phone_number' => 'required|string|max:15',
         ]);
 
-        $booking = Booking::create([
+        $booking = bookings::create([
             'booking_date' => $request->booking_date,
             'booking_time' => $request->booking_time,
             'purpose' => $request->purpose,
@@ -49,25 +50,25 @@ class BookingController extends Controller
 
         $booking->users()->attach(auth()->user()->no_matriks);
 
-        return redirect()->route('booking.index')->with('success', 'Booking created successfully.');
+        return redirect()->route('backend.booking.index')->with('success', 'Booking created successfully.');
     }
 
     // Show the form for editing the specified booking
     public function edit($id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = bookings::findOrFail($id);
 
         if (!$booking->users()->where('user_no_matriks', auth()->user()->no_matriks)->exists()) {
             abort(403, 'Unauthorized access to this booking.');
         }
 
-        return view('bookings.edit', compact('booking'));
+        return view('backend.bookings.edit', compact('booking'));
     }
 
     // Update the specified booking in storage
     public function update(Request $request, $id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = bookings::findOrFail($id);
 
         $request->validate([
             'booking_date' => 'required|date',
@@ -85,13 +86,13 @@ class BookingController extends Controller
             'phone_number' => $request->phone_number,
         ]);
 
-        return redirect()->route('booking.index')->with('success', 'Booking updated successfully.');
+        return redirect()->route('backend.booking.index')->with('success', 'Booking updated successfully.');
     }
 
     // Remove the specified booking from storage
     public function destroy($id)
     {
-        $booking = Booking::findOrFail($id);
+        $booking = bookings::findOrFail($id);
 
         if (!$booking->users()->where('user_no_matriks', auth()->user()->no_matriks)->exists()) {
             abort(403, 'Unauthorized access to this booking.');
@@ -99,26 +100,25 @@ class BookingController extends Controller
 
         $booking->delete();
 
-        return redirect()->route('booking.index')->with('success', 'Booking deleted successfully.');
+        return redirect()->route('backend.booking.index')->with('success', 'Booking deleted successfully.');
     }
 
     // Generate PDF for a specific booking
     public function pdf(Request $request)
     {
-        $booking = Booking::with(['users'])->findOrFail($request->id);
+        $booking = bookings::with(['users'])->findOrFail($request->id);
         $file_name = $booking->booking_number . '-' . $booking->purpose . '.pdf';
 
-        $pdf = PDF::loadView('backend.booking.pdf', compact('booking'));
+        $pdf = PDF::loadView('booking.pdf', compact('booking'));
 
         return $pdf->download($file_name);
     }
-
     // Generate income chart data for bookings
-    public function incomeChart(Request $request)
+    public function roomChart(Request $request)
     {
         $year = Carbon::now()->year;
 
-        $items = Booking::whereYear('created_at', $year)
+        $items = bookings::whereYear('created_at', $year)
             ->where('status', 'completed')
             ->get()
             ->groupBy(function ($d) {

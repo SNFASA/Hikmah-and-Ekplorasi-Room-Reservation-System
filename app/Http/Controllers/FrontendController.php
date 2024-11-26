@@ -1,56 +1,77 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\User;
-use App\Models\Student;
-use App\Models\Staff;
-use Auth;
-use Session;
-use Hash;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
+
+
 class FrontendController extends Controller
 {
-   
-    public function index(Request $request){
-        return redirect()->route($request->user()->role);
+    // Redirect user based on role
+    public function index(Request $request)
+    {
+        if ($request->user()) {
+            return redirect()->route($request->user()->role);
+        }
+        return redirect()->route('login');
     }
 
-    public function home(){
-        
-    } 
+    // Home method
+    public function home()
+    {
+        return view('frontend.pages.home');
+    }
 
-    // Login
-    public function login(){
+    // Show login form
+    public function login()
+    {
         return view('frontend.pages.login');
     }
-    public function loginSubmit(Request $request){
-        $data= $request->all();
-        if(Auth::attempt(['email' => $data['email'], 'password' => $data['password']])){
-            Session::put('user',$data['email']);
-            request()->session()->flash('success','Successfully login');
+
+    // Handle login submission
+    public function loginSubmit(Request $request)
+    {
+        $data = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($data)) {
+            Session::put('user', Auth::user()->email);
+            $request->session()->flash('success', 'Successfully logged in');
             return redirect()->route('home');
-        }
-        else{
-            request()->session()->flash('error','Invalid email and password pleas try again!');
-            return redirect()->back();
+        } else {
+            $request->session()->flash('error', 'Invalid email or password. Please try again!');
+            return back();
         }
     }
 
-    public function logout(){
+    // Logout the user
+    public function logout()
+    {
         Session::forget('user');
         Auth::logout();
-        request()->session()->flash('success','Logout successfully');
-        return back();
+        request()->session()->flash('success', 'Logged out successfully');
+        return redirect()->route('login');
     }
 
-    public function register(){
+    // Show register form
+    public function register()
+    {
         return view('frontend.pages.register');
     }
+
+    // Handle register submission
     public function registerSubmit(Request $request)
     {
-        // Step 1: Validate user data, including type-specific fields
-        $this->validate($request, [
+        // Validate user data
+        $data = $request->validate([
             'no_matriks' => 'required|unique:users|max:255',
             'name' => 'required|max:255',
             'facultyOffice' => 'required|max:255',
@@ -59,50 +80,59 @@ class FrontendController extends Controller
             'password' => 'required|min:6|confirmed',
             'role' => 'required',
         ]);
-    
-        // Step 2: Prepare data based on the user type
-        $data = [
-            'no_matriks' => $request->no_matriks,
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => $request->role,
-            'facultyOffice' => $request->facultyOffice ?? null,
-            'course' => $request->course ?? null,
-        ];
-    
-        // Step 3: Insert into users table
-        $user = User::create($data);
-    
-        if ($user) {
-            // Step 4: Put email in session and redirect with success message
-            Session::put('user', $user->email);
-            request()->session()->flash('success', 'Successfully registered');
-            return redirect()->route('home');
-        } else {
-            request()->session()->flash('error', 'Please try again!');
-            return back();
-        }
-    }    
-    public function create(array $data)
-    {
-        return User::create([
+
+        // Create the user
+        $user = User::create([
+            'no_matriks' => $data['no_matriks'],
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'user_type' => $data['user_type'],             
-            'no_matriks' => $data['no_matriks'] ?? null,   
-            'facultyOffice' => $data['facultyOffice'] ?? null, 
-            'course' => $data['course'] ?? null,           
+            'role' => $data['role'],
+            'facultyOffice' => $data['facultyOffice'],
+            'course' => $data['course'],
         ]);
+
+        if ($user) {
+            // Store email in session and redirect with success message
+            Session::put('user', $user->email);
+            $request->session()->flash('success', 'Successfully registered');
+            return redirect()->route('home');
+        } else {
+            $request->session()->flash('error', 'Registration failed. Please try again!');
+            return back();
+        }
     }
-    
-    
-    // Reset password
-    public function showResetForm()
+
+    // Custom password reset form
+    public function showResetForm($token)
     {
-        return view('auth.passwords.old-reset');
+        return view('auth.passwords.reset', ['token' => $token]);
     }
     
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|confirmed|min:6',
+            'token' => 'required',
+        ]);
+    
+        $status = Password::reset(
+            $request->only('email', 'password', 'password_confirmation', 'token'),
+            function ($user, $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                ])->save();
+    
+                event(new PasswordReset($user));
+            }
+        );
+    
+        if ($status == Password::PASSWORD_RESET) {
+            return redirect()->route('login.form')->with('success', __($status));
+        }
+    
+        return back()->withErrors(['email' => __($status)]);
+    }
     
 }

@@ -20,7 +20,8 @@ return new class extends Migration
             $table->unsignedBigInteger('electronicEquipment')->index(); // Foreign key to electronic_equipment
     
             // Set up foreign key relationships
-            
+           // $table->foreign('furniture')->references('no_furniture')->on('furniture')->onDelete('cascade')->onUpdate('cascade');
+            //$table->foreign('electronicEquipment')->references('no_electronicEquipment')->on('electronic_equipment')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

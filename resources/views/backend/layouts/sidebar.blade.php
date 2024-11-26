@@ -49,8 +49,8 @@
         <div id="bookingCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Booking Options:</h6>
-            <a class="collapse-item" href="{{route('category.index')}}">Booking</a>
-            <a class="collapse-item" href="{{route('category.create')}}">Add Booking</a>
+            <a class="collapse-item" href="{{route('booking.index')}}">Booking</a>
+            <a class="collapse-item" href="{{route('booking.create')}}">Add Booking</a>
           </div>
         </div>
     </li>

@@ -101,18 +101,33 @@ class AdminController extends Controller
         return redirect()->route('admin')->with('success', 'Password successfully changed');
     }
 
-    public function storageLink() {
-        if (File::exists(public_path('storage'))) {
+    public function storageLink(){
+        // check if the storage folder already linked;
+        if(File::exists(public_path('storage'))){
+            // removed the existing symbolic link
             File::delete(public_path('storage'));
+
+            //Regenerate the storage link folder
+            try{
+                Artisan::call('storage:link');
+                request()->session()->flash('success', 'Successfully storage linked.');
+                return redirect()->back();
+            }
+            catch(\Exception $exception){
+                request()->session()->flash('error', $exception->getMessage());
+                return redirect()->back();
+            }
         }
-        
-        try {
-            Artisan::call('storage:link');
-            request()->session()->flash('success', 'Successfully storage linked.');
-        } catch (\Exception $exception) {
-            request()->session()->flash('error', $exception->getMessage());
+        else{
+            try{
+                Artisan::call('storage:link');
+                request()->session()->flash('success', 'Successfully storage linked.');
+                return redirect()->back();
+            }
+            catch(\Exception $exception){
+                request()->session()->flash('error', $exception->getMessage());
+                return redirect()->back();
+            }
         }
-        
-        return redirect()->back();
     }
 }

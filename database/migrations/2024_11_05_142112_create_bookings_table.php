@@ -15,10 +15,14 @@ class CreateBookingsTable extends Migration
             $table->unsignedBigInteger('no_room');
             $table->string('phone_number', 15);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->unsignedBigInteger('list_student')->nullable(); // Add the new column
             $table->timestamps();
 
-            // Foreign key to rooms table (assuming it exists)
-            $table->foreign('no_room')->references('no_room')->on('rooms')->onDelete('restrict')->onUpdate('cascade');
+            // Foreign key to rooms table
+           //$table->foreign('no_room')->references('no_room')->on('rooms')->onDelete('restrict')->onUpdate('cascade');
+
+            // Foreign key to list_student_booking table
+            //$table->foreign('list_student')->references('id')->on('list_student_booking')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

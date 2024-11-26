@@ -25,7 +25,9 @@ return new class extends Migration
                 $table->unsignedBigInteger('course')->nullable()->index();
     
                 // Foreign keys for related tables
-               
+                //$table->foreign('facultyOffice')->references('no_facultyOffice')->on('faculty_offices')->onDelete('cascade')->onUpdate('cascade');
+               // $table->foreign('course')->references('no_course')->on('courses')->onDelete('cascade')->onUpdate('cascade');
+
             });
         }
     }
@@ -37,6 +39,5 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
     }
 };

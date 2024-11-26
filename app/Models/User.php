@@ -32,8 +32,18 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function bookings(): BelongsToMany
+    use Notifiable;
+    public function isAdmin()
     {
-        return $this->belongsToMany(Booking::class, 'booking_user', 'user_no_matriks', 'booking_id', 'no_matriks', 'id');
+        return $this->role === 'staff'; 
     }
+    public function isStudent()
+    {
+        return $this->role === 'student';
+    }
+    public function canAccessStudentRoutes()
+    {
+        return $this->isAdmin() || $this->isStudent();
+    }
+    
 }

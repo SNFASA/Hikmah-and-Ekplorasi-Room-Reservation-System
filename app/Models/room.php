@@ -16,10 +16,29 @@ class room extends Model
 
     protected $primaryKey = 'no_room';
 
-    // Relationship to RoomBooking
-    public function bookings()
+    protected $fillable = [
+        'name',
+        'capacity',
+        'status',
+        'furniture',
+        'electronicEquipment',
+    ];
+
+    // Relationship to 
+    public function furniture()
     {
-        return $this->hasMany(RoomBooking::class, 'room_id');
+       return $this->hasMany(furniture::class, 'furniture', 'no_furniture');
+    }
+    public function electronicEquipment()
+    {
+       return $this->hasMany(electronic::class, 'electronicEquipment', 'no_electronic');
+    }
+    public static function countActiveroom(){
+        $data=electronic::where('status','active')->count();
+        if($data){
+            return $data;
+        }
+        return 0;
     }
 }
 

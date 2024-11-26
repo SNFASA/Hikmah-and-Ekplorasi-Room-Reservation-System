@@ -18,7 +18,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Booking</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Category::countActiveBooking()}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\bookings::countActiveBooking()}}</div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-book fa-2x "></i>
@@ -35,7 +35,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Electronic</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Product::countActiveElectronic()}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\electronic::countActiveElectronic()}}</div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-desktop fa-2x text-gray-300"></i>
@@ -54,7 +54,7 @@
                 <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Furniture</div>
                 <div class="row no-gutters align-items-center">
                   <div class="col-auto">
-                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{\App\Models\Order::countActiveFurniture()}}</div>
+                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{\App\Models\furniture::countActiveFurniture()}}</div>
                   </div>
                   
                 </div>
@@ -74,7 +74,7 @@
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
                 <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Room</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\Post::countActiveRoom()}}</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\room::countActiveRoom()}}</div>
               </div>
               <div class="col-auto">
                 <i class="fas fa-door-closed fa-2x"></i>

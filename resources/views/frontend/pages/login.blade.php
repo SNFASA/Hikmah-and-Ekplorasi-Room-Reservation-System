@@ -44,7 +44,7 @@
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Your Password<span>*</span></label>
-                                        <input type="password" name="password" placeholder="" required="required" value="{{old('password')}}">
+                                        <input type="password" name="password" placeholder="" required="required">
                                         @error('password')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
@@ -55,16 +55,17 @@
                                         <button class="btn" type="submit">Login</button>
                                         <a href="{{route('register.form')}}" class="btn">Register</a>
                                         OR
-                                        <a href="{{route('login.redirect','facebook')}}" class="btn btn-facebook"><i class="ti-facebook"></i></a>
-                                        <a href="{{route('login.redirect','github')}}" class="btn btn-github"><i class="ti-github"></i></a>
-                                        <a href="{{route('login.redirect','google')}}" class="btn btn-google"><i class="ti-google"></i></a>
-
+                                        <a href="{{route('login.redirect','facebook')}}" class="btn btn-facebook" rel="noopener noreferrer"><i class="ti-facebook"></i></a>
+                                        <a href="{{route('login.redirect','github')}}" class="btn btn-github" rel="noopener noreferrer"><i class="ti-github"></i></a>
+                                        <a href="{{route('login.redirect','google')}}" class="btn btn-google" rel="noopener noreferrer"><i class="ti-google"></i></a>
                                     </div>
                                     <div class="checkbox">
-                                        <label class="checkbox-inline" for="2"><input name="news" id="2" type="checkbox">Remember me</label>
+                                        <label class="checkbox-inline" for="remember">
+                                            <input name="remember" id="remember" type="checkbox"> Remember me
+                                        </label>
                                     </div>
                                     @if (Route::has('password.request'))
-                                        <a class="lost-pass" href="{{ route('password.reset') }}">
+                                        <a class="lost-pass" href="{{ route('password.request') }}">
                                             Lost your password?
                                         </a>
                                     @endif
@@ -79,6 +80,7 @@
     </section>
     <!--/ End Login -->
 @endsection
+
 @push('styles')
 <style>
     .shop.login .form .btn{

@@ -17,6 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('department')->index(); // Foreign key to departments
     
             // Set up foreign key relationship
+           //$table->foreign('department')->references('no_department')->on('departments')->onDelete('cascade')->onUpdate('cascade');
+
             $table->timestamps();
         });
     }
