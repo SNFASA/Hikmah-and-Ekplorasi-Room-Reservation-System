@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0" version="24.8.9">
   <diagram name="Page-1" id="uvpJDCQNIZLogQXfxX72">
-    <mxGraphModel dx="1349" dy="559" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1115" dy="462" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -22,7 +22,7 @@
         <mxCell id="1xTNmZthlHnNQeKMzbU9-13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1xTNmZthlHnNQeKMzbU9-2" source="1xTNmZthlHnNQeKMzbU9-6" target="1xTNmZthlHnNQeKMzbU9-12">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="1xTNmZthlHnNQeKMzbU9-6" value="input no_matriks , name, faculty, course, email, password,&amp;nbsp;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-2">
+        <mxCell id="1xTNmZthlHnNQeKMzbU9-6" value="input no matriks , name, faculty, course, email, password,&amp;nbsp;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-2">
           <mxGeometry x="40" y="170" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="1xTNmZthlHnNQeKMzbU9-15" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1xTNmZthlHnNQeKMzbU9-2" source="1xTNmZthlHnNQeKMzbU9-12" target="1xTNmZthlHnNQeKMzbU9-14">
@@ -102,7 +102,7 @@
         <mxCell id="1xTNmZthlHnNQeKMzbU9-38" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1xTNmZthlHnNQeKMzbU9-33" source="1xTNmZthlHnNQeKMzbU9-39" target="1xTNmZthlHnNQeKMzbU9-41">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="1xTNmZthlHnNQeKMzbU9-39" value="input no_matriks , name, faculty, course, email, password,&amp;nbsp;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
+        <mxCell id="1xTNmZthlHnNQeKMzbU9-39" value="input no matriks , name, faculty, course, email, password,&amp;nbsp;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
           <mxGeometry x="40" y="170" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="1xTNmZthlHnNQeKMzbU9-40" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1xTNmZthlHnNQeKMzbU9-33" source="1xTNmZthlHnNQeKMzbU9-41" target="1xTNmZthlHnNQeKMzbU9-43">
@@ -129,14 +129,14 @@
         <mxCell id="1xTNmZthlHnNQeKMzbU9-47" value="edit/delete" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
           <mxGeometry x="60" y="490" width="80" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="1xTNmZthlHnNQeKMzbU9-48" value="edit student information" style="whiteSpace=wrap;html=1;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
-          <mxGeometry x="180" y="512.5" width="80" height="35" as="geometry" />
+        <mxCell id="1xTNmZthlHnNQeKMzbU9-48" value="edit / delete student information" style="whiteSpace=wrap;html=1;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
+          <mxGeometry x="180" y="506.25" width="80" height="47.5" as="geometry" />
         </mxCell>
         <mxCell id="1xTNmZthlHnNQeKMzbU9-49" value="No" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
           <mxGeometry x="20" y="510" width="50" height="20" as="geometry" />
         </mxCell>
         <mxCell id="1xTNmZthlHnNQeKMzbU9-50" value="No" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
-          <mxGeometry x="20" y="280" width="50" height="20" as="geometry" />
+          <mxGeometry x="150" y="270" width="50" height="20" as="geometry" />
         </mxCell>
         <mxCell id="1xTNmZthlHnNQeKMzbU9-51" value="Yes" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1xTNmZthlHnNQeKMzbU9-33">
           <mxGeometry x="130" y="510" width="50" height="20" as="geometry" />
@@ -151,6 +151,16 @@
             <Array as="points">
               <mxPoint x="30" y="530" />
               <mxPoint x="30" y="410" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="1xTNmZthlHnNQeKMzbU9-54" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" edge="1" parent="1xTNmZthlHnNQeKMzbU9-33" source="1xTNmZthlHnNQeKMzbU9-41">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="140" y="290" as="sourcePoint" />
+            <mxPoint x="100" y="160" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="200" y="295" />
+              <mxPoint x="200" y="160" />
             </Array>
           </mxGeometry>
         </mxCell>
