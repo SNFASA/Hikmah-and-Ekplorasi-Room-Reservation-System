@@ -64,12 +64,23 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'admin' => \App\Http\Middleware\Admin::class,
-        'user' => \App\Http\Middleware\User::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+
+        //'admin' => \App\Http\Middleware\Admin::class,
+        //'user' => \App\Http\Middleware\User::class,
     ];
 
     protected $routeMiddleware = [
-        'user' => \App\Http\Middleware\UserMiddleware::class,
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'role' => \App\Http\Middleware\RoleMiddleware::class,
+
+        //'user' => \App\Http\Middleware\UserMiddleware::class,
+        //'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        'admin' => \App\Http\Middleware\Admin::class,
+        'user' => \App\Http\Middleware\User::class,
+
+
     ];
     
 }

@@ -22,19 +22,21 @@ class LoginController extends Controller
      *
      * @return string
      */
+    protected $redirectTo = '/home';
+
     protected function redirectTo()
     {
-        // Redirect based on user type
+        
         if (Auth::check()) {
-            if (Auth::user()->user_type === 'staff') {
-                return '/staff-dashboard';
-            } elseif (Auth::user()->user_type === 'student') {
-                return '/student-dashboard';
-            }
+            return Auth::user()->role === 'admin' ? '/admin-dashboard' : '/home';
         }
-
-        return RouteServiceProvider::HOME;
+        return '/login';
     }
+    protected function authenticated(Request $request, $user)
+    {
+    return redirect()->route('home');
+    }
+
 
     /**
      * Define custom login conditions.

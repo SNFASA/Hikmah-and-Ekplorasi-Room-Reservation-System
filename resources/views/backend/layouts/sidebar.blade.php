@@ -49,8 +49,8 @@
         <div id="bookingCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Booking Options:</h6>
-            <a class="collapse-item" href="{{route('booking.index')}}">Booking</a>
-            <a class="collapse-item" href="{{route('booking.create')}}">Add Booking</a>
+            <a class="collapse-item" href="{{url('backend.booking.index')}}">Booking</a>
+            <a class="collapse-item" href="{{url('backend.booking.create')}}">Add Booking</a>
           </div>
         </div>
     </li>
@@ -63,8 +63,8 @@
         <div id="roomCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Room Options:</h6>
-            <a class="collapse-item" href="{{route('product.index')}}">Romm</a>
-            <a class="collapse-item" href="{{route('product.create')}}">Add Room</a>
+            <a class="collapse-item" href="{{url('backend.room.index')}}">Romm</a>
+            <a class="collapse-item" href="{{url('backend.room.create')}}">Add Room</a>
           </div>
         </div>
     </li>
@@ -78,8 +78,8 @@
         <div id="furnitureCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Furniture Options:</h6>
-            <a class="collapse-item" href="{{route('brand.index')}}">Furniture</a>
-            <a class="collapse-item" href="{{route('brand.create')}}">Add Furniture</a>
+            <a class="collapse-item" href="{{url('backend.furniture.index')}}">Furniture</a>
+            <a class="collapse-item" href="{{url('backedn.furniture.create')}}">Add Furniture</a>
           </div>
         </div>
     </li>
@@ -92,8 +92,8 @@
       <div id="brandCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
           <h6 class="collapse-header">Electronic Options:</h6>
-          <a class="collapse-item" href="{{route('brand.index')}}">Electronic</a>
-          <a class="collapse-item" href="{{route('brand.create')}}">Add Electronic</a>
+          <a class="collapse-item" href="{{url('backend.electronic.index')}}">Electronic</a>
+          <a class="collapse-item" href="{{url('backend.electronic.create')}}">Add Electronic</a>
         </div>
       </div>
   </li>

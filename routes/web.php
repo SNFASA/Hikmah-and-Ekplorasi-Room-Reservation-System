@@ -6,13 +6,9 @@ use App\Http\Controllers\FrontendController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\NotificationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookingController;
-
-// Welcome Page
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Controllers\UsersController;
 
 // Authentication Routes
 Auth::routes(['register' => false]);
@@ -42,32 +38,24 @@ Route::get('cache-clear', function () {
 Route::get('storage-link', [AdminController::class, 'storageLink'])->name('storage.link');
 
 // Home Route (Require Login)
-Route::get('/', [FrontendController::class, 'home'])->name('home')->middleware('auth');
-
-// User Section
-Route::group(['prefix' => '/user', 'middleware' => ['user']], function () {
-    Route::get('/', [HomeController::class, 'index'])->name('user');
-    Route::get('/profile', [HomeController::class, 'profile'])->name('user-profile');
-    Route::post('/profile/{id}', [HomeController::class, 'profileUpdate'])->name('user-profile-update');
-    Route::get('change-password', [HomeController::class, 'changePassword'])->name('user.change.password.form');
-    Route::post('change-password', [HomeController::class, 'changPasswordStore'])->name('change.password');
-});
-
+Route::get('/', [HomeController::class, 'index'])->name('user')->middleware('auth');
+Route::get('/home', [FrontendController::class, 'home'])->name('home');
 // Bookings
-Route::prefix('bookings')->middleware(['auth', 'user'])->group(function () {
-    Route::get('/', [BookingController::class, 'index'])->name('booking.index');
-    Route::get('/create', [BookingController::class, 'create'])->name('booking.create');
-    Route::post('/', [BookingController::class, 'store'])->name('booking.store');
-    Route::get('/{id}', [BookingController::class, 'show'])->name('booking.show');
-    Route::get('/{id}/edit', [BookingController::class, 'edit'])->name('booking.edit');
-    Route::put('/{id}', [BookingController::class, 'update'])->name('booking.update');
-    Route::delete('/{id}', [BookingController::class, 'destroy'])->name('booking.destroy');
-    Route::get('/booking', [BookingController::class, 'roomChart'])->name('user.booking.Chart');
+Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index');
+    Route::get('/create', [BookingController::class, 'create'])->name('backend.booking.create');
+    Route::post('/', [BookingController::class, 'store'])->name('backend.booking.store');
+    Route::get('/{id}', [BookingController::class, 'show'])->name('backend.booking.show');
+    Route::get('/{id}/edit', [BookingController::class, 'edit'])->name('backend.booking.edit');
+    Route::put('/{id}', [BookingController::class, 'update'])->name('backend.booking.update');
+    Route::delete('/{id}', [BookingController::class, 'destroy'])->name('backend.booking.destroy');
+    Route::get('/booking', [BookingController::class, 'roomChart'])->name('backend.booking.Chart');
 });
 
 // Admin Section
-Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'admin']], function () {
-    Route::get('/', [AdminController::class, 'index'])->name('staff');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin', [AdminController::class, 'index'])->name('backend.index');
+    Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/file-manager', function () {
         return view('backend.layouts.file-manager');
     })->name('file-manager');
@@ -89,5 +77,14 @@ Route::group(['prefix' => '/admin', 'middleware' => ['auth', 'admin']], function
     Route::post('change-password', [AdminController::class, 'changPasswordStore'])->name('change.password');
 
     // Bookings
-    Route::resource('/bookings', BookingController::class);
+    Route::resource('/admin/bookings', BookingController::class);
+});
+
+// User Section
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', [FrontendController::class, 'home'])->name('home');
+    Route::get('/profile', [HomeController::class, 'profile'])->name('user-profile');
+    Route::post('/profile/{id}', [HomeController::class, 'profileUpdate'])->name('user-profile-update');
+    Route::get('change-password', [HomeController::class, 'changePassword'])->name('user.change.password.form');
+    Route::post('change-password', [HomeController::class, 'changPasswordStore'])->name('change.password');
 });

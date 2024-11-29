@@ -3,23 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\bookings;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use PDF;
 use Carbon\Carbon;
-
 
 class BookingController extends Controller
 {
-    // Display a listing of bookings for the authenticated user
+    // Constructor with middleware to restrict access to admins
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            if (!auth()->user() || !auth()->user()->isAdmin()) {
+                abort(403, 'Unauthorized access. Admins only.');
+            }
+            return $next($request);
+        });
+    }
+
+    // Display a listing of all bookingsup
     public function index()
     {
-        $bookings = bookings::whereHas('users', function ($query) {
-            $query->where('user_no_matriks', auth()->user()->no_matriks);
-        })->paginate(10);
-
-        return view('user.index', compact('bookings'));
+        $bookings = bookings::paginate(10); 
+        return view('backend.booking.index', compact('bookings'));
     }
 
     // Show the form for creating a new booking
@@ -37,6 +42,7 @@ class BookingController extends Controller
             'purpose' => 'required|string|max:255',
             'no_room' => 'required|exists:rooms,no_room',
             'phone_number' => 'required|string|max:15',
+            'list_student' => 'nullable|exists:list_student_booking,id',
         ]);
 
         $booking = bookings::create([
@@ -45,10 +51,9 @@ class BookingController extends Controller
             'purpose' => $request->purpose,
             'no_room' => $request->no_room,
             'phone_number' => $request->phone_number,
+            'list_student' => $request->list_student,
             'status' => 'pending',
         ]);
-
-        $booking->users()->attach(auth()->user()->no_matriks);
 
         return redirect()->route('backend.booking.index')->with('success', 'Booking created successfully.');
     }
@@ -57,12 +62,7 @@ class BookingController extends Controller
     public function edit($id)
     {
         $booking = bookings::findOrFail($id);
-
-        if (!$booking->users()->where('user_no_matriks', auth()->user()->no_matriks)->exists()) {
-            abort(403, 'Unauthorized access to this booking.');
-        }
-
-        return view('backend.bookings.edit', compact('booking'));
+        return view('backend.booking.edit', compact('booking'));
     }
 
     // Update the specified booking in storage
@@ -76,6 +76,7 @@ class BookingController extends Controller
             'purpose' => 'required|string|max:255',
             'no_room' => 'required|exists:rooms,no_room',
             'phone_number' => 'required|string|max:15',
+            'list_student' => 'nullable|exists:list_student_booking,id',
         ]);
 
         $booking->update([
@@ -84,6 +85,8 @@ class BookingController extends Controller
             'purpose' => $request->purpose,
             'no_room' => $request->no_room,
             'phone_number' => $request->phone_number,
+            'list_student' => $request->list_student,
+            'status' => 'pending',
         ]);
 
         return redirect()->route('backend.booking.index')->with('success', 'Booking updated successfully.');
@@ -93,33 +96,18 @@ class BookingController extends Controller
     public function destroy($id)
     {
         $booking = bookings::findOrFail($id);
-
-        if (!$booking->users()->where('user_no_matriks', auth()->user()->no_matriks)->exists()) {
-            abort(403, 'Unauthorized access to this booking.');
-        }
-
         $booking->delete();
 
         return redirect()->route('backend.booking.index')->with('success', 'Booking deleted successfully.');
     }
 
-    // Generate PDF for a specific booking
-    public function pdf(Request $request)
-    {
-        $booking = bookings::with(['users'])->findOrFail($request->id);
-        $file_name = $booking->booking_number . '-' . $booking->purpose . '.pdf';
-
-        $pdf = PDF::loadView('booking.pdf', compact('booking'));
-
-        return $pdf->download($file_name);
-    }
-    // Generate income chart data for bookings
-    public function roomChart(Request $request)
+    // Generate booking chart data for bookings
+    public function roomChart()
     {
         $year = Carbon::now()->year;
 
         $items = bookings::whereYear('created_at', $year)
-            ->where('status', 'completed')
+            ->where('status', 'approved')
             ->get()
             ->groupBy(function ($d) {
                 return Carbon::parse($d->created_at)->format('m');
@@ -127,7 +115,7 @@ class BookingController extends Controller
 
         $result = [];
         foreach ($items as $month => $bookingCollections) {
-            $amount = $bookingCollections->sum('amount'); // Assuming `amount` column for each booking
+            $amount = $bookingCollections->sum('amount');
             $m = intval($month);
             $result[$m] = $amount;
         }

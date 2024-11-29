@@ -25,6 +25,7 @@ class FrontendController extends Controller
     // Home method
     public function home()
     {
+        
         return view('frontend.pages.home');
     }
 
@@ -41,16 +42,16 @@ class FrontendController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
+    
         if (Auth::attempt($data)) {
-            Session::put('user', Auth::user()->email);
             $request->session()->flash('success', 'Successfully logged in');
-            return redirect()->route('home');
+            return redirect()->route('home'); // Redirect to the shared home page
         } else {
             $request->session()->flash('error', 'Invalid email or password. Please try again!');
             return back();
         }
     }
+    
 
     // Logout the user
     public function logout()
