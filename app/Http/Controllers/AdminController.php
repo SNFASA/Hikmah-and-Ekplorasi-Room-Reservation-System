@@ -4,19 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Setting;
-use App\Models\Staff; // Use the Staff model for both controllers
+use App\Models\Staff; 
+
 use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use App\Models\User;
+use App\Models\Admin;
 use Carbon\Carbon;
 
 class AdminController extends Controller
 {
     public function index() {
         // Data for pie chart
-        $data = Staff::select(
+        $data = User::select(
                 \DB::raw("COUNT(*) as count"), 
                 \DB::raw("DAYNAME(created_at) as day_name"), 
                 \DB::raw("DAY(created_at) as day")
@@ -79,33 +81,45 @@ class AdminController extends Controller
 
     public function settings() {
         $data = Setting::first();
+        if (!$data) {
+            // If no settings exist, create default settings
+            $data = Setting::create([
+                'short_des' => '',
+                'description' => '',
+                'photo' => '',
+                'logo' => '',
+                'address' => '',
+                'email' => '',
+                'phone' => '',
+            ]);
+        }
         return view('backend.setting')->with('data', $data);
     }
+    
 
     public function settingsUpdate(Request $request) {
-        // Validate staff settings
         $this->validate($request, [
-            'no_staff' => 'required|max:255|unique:staff,no_staff,' . auth()->user()->id, 
-            'name' => 'required|max:255',
-            'facultyOffice' => 'required|max:255',
-            'role' => 'required|max:255',
-            'email' => 'required|email|unique:staff,email,' . auth()->user()->id, 
-            'receive_notifications' => 'boolean',
+            'short_des' => 'required|string',
+            'description' => 'required|string',
+            'photo' => 'required',
+            'logo' => 'required',
+            'address' => 'required|string',
+            'email' => 'required|email',
+            'phone' => 'required|string',
         ]);
-        
-        // Assuming you want to update the logged-in user's staff information
-        $staff = Staff::findOrFail(auth()->user()->id);
-        $data = $request->only(['no_staff', 'name', 'facultyOffice', 'role', 'email', 'receive_notifications']);
-        
-        // Fill staff data and save
-        $staff->fill($data)->save();
-        
-        // Flash success message
-        request()->session()->flash('success', 'Staff settings successfully updated.');
-        
-        // Redirect back to the settings page or wherever appropriate
-        return redirect()->back();
+    
+        $settings = Setting::first();
+        if (!$settings) {
+            $settings = new Setting(); // Create new settings if none exist
+        }
+    
+        $settings->fill($request->all());
+        $settings->save();
+    
+        request()->session()->flash('success', 'Setting successfully updated');
+        return redirect()->route('admin');
     }
+    
     
 
     public function changePassword() {

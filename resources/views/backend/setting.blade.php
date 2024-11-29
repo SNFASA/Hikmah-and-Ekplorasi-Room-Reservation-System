@@ -11,7 +11,7 @@
         {{-- {{dd($data)}} --}}
         <div class="form-group">
           <label for="short_des" class="col-form-label">Short Description <span class="text-danger">*</span></label>
-          <textarea class="form-control" id="quote" name="short_des">{{$data->short_des}}</textarea>
+          <textarea class="form-control" id="quote" name="short_des">{{ $data->short_des ?? '' }}</textarea>
           @error('short_des')
           <span class="text-danger">{{$message}}</span>
           @enderror

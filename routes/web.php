@@ -63,6 +63,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // User Management
     Route::resource('users', UsersController::class);
 
+    //profile 
+    Route::get('/profile', [AdminController::class, 'profile'])->name('admin-profile');
+    Route::post('/profile/{id}', [AdminController::class, 'profileUpdate'])->name('profile-update');
+
     // Settings
     Route::get('settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('setting/update', [AdminController::class, 'settingsUpdate'])->name('settings.update');
