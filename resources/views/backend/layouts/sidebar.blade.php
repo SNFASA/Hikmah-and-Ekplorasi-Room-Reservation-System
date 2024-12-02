@@ -89,11 +89,11 @@
         <i class="fas fa-desktop"></i>
         <span>Electronic</span>
       </a>
-      <div id="brandCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+      <div id="electronicCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
           <h6 class="collapse-header">Electronic Options:</h6>
-          <a class="collapse-item" href="{{url('backend.electronic.index')}}">Electronic</a>
-          <a class="collapse-item" href="{{url('backend.electronic.create')}}">Add Electronic</a>
+          <a class="collapse-item" href="{{route('electronic.index')}}">Electronic</a>
+          <a class="collapse-item" href="{{route('electronic.create')}}">Add Electronic</a>
         </div>
       </div>
   </li>

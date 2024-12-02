@@ -100,29 +100,29 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
 
 <script>
-    $('#lfm').filemanager('image');
-    $('#lfm1').filemanager('image');
-    $(document).ready(function() {
-    $('#summary').summernote({
-      placeholder: "Write short description.....",
+  $('#lfm').filemanager('image');
+  $('#lfm1').filemanager('image');
+  $(document).ready(function() {
+  $('#summary').summernote({
+    placeholder: "Write short description.....",
+      tabsize: 2,
+      height: 150
+  });
+  });
+
+  $(document).ready(function() {
+    $('#quote').summernote({
+      placeholder: "Write short Quote.....",
+        tabsize: 2,
+        height: 100
+    });
+  });
+  $(document).ready(function() {
+    $('#description').summernote({
+      placeholder: "Write detail description.....",
         tabsize: 2,
         height: 150
     });
-    });
-
-    $(document).ready(function() {
-      $('#quote').summernote({
-        placeholder: "Write short Quote.....",
-          tabsize: 2,
-          height: 100
-      });
-    });
-    $(document).ready(function() {
-      $('#description').summernote({
-        placeholder: "Write detail description.....",
-          tabsize: 2,
-          height: 150
-      });
-    });
+  });
 </script>
 @endpush

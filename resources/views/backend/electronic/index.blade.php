@@ -14,7 +14,7 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        @if(count($electronics)>0)
+        @if($electronics->isNotEmpty())
         <table class="table table-bordered" id="post-category-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
@@ -37,22 +37,22 @@
           <tbody>
             @foreach($electronics as $device)   
                 <tr>
-                    <td>{{$device->id}}</td>
+                    <td>{{$device->no_electronicEquipment}}</td>
                     <td>{{$device->name}}</td>
                     <td></td>{{$device->category}}</td>
                     <td>
-                        @if($device->status=='active')
+                        @if($device->status=='Active')
                             <span class="badge badge-success">{{$device->status}}</span>
                         @else
                             <span class="badge badge-warning">{{$device->status}}</span>
                         @endif
                     </td>
                     <td>
-                        <a href="{{route('electronic.edit',$device->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                    <form method="POST" action="{{route('electronic.destroy',[$data->id])}}">
+                        <a href="{{route('electronic.edit',$device->no_electronicEquipment)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
+                    <form method="POST" action="{{route('electronic.destroy',[$device->no_electronicEquipment])}}">
                       @csrf 
                       @method('delete')
-                          <button class="btn btn-danger btn-sm dltBtn" data-id={{$device->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                          <button class="btn btn-danger btn-sm dltBtn" data-id={{$device->no_electronicEquipment}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
                         </form>
                     </td>
                     {{-- Delete Modal --}}

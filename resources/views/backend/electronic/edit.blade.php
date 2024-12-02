@@ -5,7 +5,7 @@
 <div class="card">
     <h5 class="card-header">Edit Furniture</h5>
     <div class="card-body">
-      <form method="post" action="{{route('electronic.update',$electronics->id)}}">
+      <form method="post" action="{{route('electronic.update',$electronics->no_electronicEquipment)}}">
         @csrf 
         @method('PATCH')
         <div class="form-group">
@@ -15,25 +15,38 @@
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
-        <div class="form-group">
-          <label for="cat_id">Category <span class="text-danger">*</span></label>
-          <select name="cat_id" id="cat_id" class="form-control">
-              <option value="">--Select any category--</option>
-              @foreach($categories as $key=>$cat_data)
-                  <option value='{{$cat_data->id}}' {{(($product->cat_id==$cat_data->id)? 'selected' : '')}}>{{$cat_data->title}}</option>
+        @php
+        // Fetching roles, faculty offices, and courses data from the database
+        $categories = DB::table('electronic_equipment')->select('category')->where('no_electronicEquipment', $electronics->no_electronicEquipment)->get();
+        $status = DB::table('electronic_equipment')->select('status')->where('no_electronicEquipment', $electronics->no_electronicEquipment)->get();
+      @endphp
+
+      <div class="form-group">
+        <label for="category" class="col-form-label">Role</label>
+        <select name="category" class="form-control">
+            <option value="">-----Select Category-----</option>
+              @foreach($categories as $category)
+                <option value="{{ $category->category }}" {{ $category->category == 'Computer' ? 'selected' : '' }}>Computer</option>
+                <option value="{{$category ->category }}" {{ $category->category == 'LCD Projector' ? 'selected' : '' }}>LCD Projector</option>
               @endforeach
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="status" class="col-form-label">Status</label>
-          <select name="status" class="form-control">
-            <option value="Active" {{(($postCategory->status=='active') ? 'selected' : '')}}>Active</option>
-            <option value="Damage" {{(($postCategory->status=='Damage') ? 'selected' : '')}}>Damage</option>
-          </select>
+        </select>
+          @error('category')
+          <span class="text-danger">{{ $message }}</span>
+         @enderror
+      </div>
+      <div class="form-group">
+        <label for="status" class="col-form-label">Role</label>
+        <select name="status" class="form-control">
+            <option value="">-----Select Status-----</option>
+              @foreach($status as $st)
+                <option value="{{ $st->status }}" {{ $st->status == 'Active' ? 'selected' : '' }}>Active</option>
+                <option value="{{$st ->status }}" {{ $st->status == 'Damage' ? 'selected' : '' }}>Damage</option>
+              @endforeach
+        </select>
           @error('status')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
+          <span class="text-danger">{{ $message }}</span>
+         @enderror
+      </div>
         <div class="form-group mb-3">
            <button class="btn btn-success" type="submit">Update</button>
         </div>

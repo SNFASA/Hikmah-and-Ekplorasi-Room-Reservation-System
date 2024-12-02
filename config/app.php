@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
+
 return [
 
     /*
@@ -167,9 +168,9 @@ return [
         App\Providers\AuthServiceProvider::class,
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
+        App\Providers\CustomUMLServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ])->toArray(),
-
     /*
     |--------------------------------------------------------------------------
     | Class Aliases

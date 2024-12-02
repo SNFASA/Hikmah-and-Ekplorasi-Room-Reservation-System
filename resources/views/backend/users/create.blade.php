@@ -6,18 +6,18 @@
     <h5 class="card-header">Add User</h5>
     <div class="card-body">
       <form method="post" action="{{route('users.store')}}">
-        {{csrf_field()}}
+        @csrf()
         <div class="form-group">
-          <label for="inputTitle" class="col-form-label">No matriks</label>
-        <input id="inputTitle" type="text" name="no_matriks" placeholder="Enter no matriks"  value="{{old('no_matriks')}}" class="form-control">
+          <label for="inputno_matriks" class="col-form-label">No matriks</label>
+        <input id="inputno_matriks" type="text" name="no_matriks" placeholder="Enter no matriks"  value="{{old('no_matriks')}}" class="form-control">
         @error('no_matriks')
         <span class="text-danger">{{$message}}</span>
         @enderror
         </div>
 
         <div class="form-group">
-          <label for="inputTitle" class="col-form-label">Name</label>
-        <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
+          <label for="inputname" class="col-form-label">Name</label>
+        <input id="inputname" type="text" name="name" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
         @error('name')
         <span class="text-danger">{{$message}}</span>
         @enderror
@@ -25,7 +25,7 @@
 
         <div class="form-group">
             <label for="inputEmail" class="col-form-label">Email</label>
-          <input id="inputEmail" type="email" name="email" placeholder="Enter email"  value="{{old('email')}}" class="form-control">
+          <input id="inputEmail" type="email" name="email" placeholder="Enter email"  value="{{old('email')}}" autocomplete="new-email" class="form-control">
           @error('email')
           <span class="text-danger">{{$message}}</span>
           @enderror
@@ -77,11 +77,18 @@
 
         <div class="form-group">
           <label for="inputPassword" class="col-form-label">Password</label>
-          <input id="inputPassword" type="password" name="password" placeholder="Enter password"  value="{{old('password')}}" class="form-control">
+          <input id="inputPassword" type="password" name="password" placeholder="Enter password"  value="{{old('password')}}"  autocomplete="new-password" class="form-control">
             @error('password')
               <span class="text-danger">{{$message}}</span>
             @enderror
         </div>
+        <div class="form-group">
+          <label for="inputPasswordConfirmation" class="col-form-label">Confirm Password</label>
+          <input id="inputPasswordConfirmation" type="password" name="password_confirmation" placeholder="Confirm password" autocomplete="new-password" class="form-control">
+          @error('password_confirmation')
+              <span class="text-danger">{{ $message }}</span>
+          @enderror
+      </div>
         <div class="form-group mb-3">
           <button type="reset" class="btn btn-warning">Reset</button>
           <button class="btn btn-success" type="submit">Submit</button>

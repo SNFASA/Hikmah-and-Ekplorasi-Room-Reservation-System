@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ElectronicController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\FrontendController;
@@ -52,6 +53,18 @@ Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(func
     Route::get('/booking', [BookingController::class, 'roomChart'])->name('backend.booking.Chart');
 });
 
+//electronic 
+Route::prefix('/admin/electronics')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [ElectronicController::class, 'index'])->name('backend.electronic.index');
+    Route::get('/create', [ElectronicController::class, 'create'])->name('backend.electronic.create');
+    Route::post('/', [ElectronicController::class, 'store'])->name('backend.electronic.store');
+    Route::get('/{id}', [ElectronicController::class, 'show'])->name('backend.electronic.show');
+    Route::get('/{id}/edit', [ElectronicController::class, 'edit'])->name('backend.electronic.edit');
+    Route::put('/{id}', [ElectronicController::class, 'update'])->name('backend.electronic.update');
+    Route::delete('/{id}', [ElectronicController::class, 'destroy'])->name('backend.electronic.destroy');
+});
+
+
 // Admin Section
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('backend.index');
@@ -59,6 +72,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/file-manager', function () {
         return view('backend.layouts.file-manager');
     })->name('file-manager');
+    Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+        \UniSharp\LaravelFilemanager\Lfm::routes();
+    });
+    
 
     // User Management
     Route::resource('users', UsersController::class);
@@ -82,6 +99,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     // Bookings
     Route::resource('/admin/bookings', BookingController::class);
+
+    //electronic
+    Route::resource('/admin/electronic', ElectronicController::class);
 });
 
 // User Section

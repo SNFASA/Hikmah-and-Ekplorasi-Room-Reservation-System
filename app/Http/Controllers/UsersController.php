@@ -25,17 +25,19 @@ class UsersController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'no_matriks' => 'required|unique|max:255',
+            'no_matriks' => 'required|unique:users,no_matriks|max:255',
             'name' => 'required|max:255',
             'facultyOffice' => 'required|max:255',
             'course' => 'required|max:255',
-            'email' => 'required|email|unique|max:255',
-            'password' => 'required|min:6|confirmed',
+            'email' => 'required|email|unique:users,email|max:255',
+            'password' => 'required|min:8|confirmed',
             'role' => 'required',
         ]);
 
         $data = $request->all();
-        $data['password'] = Hash::make($request->password);
+        if ($request->filled('password')) {
+            $data['password'] = Hash::make($request->password);
+        }
 
         $status = User::create($data);
 
@@ -68,12 +70,12 @@ class UsersController extends Controller
         $users = User::findOrFail($id);
 
         $this->validate($request, [
-            'no_matriks' => 'required|max:255|unique:no_matriks,' . $id,
+            'no_matriks' => 'required|max:255|unique:users,no_matriks,' . $id,
             'name' => 'required|max:255',
             'facultyOffice' => 'required|max:255',
             'course' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:students,email,' . $id,
-            'password' => 'nullable|min:6|confirmed',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|min:8|confirmed',
             'role' => 'required',
         ]);
 
