@@ -34,7 +34,7 @@ class room extends Model
        return $this->hasMany(electronic::class, 'electronicEquipment', 'no_electronic');
     }
     public static function countActiveroom(){
-        $data=electronic::where('status','active')->count();
+        $data=room::where('status','active')->count();
         if($data){
             return $data;
         }

@@ -8,21 +8,20 @@
       <form method="post" action="{{route('furniture.store')}}">
         {{csrf_field()}}
         <div class="form-group">
-          <label for="inputTitle" class="col-form-label">Name</label>
-          <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
+          <label for="inputName" class="col-form-label">Name</label>
+          <input id="inputName" type="text" name="name" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
           @error('name')
           <span class="text-danger">{{$message}}</span>
           @enderror
         </div>
         <div class="form-group">
-          <label for="cat_id">Category<span class="text-danger">*</span></label>
-          <select name="cat_id" id="cat_id" class="form-control">
-              <option value="">--Select any category--</option>
-              @foreach($categories as $key=>$cat_data)
-                  <option value='Desk'>Desk</option>
-                  <option value='Chair'>Chair</option>
-                  <option value='japanese desk'>japanese desk</option>
-              @endforeach
+          <label for="category">Category <span class="text-danger">*</span></label>
+          <select name="category" id="category" class="form-control">
+            <option value="">-----Select Category-----</option>
+            <option value="Desk">Desk</option>
+            <option value="Chair">Chair</option>
+            <option value="Japaness Table">Japaness Table</option>
+            <option value="Whiteboard">Whiteboard</option>
           </select>
         </div>
 

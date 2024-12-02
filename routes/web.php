@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ElectronicController;
+use App\Models\room;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\FrontendController;
@@ -9,6 +10,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\FurnitureController;
 use App\Http\Controllers\UsersController;
 
 // Authentication Routes
@@ -64,6 +67,28 @@ Route::prefix('/admin/electronics')->middleware(['auth', 'role:admin'])->group(f
     Route::delete('/{id}', [ElectronicController::class, 'destroy'])->name('backend.electronic.destroy');
 });
 
+//furniture 
+Route::prefix('/admin/furnitures')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [FurnitureController::class, 'index'])->name('backend.furniture.index');
+    Route::get('/create', [FurnitureController::class, 'create'])->name('backend.furniture.create');
+    Route::post('/', [FurnitureController::class, 'store'])->name('backend.furniture.store');
+    Route::get('/{id}', [FurnitureController::class, 'show'])->name('backend.furniture.show');
+    Route::get('/{id}/edit', [FurnitureController::class, 'edit'])->name('backend.furniture.edit');
+    Route::put('/{id}', [FurnitureController::class, 'update'])->name('backend.furniture.update');
+    Route::delete('/{id}', [FurnitureController::class, 'destroy'])->name('backend.furniture.destroy');
+});
+
+//room 
+Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [RoomController::class, 'index'])->name('backend.room.index');
+    Route::get('/create', [RoomController::class, 'create'])->name('backend.room.create');
+    Route::post('/', [RoomController::class, 'store'])->name('backend.room.store');
+    Route::get('/{id}', [RoomController::class, 'show'])->name('backend.room.show');
+    Route::get('/{id}/edit', [RoomController::class, 'edit'])->name('backend.room.edit');
+    Route::put('/{id}', [RoomController::class, 'update'])->name('backend.room.update');
+    Route::delete('/{id}', [RoomController::class, 'destroy'])->name('backend.room.destroy');
+});
+
 
 // Admin Section
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -102,6 +127,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     //electronic
     Route::resource('/admin/electronic', ElectronicController::class);
+
+    //furniture 
+    Route::resource('/admin/furniture', FurnitureController::class);
+
+    //room
+    Route::resource('/admin/room', RoomController::class);
 });
 
 // User Section

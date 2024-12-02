@@ -14,7 +14,7 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        @if(count($furnitures)>0)
+        @if($furniture->isNotEmpty())
         <table class="table table-bordered" id="post-category-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
@@ -35,9 +35,9 @@
               </tr>
           </tfoot>
           <tbody>
-            @foreach($furnitures as $data)   
+            @foreach($furniture as $data)   
                 <tr>
-                    <td>{{$data->id}}</td>
+                    <td>{{$data->no_furniture}}</td>
                     <td>{{$data->name}}</td>
                     <td></td>{{$data->category}}</td>
                     <td>
@@ -48,11 +48,11 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{route('furniture.edit',$data->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                    <form method="POST" action="{{route('furniture.destroy',[$data->id])}}">
+                        <a href="{{route('furniture.edit',$data->no_furniture)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
+                    <form method="POST" action="{{route('furniture.destroy',[$data->no_furniture])}}">
                       @csrf 
                       @method('delete')
-                          <button class="btn btn-danger btn-sm dltBtn" data-id={{$data->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                          <button class="btn btn-danger btn-sm dltBtn" data-id={{$data->no_furniture}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
                         </form>
                     </td>
                     {{-- Delete Modal --}}
@@ -79,7 +79,7 @@
             @endforeach
           </tbody>
         </table>
-        <span style="float:right">{{$furnitures->links()}}</span>
+        <span style="float:right">{{$furniture->links()}}</span>
         @else
           <h6 class="text-center">No furniture found!!! Please create furniture</h6>
         @endif

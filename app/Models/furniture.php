@@ -15,7 +15,7 @@ class furniture extends Model
         'status',
     ];
     public static function countActiveFurniture(){
-        $data=electronic::where('status','active')->count();
+        $data=furniture::where('status','active')->count();
         if($data){
             return $data;
         }

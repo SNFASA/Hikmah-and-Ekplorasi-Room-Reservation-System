@@ -57,13 +57,13 @@
     {{-- Room --}}
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#roomCollapse" aria-expanded="true" aria-controls="roomCollapse">
-          <i class="fas fa-door-close"></i>
+          <i class="fas fa-door-closed fa-2x"></i>
           <span>Room</span>
         </a>
         <div id="roomCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Room Options:</h6>
-            <a class="collapse-item" href="{{url('backend.room.index')}}">Romm</a>
+            <a class="collapse-item" href="{{url('backend.room.index')}}">Room</a>
             <a class="collapse-item" href="{{url('backend.room.create')}}">Add Room</a>
           </div>
         </div>
@@ -78,8 +78,8 @@
         <div id="furnitureCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Furniture Options:</h6>
-            <a class="collapse-item" href="{{url('backend.furniture.index')}}">Furniture</a>
-            <a class="collapse-item" href="{{url('backedn.furniture.create')}}">Add Furniture</a>
+            <a class="collapse-item" href="{{route('furniture.index')}}">Furniture</a>
+            <a class="collapse-item" href="{{route('furniture.create')}}">Add Furniture</a>
           </div>
         </div>
     </li>
