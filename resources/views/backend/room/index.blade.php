@@ -21,9 +21,9 @@
               <th>S.N.</th>
               <th>Name</th>
               <th>Capacity</th>
+              <th>Type Room</th>
               <th>Furniture</th>
               <th>Electronic equpment</th>
-              <th>Photo</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
@@ -33,6 +33,7 @@
               <th>S.N.</th>
               <th>Name</th>
               <th>Capacity</th>
+              <th>Type Room</th>
               <th>Furniture</th>
               <th>Electronic equpment</th>
               <th>Status</th>
@@ -40,34 +41,45 @@
             </tr>
           </tfoot>
           <tbody>
-
             @foreach($rooms as $room)
-              @php
-              @endphp
-                <tr>
-                    <td>{{$room->id}}</td>
-                    <td>{{$room->name}}</td>
-                    <td>{{$room->capacity}}</td>
-                    <td>{{$room->furniture}}</td>
-                    <td>{{$room->electronic}}</td>
-                    <td>
-                        @if($category->status=='active')
-                            <span class="badge badge-success">{{$room->status}}</span>
-                        @else
-                            <span class="badge badge-warning">{{$room->status}}</span>
-                        @endif
-                    </td>
-                    <td>
-                        <a href="{{route('room.edit',$room->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                    <form method="POST" action="{{route('room.destroy',[$category->id])}}">
-                      @csrf
-                      @method('delete')
-                          <button class="btn btn-danger btn-sm dltBtn" data-id={{$category->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                        </form>
-                    </td>
-                </tr>
+            <tr>
+                <td>{{ $room->no_room }}</td>
+                <td>{{ $room->name }}</td>
+                <td>{{ $room->capacity }}</td>
+                <td>{{ $room->type_room }}</td>
+                <td>
+                    @if($room->furnitures->isNotEmpty())
+                        {{ $room->furnitures->pluck('name')->join(', ') }}
+                    @else
+                        N/A
+                    @endif
+                </td>
+                <td>
+                    @if($room->electronics->isNotEmpty())
+                        {{ $room->electronics->pluck('name')->join(', ') }}
+                    @else
+                        N/A
+                    @endif
+                </td>
+                <td>
+                    @if($room->status == 'valid')
+                        <span class="badge badge-success">{{ $room->status }}</span>
+                    @else
+                        <span class="badge badge-warning">{{ $room->status }}</span>
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('room.edit', $room->no_room) }}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
+                    <form method="POST" action="{{ route('room.destroy', [$room->no_room]) }}">
+                        @csrf
+                        @method('delete')
+                        <button class="btn btn-danger btn-sm dltBtn" data-id="{{ $room->no_room }}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                    </form>
+                </td>
+            </tr>
             @endforeach
-          </tbody>
+        </tbody>
+        
         </table>
         <span style="float:right">{{$rooms->links()}}</span>
         @else

@@ -21,4 +21,8 @@ class furniture extends Model
         }
         return 0;
     }
+    public function rooms()
+    {
+        return $this->belongsToMany(room::class, 'furniture_room', 'furniture_id', 'room_id', 'no_furniture', 'no_room');
+    }
 }

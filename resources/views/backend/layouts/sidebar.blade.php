@@ -63,8 +63,8 @@
         <div id="roomCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Room Options:</h6>
-            <a class="collapse-item" href="{{url('backend.room.index')}}">Room</a>
-            <a class="collapse-item" href="{{url('backend.room.create')}}">Add Room</a>
+            <a class="collapse-item" href="{{route('room.index')}}">Room</a>
+            <a class="collapse-item" href="{{route('room.create')}}">Add Room</a>
           </div>
         </div>
     </li>

@@ -5,91 +5,170 @@
 <div class="card">
     <h5 class="card-header">Add Room</h5>
     <div class="card-body">
-      <form method="post" action="{{route('room.store')}}">
-        {{csrf_field()}}
-        <div class="form-group">
-          <label for="inputTitle" class="col-form-label">Room name<span class="text-danger">*</span></label>
-          <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{old('name')}}" class="form-control">
-          @error('name')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-        <div class="form-group">
-          <label for="stock">Capacity <span class="text-danger">*</span></label>
-          <input id="quantity" type="number" name="stock" min="0" placeholder="Enter capacity"  value="{{$room->capacity}}" class="form-control">
-          @error('capacity')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-        <div class="form-group d-none" id='parent_cat_div'>
-          <label for="parent_id">Furniture</label>
-          <select name="parent_id" class="form-control">
-              <option value="">--Select any furnitre--</option>
-              @foreach($parent_cats as $key=>$parent_cat)
-                  <option value='{{$parent_cat->id}}'>{{$parent_cat->name}}</option>
-              @endforeach
-          </select>
-        </div>
-        {{-- {{$parent_cats}} --}}
+        <form method="post" action="{{ route('room.store') }}">
+            @csrf
 
-        <div class="form-group d-none" id='parent_cat_div'>
-          <label for="parent_id">Electronic equpment</label>
-          <select name="parent_id" class="form-control">
-              <option value="">--Select any equpment--</option>
-              @foreach($parent_cats as $key=>$parent_cat)
-                  <option value='{{$parent_cat->id}}'>{{$parent_cat->title}}</option>
-              @endforeach
-          </select>
-        </div>       
-        <div class="form-group">
-          <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
-          <select name="status" class="form-control">
-              <option value="valid">Valid</option>
-              <option value="invalid">inValid</option></option>
-          </select>
-          @error('status')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-        <div class="form-group mb-3">
-          <button type="reset" class="btn btn-warning">Reset</button>
-           <button class="btn btn-success" type="submit">Submit</button>
-        </div>
-      </form>
+            <!-- Room Name -->
+            <div class="form-group">
+                <label for="inputName" class="col-form-label">Room Name <span class="text-danger">*</span></label>
+                <input id="inputName" type="text" name="name" placeholder="Enter name" value="{{ old('name') }}" class="form-control">
+                @error('name')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Capacity -->
+            <div class="form-group">
+                <label for="capacity">Capacity <span class="text-danger">*</span></label>
+                <input id="capacity" type="number" name="capacity" min="0" placeholder="Enter capacity" value="{{ old('capacity') }}" class="form-control">
+                @error('capacity')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Furniture Selection -->
+            <div class="form-group">
+                <label for="furniture">Furniture <span class="text-danger">*</span></label>
+                <select id="furniture-select" class="form-control">
+                    <option value="">--Select Furniture--</option>
+                    @foreach($furnitures as $furniture)
+                        <option value="{{ $furniture->no_furniture }}">
+                            {{ $furniture->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('furniture')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Selected Furniture -->
+            <div class="form-group">
+                <label for="selected-furniture">Selected Furniture</label>
+                <ul id="selected-furniture" class="list-group">
+                    <!-- Selected furniture will be added dynamically -->
+                </ul>
+            </div>
+            <div id="furniture-hidden-inputs"></div>
+            <button type="button" id="add-selected-furniture" class="btn btn-primary">Add Selected Furniture</button>
+
+            <!-- Electronic Equipment Selection -->
+            <div class="form-group">
+                <label for="electronicEquipment">Electronic Equipment <span class="text-danger">*</span></label>
+                <select id="electronic-equipment-select" class="form-control">
+                    <option value="">--Select Equipment--</option>
+                    @foreach($electronics as $electronic)
+                        <option value="{{ $electronic->no_electronicEquipment }}">
+                            {{ $electronic->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('electronicEquipment')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Selected Electronics -->
+            <div class="form-group">
+                <label for="selected-electronics">Selected Electronics</label>
+                <ul id="selected-electronics" class="list-group">
+                    <!-- Selected electronics will be added dynamically -->
+                </ul>
+            </div>
+            <div id="electronics-hidden-inputs"></div>
+            <button type="button" id="add-selected-equipment" class="btn btn-primary">Add Selected Equipment</button>
+
+            <!-- Room Type -->
+            <div class="form-group">
+                <label for="type_room" class="col-form-label">Type Room<span class="text-danger">*</span></label>
+                <select name="type_room" class="form-control">
+                    <option value="HIKMAH">HIKMAH</option>
+                    <option value="EKSPLORASI">EKSPLORASI</option>
+                </select>
+                @error('type_room')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Status -->
+            <div class="form-group">
+                <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
+                <select name="status" class="form-control">
+                    <option value="valid">Valid</option>
+                    <option value="invalid">Invalid</option>
+                </select>
+                @error('status')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <!-- Submit -->
+            <div class="form-group mb-3">
+                <button type="reset" class="btn btn-warning">Reset</button>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+        </form>
     </div>
 </div>
 
 @endsection
 
-@push('styles')
-<link rel="stylesheet" href="{{asset('backend/summernote/summernote.min.css')}}">
-@endpush
 @push('scripts')
-<script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
-<script src="{{asset('backend/summernote/summernote.min.js')}}"></script>
 <script>
-    $('#lfm').filemanager('image');
+$(document).ready(function () {
+    // Add selected furniture
+    $('#add-selected-furniture').click(function () {
+        const selectedItemId = $('#furniture-select').val();
+        const selectedItemText = $('#furniture-select option:selected').text();
 
-    $(document).ready(function() {
-      $('#summary').summernote({
-        placeholder: "Write short description.....",
-          tabsize: 2,
-          height: 120
-      });
+        if (selectedItemId) {
+            if (!$(`#selected-furniture li[data-item-id="${selectedItemId}"]`).length) {
+                $('#selected-furniture').append(`
+                    <li class="list-group-item d-flex justify-content-between" data-item-id="${selectedItemId}">
+                        ${selectedItemText}
+                        <button type="button" class="btn btn-danger btn-sm remove-item" data-item-id="${selectedItemId}" data-type="furniture">Remove</button>
+                    </li>
+                `);
+                $('#furniture-hidden-inputs').append(`<input type="hidden" name="furniture[]" value="${selectedItemId}">`);
+                $(`#furniture-select option[value="${selectedItemId}"]`).remove();
+            }
+        }
     });
-</script>
 
-<script>
-  $('#is_parent').change(function(){
-    var is_checked=$('#is_parent').prop('checked');
-    // alert(is_checked);
-    if(is_checked){
-      $('#parent_cat_div').addClass('d-none');
-      $('#parent_cat_div').val('');
-    }
-    else{
-      $('#parent_cat_div').removeClass('d-none');
-    }
-  })
+    // Add selected electronic equipment
+    $('#add-selected-equipment').click(function () {
+        const selectedItemId = $('#electronic-equipment-select').val();
+        const selectedItemText = $('#electronic-equipment-select option:selected').text();
+
+        if (selectedItemId) {
+            if (!$(`#selected-electronics li[data-item-id="${selectedItemId}"]`).length) {
+                $('#selected-electronics').append(`
+                    <li class="list-group-item d-flex justify-content-between" data-item-id="${selectedItemId}">
+                        ${selectedItemText}
+                        <button type="button" class="btn btn-danger btn-sm remove-item" data-item-id="${selectedItemId}" data-type="electronics">Remove</button>
+                    </li>
+                `);
+                $('#electronics-hidden-inputs').append(`<input type="hidden" name="electronicEquipment[]" value="${selectedItemId}">`);
+                $(`#electronic-equipment-select option[value="${selectedItemId}"]`).remove();
+            }
+        }
+    });
+
+    // Remove item from the list
+    $(document).on('click', '.remove-item', function () {
+        const itemId = $(this).data('item-id');
+        const itemType = $(this).data('type');
+        const itemText = $(this).closest('li').text().trim().replace('Remove', '').trim();
+
+        $(this).closest('li').remove();
+        $(`input[name="${itemType}[]"][value="${itemId}"]`).remove();
+
+        if (itemType === 'furniture') {
+            $('#furniture-select').append(`<option value="${itemId}">${itemText}</option>`);
+        } else if (itemType === 'electronics') {
+            $('#electronic-equipment-select').append(`<option value="${itemId}">${itemText}</option>`);
+        }
+    });
+});
 </script>
 @endpush

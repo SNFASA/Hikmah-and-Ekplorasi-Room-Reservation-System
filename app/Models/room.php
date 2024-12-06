@@ -5,11 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-
 class room extends Model
 {
     use HasFactory;
@@ -20,25 +15,25 @@ class room extends Model
         'name',
         'capacity',
         'status',
-        'furniture',
-        'electronicEquipment',
     ];
 
-    // Relationship to 
-    public function furniture()
+    public $incrementing = true;     // set no_room is  auto-incrementing
+    protected $keyType = 'string';    // Use 'string' if no_room is a string type, otherwise 'int'
+
+    public function furnitures()
     {
-       return $this->hasMany(furniture::class, 'furniture', 'no_furniture');
+        return $this->belongsToMany(furniture::class, 'furniture_room', 'room_id', 'furniture_id', 'no_room', 'no_furniture');
     }
-    public function electronicEquipment()
+    
+    public function electronics()
     {
-       return $this->hasMany(electronic::class, 'electronicEquipment', 'no_electronic');
+        return $this->belongsToMany(electronic::class, 'electronic_equipment_room', 'room_id', 'electronic_equipment_id', 'no_room', 'no_electronicEquipment');
     }
-    public static function countActiveroom(){
-        $data=room::where('status','active')->count();
-        if($data){
-            return $data;
-        }
-        return 0;
+    
+    // Count active rooms
+    public static function countActiveRoom()
+    {
+        $data = self::where('status', 'valid')->count();
+        return $data ?: 0;
     }
 }
-

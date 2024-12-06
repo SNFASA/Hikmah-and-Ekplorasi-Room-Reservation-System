@@ -31,7 +31,7 @@ class FurnitureController extends Controller
             'Japaness Table',
             'Whiteboard'
         ];
-        return view('backend.electronic.create', compact('categories'));
+        return view('backend.furniture.create', compact('categories'));
     }
 
 

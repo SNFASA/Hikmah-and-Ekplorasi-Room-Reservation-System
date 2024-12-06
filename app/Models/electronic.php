@@ -23,4 +23,8 @@ class electronic extends Model
         }
         return 0;
     }
+    public function rooms()
+    {
+        return $this->belongsToMany(room::class, 'electronic_equipment_room', 'electronic_equipment_id', 'room_id', 'no_electronicEquipment', 'no_room');
+    }
 }
