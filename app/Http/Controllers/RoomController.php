@@ -86,13 +86,15 @@ class RoomController extends Controller
     
     public function edit($id)
     {
-        $type_rooms = ['HIKMAH', 'EKSPLORASI'];
-        $room = room::findOrFail($id);
+        $room = room::with(['furnitures', 'electronics'])->findOrFail($id);
         $furnitures = furniture::all();
         $electronics = electronic::all();
-
-        return view('backend.room.edit', compact('room', 'type_rooms', 'furnitures', 'electronics'));
+        $selectedFurnitures = $room->furnitures;
+        $selectedElectronics = $room->electronics;
+    
+        return view('backend.room.edit', compact('room', 'furnitures', 'electronics', 'selectedFurnitures', 'selectedElectronics'));
     }
+    
 
     public function update(Request $request, $id)
     {
@@ -100,26 +102,53 @@ class RoomController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'capacity' => 'required|string|max:255',
-            'status' => 'required|string|max:255',
-            'type_room' => 'required|string|max:255|in:HIKMAH,EKSPLORASI',
-            'furniture' => 'required|array',
-            'furniture.*' => 'exists:furniture,no_furniture',
-            'electronicEquipment' => 'required|array',
-            'electronicEquipment.*' => 'exists:electronic_equipment,no_electronicEquipment',
+            'capacity' => 'required|integer|min:0',
+            'furniture' => 'nullable|array',
+            'electronicEquipment' => 'nullable|array',
+            'type_room' => 'required|string|in:HIKMAH,EKSPLORASI',
+            'status' => 'required|string|in:valid,invalid',
         ]);
 
         // Update room details
-        $room->update([
-            'name' => $request->name,
-            'capacity' => $request->capacity,
-            'status' => $request->status,
-            'type_room' => $request->type_room,
-        ]);
-
-        // Sync furniture and electronic equipment
-        $room->furniture()->sync($request->furniture);
-        $room->electronicEquipment()->sync($request->electronic_equipment);
+            DB::transaction(function () use ($request, $id) {
+            try {
+                
+                $room = Room::findOrFail($id);
+        
+                // Update the room details
+                $room->name = $request->name;
+                $room->capacity = $request->capacity;
+                $room->type_room = $request->type_room;
+                $room->status = $request->status;
+                $room->save();
+        
+                // Log the updated room to check the changes
+                \Log::info('Room after update:', $room->toArray());
+        
+                // If no room ID is generated, throw an exception (this is unlikely for an update but kept for safety)
+                if (!$room->no_room) {
+                    throw new \Exception('Room ID not generated!');
+                }
+        
+                // Update the furniture if available
+                if (!empty($request->furniture)) {
+                    \Log::info('Attaching furniture:', $request->furniture);
+                    // Detach existing furniture before attaching new ones to avoid duplicates
+                    $room->furnitures()->sync($request->furniture);  // `sync` will update the relationship
+                }
+        
+                // Update the electronic equipment if available
+                if (!empty($request->electronicEquipment)) {
+                    \Log::info('Attaching electronics:', $request->electronicEquipment);
+                    // Detach existing electronics before attaching new ones
+                    $room->electronics()->sync($request->electronicEquipment);  // `sync` will update the relationship
+                }
+            } catch (\Exception $e) {
+                \Log::error('Error updating room:', ['error' => $e->getMessage()]);
+                throw $e;  // Rethrow the exception
+            }
+        });
+        
 
         return redirect()->route('backend.room.index')->with('success', 'Room updated successfully.');
     }
@@ -129,8 +158,8 @@ class RoomController extends Controller
         $room = room::findOrFail($id);
 
         // Detach related furniture and electronics
-        $room->furniture()->detach();
-        $room->electronicEquipment()->detach();
+        $room->furnitures()->detach();
+        $room->electronics()->detach();
 
         $room->delete();
 
