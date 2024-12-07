@@ -23,8 +23,8 @@ class BookingController extends Controller
     // Display a listing of all bookingsup
     public function index()
     {
-        $bookings = bookings::paginate(10); 
-        return view('backend.booking.index', compact('bookings'));
+        $bookings = bookings::orderBy('id', 'ASC')->paginate(10);
+        return view('backend.booking.index')->with('bookings', $bookings);
     }
 
     // Show the form for creating a new booking

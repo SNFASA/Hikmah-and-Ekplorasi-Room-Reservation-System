@@ -44,6 +44,16 @@ Route::get('storage-link', [AdminController::class, 'storageLink'])->name('stora
 // Home Route (Require Login)
 Route::get('/', [HomeController::class, 'index'])->name('user')->middleware('auth');
 Route::get('/home', [FrontendController::class, 'home'])->name('home');
+//User
+Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [UsersController::class, 'index'])->name('backend.users.index');
+    Route::get('/create', [UsersController::class, 'create'])->name('backend.users.create');
+    Route::post('/', [UsersController::class, 'store'])->name('backend.users.store');
+    Route::get('/{id}', [UsersController::class, 'show'])->name('backend.users.show');
+    Route::get('/{id}/edit', [UsersController::class, 'edit'])->name('backend.users.edit');
+    Route::put('/{id}', [UsersController::class, 'update'])->name('backend.users.update');
+    Route::delete('/{id}', [UsersController::class, 'destroy'])->name('backend.users.destroy');
+});
 // Bookings
 Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index');

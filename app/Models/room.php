@@ -10,12 +10,10 @@ class room extends Model
     use HasFactory;
 
     protected $primaryKey = 'no_room';
-
-    protected $fillable = [
-        'name',
-        'capacity',
-        'status',
-    ];
+    protected$no_room;
+    protected $name;
+    protected $capacity;
+    protected $status;
 
     public $incrementing = true;     // set no_room is  auto-incrementing
     protected $keyType = 'string';    // Use 'string' if no_room is a string type, otherwise 'int'

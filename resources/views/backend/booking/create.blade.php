@@ -5,7 +5,7 @@
 <div class="card">
     <h5 class="card-header">Add Booking</h5>
     <div class="card-body">
-      <form method="post" action="{{route('backend.booking.store')}}">
+      <form method="post" action="{{route('bookings.store')}}">
         {{csrf_field()}}
         <div class="form-group">
           <label for="inputpurpose" class="col-form-label">Purpose<span class="text-danger">*</span></label>
@@ -33,7 +33,7 @@
         
         <div class="form-group">
           <label for="inputPhoneNumber" class="col-form-label">Phone number<span class="text-danger">*</span></label>
-        <input id="inputphoneNumber" type="text" name="Phonenumber" placeholder="Enter Phone number"  value="{{old('Phonenumber')}}" class="form-control">
+        <input id="inputphoneNumber" type="number" name="phone_number" placeholder="Enter Phone number"  value="{{old('phone_number')}}" class="form-control">
         @error('Phonenumber')
         <span class="text-danger">{{$message}}</span>
         @enderror
@@ -47,7 +47,7 @@
             <select name="room" class="form-control">
               <option value="">-----Select Room-----</option>
                 @foreach($rooms as $room)
-                  <option value="{{ $room->room }}">{{ $room->rooom }}</option>
+                  <option value="{{ $room->no_room }}">{{ $room->name }}</option>
                 @endforeach
             </select>
               @error('room')

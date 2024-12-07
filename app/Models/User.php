@@ -11,7 +11,7 @@ use App\Traits\RoleTrait;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, RoleTrait;
-
+    
     protected $fillable = [
         'no_matriks',
         'name',

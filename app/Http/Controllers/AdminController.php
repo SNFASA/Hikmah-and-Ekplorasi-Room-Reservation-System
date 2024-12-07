@@ -63,17 +63,18 @@ class AdminController extends Controller
     }
 
     public function profileUpdate(Request $request, $id) {
-        $staff = Staff::findOrFail($id);
+        $user = User::findOrFail($id);
         $data = $request->validate([  // Validate incoming request
-            'no_staff' => 'required|max:255|unique:staff,no_staff,' . $id,
+            'no_matriks' => 'required|max:255|unique:users,no_matriks,' . $id,
             'name' => 'required|max:255',
             'facultyOffice' => 'required|max:255',
-            'role' => 'required|max:255',
-            'email' => 'required|email|unique:staff,email,' . $id,
-            'receive_notifications' => 'boolean',
+            'course' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|min:8|confirmed',
+            'role' => 'required',
         ]);
         
-        $staff->fill($data)->save();
+        $user->fill($data)->save();
         request()->session()->flash('success', 'Successfully updated your profile');
         
         return redirect()->back();
@@ -133,7 +134,7 @@ class AdminController extends Controller
             'new_confirm_password' => ['same:new_password'],
         ]);
 
-        Staff::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
+        User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
         return redirect()->route('admin')->with('success', 'Password successfully changed');
     }
 

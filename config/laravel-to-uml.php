@@ -14,7 +14,7 @@ return [
     'casts'         => false,
     'channels'      => false,
     'commands'      => false,
-    'components'    => false,
+    'components'    => true,
     'controllers'   => true,
     'events'        => false,
     'exceptions'    => false,
@@ -26,7 +26,7 @@ return [
     'notifications' => false,
     'observers'     => false,
     'policies'      => false,
-    'providers'     => false,
+    'providers'     => true,
     'requests'      => true,
     'resources'     => false,
     'rules'         => false,
@@ -37,29 +37,30 @@ return [
      * You can define specific nomnoml styling.
      * For more information: https://github.com/skanaar/nomnoml
      */
-    'style' => [
-        'background' => '#071013',
-        'stroke'     => '#EBEBEB',
-        'arrowSize'  => 1,
-        'bendSize'   => 0.3,
-        'direction'  => 'down',
-        'gutter'     => 5,
-        'edgeMargin' => 0,
-        'gravity'    => 1,
-        'edges'      => 'rounded',
-        'fill'       => '#3A6EA5',
-        'fillArrows' => false,
-        'font'       => 'Calibri',
-        'fontSize'   => 12,
-        'leading'    => 1.25,
-        'lineWidth'  => 3,
-        'padding'    => 8,
-        'spacing'    => 40,
-        'title'      => 'Filename',
-        'zoom'       => 1,
-        'acyclicer'  => 'greedy',
-        'ranker'     => 'longest-path'
-    ],
+'style' => [
+    'background' => '#071013',
+    'stroke'     => '#EBEBEB',
+    'arrowSize'  => 1,
+    'bendSize'   => 0.5,
+    'direction'  => 'down',  // Ensures a top-to-bottom flow
+    'gutter'     => 15,      // Increases space between nodes
+    'edgeMargin' => 20,      // Adds margin around edges
+    'gravity'    => 2,       // Keeps the structure balanced
+    'edges'      => 'rounded',
+    'fill'       => '#3A6EA5',
+    'fillArrows' => true,
+    'font'       => 'Calibri',
+    'fontSize'   => 12,
+    'leading'    => 1.25,
+    'lineWidth'  => 3,
+    'padding'    => 15,      // Adds padding inside the boxes
+    'spacing'    => 90,      // Separates nodes vertically
+    'title'      => 'Filename',
+    'zoom'       => 1,
+    'acyclicer'  => 'greedy',
+    'ranker'     => 'longest-path',
+],
+
 
     /**
      * Specific files can be excluded if need be.

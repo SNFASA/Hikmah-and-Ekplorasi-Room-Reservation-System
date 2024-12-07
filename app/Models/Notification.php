@@ -7,5 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-    protected $fillable=['data','type','notifiable','read_at'];
+    use HasFactory;
+    protected $data;
+    protected $type;
+    protected $notifiable;
+    protected $read_at;
+
 }
