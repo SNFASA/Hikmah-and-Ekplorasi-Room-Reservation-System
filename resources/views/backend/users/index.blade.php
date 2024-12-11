@@ -41,15 +41,23 @@
           </tfoot>
           <tbody>
             @foreach($users as $user)   
+            @php
+                  $faculty = DB::table('faculty_offices')
+                     ->where('no_facultyOffice', $user->facultyOffice)
+                     ->value('name'); 
+                  $course = DB::table('courses')
+                    ->where('no_course', $user->course)
+                    ->value('name');
+            @endphp
                 <tr>
                     <td>{{$user->id}}</td>
                     <td>{{$user->no_matriks}}</td>
                     <td>{{$user->name}}</td>
                     <td>{{$user->email}}</td>
                     <td>
-                        {{$user->facultyOffice}}
+                        {{$faculty}}
                     </td>
-                    <td>{{$user->course}}</td>
+                    <td>{{$course}}</td>
                     <td>{{$user->role}}</td>
                     <td>
                         <a href="{{route('users.edit',$user->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
