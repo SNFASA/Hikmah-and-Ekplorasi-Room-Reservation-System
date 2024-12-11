@@ -14,8 +14,10 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\FurnitureController;
 use App\Http\Controllers\UsersController;
 
+
 // Authentication Routes
 Auth::routes(['register' => false]);
+
 
 // User Login/Registration Routes
 Route::get('user/login', [FrontendController::class, 'login'])->name('login.form');
@@ -54,9 +56,10 @@ Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/{id}', [UsersController::class, 'update'])->name('backend.users.update');
     Route::delete('/{id}', [UsersController::class, 'destroy'])->name('backend.users.destroy');
 });
-// Bookings
+
+
 Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index');
+    Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index'); // This defines the route
     Route::get('/create', [BookingController::class, 'create'])->name('backend.booking.create');
     Route::post('/', [BookingController::class, 'store'])->name('backend.booking.store');
     Route::get('/{id}', [BookingController::class, 'show'])->name('backend.booking.show');
