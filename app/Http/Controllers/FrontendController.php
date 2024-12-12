@@ -135,5 +135,45 @@ class FrontendController extends Controller
     
         return back()->withErrors(['email' => __($status)]);
     }
+    public function profile() {
+        // Fetch the authenticated user's profile data
+        $user = auth()->user();
+        return view('frontend.profile', compact('user'));
+    }
+    
+    public function profileUpdate(Request $request, $id) {
+        // Update the user's profile with validation
+        $request->validate([
+            'name' => 'required|string|max:255',
+            // other fields to validate
+        ]);
+    
+        $user = User::findOrFail($id);
+        $user->update($request->all());
+    
+        return redirect()->route('user-profile')->with('success', 'Profile updated successfully');
+    }
+    
+    public function changePassword() {
+        return view('frontend.changePassword');
+    }
+    
+    public function changPasswordStore(Request $request) {
+        // Validate and change password logic
+        $request->validate([
+            'current_password' => 'required',
+            'password' => 'required|confirmed|min:8',
+        ]);
+    
+        $user = auth()->user();
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Current password is incorrect']);
+        }
+    
+        $user->update(['password' => Hash::make($request->password)]);
+    
+        return redirect()->route('user-profile')->with('success', 'Password changed successfully');
+    }
+    
     
 }

@@ -41,39 +41,49 @@
                     </tfoot>
                     <tbody>
                         @foreach($bookings as $key => $booking)
-                            <tr>
-                                <td>{{ $loop->iteration }}</td> <!-- Use $loop->iteration for serial number -->
-                                <td>{{ $booking->purpose }}</td>
-                                <td>
+                        @php
+                            $room = DB::table('rooms')->where('no_room', $booking->no_room)->get('name');
+                        @endphp
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $booking->purpose }}</td>
+                            <td>
+                                @if($booking->listStudentBookings)
                                     <ul>
                                         @foreach($booking->listStudentBookings as $student)
-                                            <li>{{ $student->no_matriks }}</li> <!-- Access related students -->
+                                            <li>{{ $student->no_matriks }}</li>
                                         @endforeach
                                     </ul>
-                                </td>
-                                <td>{{ $booking->no_room }}</td>
-                                <td>{{ $booking->booking_date }}, {{ $booking->booking_time_start }} - {{ $booking->booking_time_end }}</td>
-                                <td>
-                                    @if($booking->status == 'approved')
-                                        <span class="badge badge-success">{{ $booking->status }}</span>
-                                    @else
-                                        <span class="badge badge-warning">{{ $booking->status }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('bookings.edit', $booking->id) }}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="Edit" data-placement="bottom">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form method="POST" action="{{ route('bookings.destroy', $booking->id) }}">
-                                        @csrf 
-                                        @method('delete')
-                                        <button class="btn btn-danger btn-sm dltBtn" data-id="{{ $booking->id }}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @endforeach
+                                @else
+                                    <p>No students found</p>
+                                @endif
+                            </td>
+                            <td>
+                             {{ $room[0]->name }}
+                            </td>
+                            <td>{{ $booking->booking_date }}, {{ $booking->booking_time_start }} - {{ $booking->booking_time_end }}</td>
+                            <td>
+                                @if($booking->status == 'approved')
+                                    <span class="badge badge-success">{{ $booking->status }}</span>
+                                @else
+                                    <span class="badge badge-warning">{{ $booking->status }}</span>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="{{ route('bookings.edit', $booking->id) }}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="Edit" data-placement="bottom">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" action="{{ route('bookings.destroy', $booking->id) }}">
+                                    @csrf 
+                                    @method('delete')
+                                    <button class="btn btn-danger btn-sm dltBtn" data-id="{{ $booking->id }}" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    @endforeach
+                    
                     </tbody>
                 </table>
                 <span style="float:right">{{ $bookings->links() }}</span>

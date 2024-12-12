@@ -1,27 +1,27 @@
 @extends('backend.layouts.master')
-@section('title', 'E-SHOP || Brand Edit')
+@section('title', 'Booking Edit')
 @section('main-content')
 
 <div class="card">
-    <h5 class="card-header">Edit Brand</h5>
+    <h5 class="card-header">Edit Booking</h5>
     <div class="card-body">
         <form method="post" action="{{ route('bookings.update', $booking->id) }}">
             @csrf 
             @method('PATCH')
-            
+
             <!-- Purpose -->
             <div class="form-group">
                 <label for="inputpurpose" class="col-form-label">Purpose<span class="text-danger">*</span></label>
-                <input id="inputpurpose" type="text" name="purpose" placeholder="Enter purpose" value="{{$booking->purpose}}" class="form-control">
+                <input id="inputpurpose" type="text" name="purpose" placeholder="Enter purpose" value="{{ $booking->purpose }}" class="form-control">
                 @error('purpose')
-                    <span class="text-danger">{{$message}}</span>
+                    <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
 
             <!-- Date -->
             <div class="form-group">
                 <label for="flatpickrDate" class="col-form-label">Date<span class="text-danger">*</span></label>
-                <input id="flatpickrDate" type="text" name="booking_date" value="{{$booking->booking_date}}" class="form-control">
+                <input id="flatpickrDate" type="text" name="booking_date" value="{{ $booking->booking_date }}" class="form-control">
                 @error('booking_date')
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
@@ -29,8 +29,8 @@
 
             <!-- Start Time -->
             <div class="form-group">
-                <label for="flatpickrTime" class="col-form-label">Time Start<span class="text-danger">*</span></label>
-                <input id="flatpickrTimeStart" type="text" name="booking_time_start" value="{{$booking->booking_time_start}}" class="form-control">
+                <label for="flatpickrTimeStart" class="col-form-label">Time Start<span class="text-danger">*</span></label>
+                <input id="flatpickrTimeStart" type="text" name="booking_time_start" value="{{ $booking->booking_time_start }}" class="form-control">
                 @error('booking_time_start')
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
@@ -38,8 +38,8 @@
 
             <!-- End Time -->
             <div class="form-group">
-                <label for="flatpickrTime" class="col-form-label">Time End<span class="text-danger">*</span></label>
-                <input id="flatpickrTimeEnd" type="text" name="booking_time_end" value="{{$booking->booking_time_end}}" class="form-control">
+                <label for="flatpickrTimeEnd" class="col-form-label">Time End<span class="text-danger">*</span></label>
+                <input id="flatpickrTimeEnd" type="text" name="booking_time_end" value="{{ $booking->booking_time_end }}" class="form-control">
                 @error('booking_time_end')
                     <span class="text-danger">{{ $message }}</span>
                 @enderror
@@ -47,10 +47,10 @@
 
             <!-- Phone Number -->
             <div class="form-group">
-                <label for="inputPhoneNumber" class="col-form-label">Phone number<span class="text-danger">*</span></label>
-                <input id="inputPhoneNumber" type="text" name="phone_number" placeholder="Enter Phone number" value="{{$booking->phone_number}}" class="form-control">
+                <label for="inputPhoneNumber" class="col-form-label">Phone Number<span class="text-danger">*</span></label>
+                <input id="inputPhoneNumber" type="text" name="phone_number" placeholder="Enter Phone Number" value="{{ $booking->phone_number }}" class="form-control">
                 @error('phone_number')
-                    <span class="text-danger">{{$message}}</span>
+                    <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
 
@@ -69,39 +69,38 @@
                 @error('no_room')<span class="text-danger">{{ $message }}</span>@enderror
             </div>
 
-            <!-- Select Student Dropdown -->
+            <!-- Student Selection -->
             <div class="form-group">
-              <label for="students-select">Select Student</label>
-              <select id="students-select" class="form-control">
-                  <option value="">--Select Student--</option>
-                  @foreach($students as $student)
-                      @if(!in_array($student->no_matriks, $selectedStudents))
-                          <option value="{{ $student->no_matriks }}">{{ $student->name }} (No Matriks: {{ $student->no_matriks }})</option>
-                      @endif
-                  @endforeach
-              </select>
-          </div>
+                <label for="students-select">Select Student<span class="text-danger">*</span></label>
+                <select id="students-select" class="form-control">
+                    <option value="">--Select Student/Staff--</option>
+                    @foreach($students as $student)
+                        @if(!in_array($student->no_matriks, $selectedStudents))
+                            <option value="{{ $student->no_matriks }}">{{ $student->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+
+                @error('students-select')
+                    <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
 
             <!-- Selected Students List -->
-<div class="form-group">
-    <label for="selected-students">Selected Students</label>
-    <ul id="selected-students" class="list-group">
-        @foreach($selectedStudents as $selectedStudent)
-            <li class="list-group-item d-flex justify-content-between" data-item-id="{{ $selectedStudent }}">
-                {{ $students->firstWhere('no_matriks', $selectedStudent)->name ?? 'Unknown' }} 
-                (No Matriks: {{ $selectedStudent }})
-                <button type="button" class="btn btn-danger btn-sm remove-item" data-item-id="{{ $selectedStudent }}">Remove</button>
-            </li>
-            <input type="hidden" name="students[]" value="{{ $selectedStudent }}">
-        @endforeach
-    </ul>
-</div>>
+            <div class="form-group">
+                <label for="selected-students">Selected Students</label>
+                <ul id="selected-students" class="list-group">
+                    @foreach($selectedStudents as $selectedStudent)
+                        <li class="list-group-item d-flex justify-content-between" data-item-id="{{ $selectedStudent }}">
+                            {{ $students->where('no_matriks', $selectedStudent)->first()->name }}
+                            <button type="button" class="btn btn-danger btn-sm remove-item" data-item-id="{{ $selectedStudent }}" data-type="student">Remove</button>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
+                <button type="button" id="add-selected-student" class="btn btn-primary" >Add Selected Student</button>
 
-            <!-- Hidden Inputs for Form Submission -->
             <div id="students-hidden-inputs"></div>
-
-            <!-- Add Student Button -->
-            <button type="button" id="add-selected-student" class="btn btn-primary" style="margin-bottom: 20px;">Add Student</button>
 
             <!-- Submit Button -->
             <div class="form-group mb-3">
@@ -114,128 +113,101 @@
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('backend/summernote/summernote.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('backend/summernote/summernote.min.css') }}">
 @endpush
 
 @push('scripts')
-<script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
-<script src="{{ asset('backend/summernote/summernote.min.js') }}"></script>
-<script>
-    // Initialize the array with pre-selected students
-    let selectedStudents = @json($selectedStudents);
-
-    // Initialize Flatpickr for Date
-    flatpickr("#flatpickrDate", {
-        altInput: true,
-        altFormat: "F j, Y", // Example: November 26, 2024
-        dateFormat: "Y-m-d", // Format for form submission
-    });
-
-    // Initialize Flatpickr for Time Start
-    flatpickr("#flatpickrTimeStart", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i", // 24-hour format
-        time_24hr: true,
-    });
-
-    // Initialize Flatpickr for Time End
-    flatpickr("#flatpickrTimeEnd", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        time_24hr: true,
-    });
-// Function to add a student to the selected list
-function addStudentToList(noMatriks, name) {
-    const list = document.getElementById('selected-students');
-    const listItem = document.createElement('li');
-    listItem.classList.add('list-group-item', 'd-flex', 'justify-content-between');
-    listItem.setAttribute('data-item-id', noMatriks);
-    listItem.innerHTML = `${name} (No Matriks: ${noMatriks})
-        <button type="button" class="btn btn-danger btn-sm remove-item" data-item-id="${noMatriks}">Remove</button>`;
+    <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
+    <script src="{{ asset('backend/summernote/summernote.min.js') }}"></script>
+    <script>
+        let selectedStudents = @json($selectedStudents);
     
-    listItem.querySelector('.remove-item').addEventListener('click', function () {
-        removeStudentFromList(noMatriks, listItem); // Remove student from list and array
-    });
-
-    list.appendChild(listItem);
-    selectedStudents.push(noMatriks); // Add to selectedStudents array
-    updateDropdownOptions(); // Update the dropdown options after adding a student
-}
-
-// Function to remove a student from the list
-function removeStudentFromList(noMatriks, listItem) {
-    // Remove from selectedStudents array
-    selectedStudents = selectedStudents.filter(student => student !== noMatriks);
+        flatpickr("#flatpickrDate", {
+            altInput: true,
+            altFormat: "F j, Y",
+            dateFormat: "Y-m-d",
+        });
     
-    // Remove the list item from the DOM
-    listItem.remove();
-
-    // Re-enable the student option in the dropdown
-    const studentSelect = document.getElementById('students-select');
-    const option = studentSelect.querySelector(`option[value="${noMatriks}"]`);
-    if (option) {
-        option.disabled = false; // Enable the option if it was previously disabled
-    }
-
-    // Update hidden inputs for form submission
-    updateHiddenInputs();
-    updateDropdownOptions(); // Update the dropdown options after removal
-}
-
-// Function to update hidden inputs for form submission
-function updateHiddenInputs() {
-    const hiddenInputsContainer = document.getElementById('students-hidden-inputs');
-    hiddenInputsContainer.innerHTML = ""; // Clear previous inputs
-
-    selectedStudents.forEach(noMatriks => {
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = "hidden";
-        hiddenInput.name = "students[]";
-        hiddenInput.value = noMatriks;
-        hiddenInputsContainer.appendChild(hiddenInput);
-    });
-}
-
-// Function to update the dropdown options based on selected students
-function updateDropdownOptions() {
-    const studentSelect = document.getElementById('students-select');
-    // Disable the students that are already selected
-    Array.from(studentSelect.options).forEach(option => {
-        if (selectedStudents.includes(option.value)) {
-            option.disabled = true; // Disable the option
-        } else {
-            option.disabled = false; // Enable the option if not selected
-        }
-    });
-}
-
-// Event delegation for remove buttons
-document.getElementById('selected-students').addEventListener('click', function (event) {
-    if (event.target && event.target.classList.contains('remove-item')) {
-        const listItem = event.target.closest('li');
-        const noMatriks = event.target.getAttribute('data-item-id');
-        removeStudentFromList(noMatriks, listItem);
-    }
-});
-
-// Event for adding a student to the list (this can be triggered on the 'Add Student' button click)
-document.getElementById('add-selected-student').addEventListener('click', function () {
-    const studentSelect = document.getElementById('students-select');
-    const selectedOption = studentSelect.options[studentSelect.selectedIndex];
-
-    if (selectedOption && selectedOption.value) {
-        const noMatriks = selectedOption.value;
-        const name = selectedOption.text;
-        
-        // Add the student to the list and disable the option
-        addStudentToList(noMatriks, name);
-        
-        // Disable the option in the dropdown
-        selectedOption.disabled = true;
-    }
-});
-
-</script>
+        flatpickr("#flatpickrTimeStart", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+        });
+    
+        flatpickr("#flatpickrTimeEnd", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+        });
+    
+        $(document).ready(function () {
+    
+            // Function to check if the number of selected students is within the allowed range
+            function validateStudentSelection() {
+                if (selectedStudents.length >= 10) {
+                    alert('You can select a maximum of 10 students.');
+                    $('#add-selected-student').prop('disabled', true); // Disable "Add Student" button
+                } else if (selectedStudents.length >= 4) {
+                    $('#add-selected-student').prop('disabled', false); // Enable "Add Student" button once 4 are selected
+                } else {
+                    $('#add-selected-student').prop('disabled', false); // Keep it enabled before 4 students
+                }
+            }
+    
+            // Initialize the number of selected students based on existing data
+            validateStudentSelection();
+    
+            // Add student to the selected list when the button is clicked
+            $('#add-selected-student').click(function () {
+                const selectedItemId = $('#students-select').val();
+                const selectedItemText = $('#students-select option:selected').text();
+    
+                if (selectedItemId) {
+                    // Check if the student is already in the list
+                    if (!$(`#selected-students li[data-item-id="${selectedItemId}"]`).length) {
+                        // Add the student to the list
+                        $('#selected-students').append(`
+                            <li class="list-group-item d-flex justify-content-between" data-item-id="${selectedItemId}">
+                                ${selectedItemText}
+                                <button type="button" class="btn btn-danger btn-sm remove-item" data-item-id="${selectedItemId}" data-type="student">Remove</button>
+                            </li>
+                        `);
+    
+                        // Add hidden input for the student
+                        $('#students-hidden-inputs').append(`<input type="hidden" name="students[]" value="${selectedItemId}">`);
+    
+                        // Remove the student from the select options
+                        $(`#students-select option[value="${selectedItemId}"]`).remove();
+    
+                        // Add student to selectedStudents array
+                        selectedStudents.push(selectedItemId);
+    
+                        // Validate the number of selected students after the addition
+                        validateStudentSelection();
+                    }
+                }
+            });
+    
+            // Remove student from the selected list
+            $(document).on('click', '.remove-item', function () {
+                const itemId = $(this).data('item-id');
+                const itemText = $(this).closest('li').text().trim().replace('Remove', '').trim();
+    
+                $(this).closest('li').remove();
+                $(`input[name="students[]"][value="${itemId}"]`).remove();
+    
+                // Add the student back to the select options
+                $('#students-select').append(`<option value="${itemId}">${itemText}</option>`);
+    
+                // Remove student from selectedStudents array
+                selectedStudents = selectedStudents.filter(id => id !== itemId);
+    
+                // Validate the number of selected students after removal
+                validateStudentSelection();
+            });
+        });
+    </script>
+    
 @endpush

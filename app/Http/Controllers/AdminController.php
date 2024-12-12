@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Setting;
 use App\Models\Staff; 
+use Illuminate\Support\Facades\DB;
+
 
 use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Hash;
@@ -57,28 +59,56 @@ class AdminController extends Controller
     
     
 
+    // Profile Page
     public function profile() {
         $profile = auth()->user(); // Fetch the authenticated user
-        return view('backend.users.profile')->with('profile', $profile);
+        $facultyOffices = DB::table('faculty_Offices')->get(); // Get all faculty offices
+        $courses = DB::table('courses')->get(); // Get all courses
+        return view('backend.users.profile', compact('profile', 'courses', 'facultyOffices')); // Return the profile view
     }
-
+    
     public function profileUpdate(Request $request, $id) {
         $user = User::findOrFail($id);
-        $data = $request->validate([  // Validate incoming request
-            'no_matriks' => 'required|max:255|unique:users,no_matriks,' . $id,
+    
+        $data = $request->validate([  
             'name' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'no_matriks' => 'required|max:255|unique:users,no_matriks,' . $id,
             'facultyOffice' => 'required|max:255',
             'course' => 'required|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|min:8|confirmed',
             'role' => 'required',
         ]);
-        
+    
+        if ($request->password) {
+            $data['password'] = Hash::make($request->password);
+        }
+    
         $user->fill($data)->save();
-        request()->session()->flash('success', 'Successfully updated your profile');
-        
-        return redirect()->back();
+    
+        session()->flash('success', 'Successfully updated your profile');
+    
+        return redirect()->route('admin-profile');
     }
+    
+    
+    public function changePassword() {
+        return view('backend.layouts.changePassword');
+    }
+    
+    public function changePasswordStore(Request $request) {
+        $request->validate([
+            'current_password' => ['required', new MatchOldPassword],
+            'new_password' => ['required', 'min:6'],
+            'new_confirm_password' => ['same:new_password'],
+        ]);
+    
+        User::find(auth()->user()->id)->update(['password' => Hash::make($request->new_password)]);
+    
+        return redirect()->route('admin-profile')->with('success', 'Password successfully changed');
+    }
+    
+    
 
     public function settings() {
         $data = Setting::first();
@@ -123,20 +153,7 @@ class AdminController extends Controller
     
     
 
-    public function changePassword() {
-        return view('backend.layouts.changePassword');
-    }
-
-    public function changePasswordStore(Request $request) {
-        $request->validate([
-            'current_password' => ['required', new MatchOldPassword],
-            'new_password' => ['required', 'min:6'],
-            'new_confirm_password' => ['same:new_password'],
-        ]);
-
-        User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
-        return redirect()->route('admin')->with('success', 'Password successfully changed');
-    }
+   
 
     public function storageLink(){
         // check if the storage folder already linked;

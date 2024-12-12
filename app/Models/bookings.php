@@ -26,7 +26,7 @@ class bookings extends Model
 
     public function room()
     {
-        return $this->belongsTo(Room::class, 'no_room');
+        return $this->belongsTo(Room::class, 'no_room', 'name');
     }
 
     public function listStudentBookings()

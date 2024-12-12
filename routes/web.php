@@ -57,9 +57,9 @@ Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/{id}', [UsersController::class, 'destroy'])->name('backend.users.destroy');
 });
 
-
+//bookings
 Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index'); // This defines the route
+    Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index'); 
     Route::get('/create', [BookingController::class, 'create'])->name('backend.booking.create');
     Route::post('/', [BookingController::class, 'store'])->name('backend.booking.store');
     Route::get('/{id}', [BookingController::class, 'show'])->name('backend.booking.show');
@@ -67,6 +67,10 @@ Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(func
     Route::put('/{id}', [BookingController::class, 'update'])->name('backend.booking.update');
     Route::delete('/{id}', [BookingController::class, 'destroy'])->name('backend.booking.destroy');
     Route::get('/booking', [BookingController::class, 'roomChart'])->name('backend.booking.Chart');
+    Route::post('/bookings/remove-student', [BookingController::class, 'removeStudent'])->name('bookings.remove-student');
+    Route::get('bookings/chart', [BookingController::class, 'getBookingsByMonth'])->name('bookings.getBookingsByMonth');
+
+
 });
 
 //electronic 
@@ -105,48 +109,58 @@ Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(functio
 
 // Admin Section
 Route::middleware(['auth', 'role:admin'])->group(function () {
+    // Dashboard and index
     Route::get('/admin', [AdminController::class, 'index'])->name('backend.index');
     Route::get('/', [AdminController::class, 'index'])->name('admin');
+    
+    // File Manager
     Route::get('/file-manager', function () {
         return view('backend.layouts.file-manager');
     })->name('file-manager');
+    
+    // File manager routes (laravel-filemanager)
     Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
         \UniSharp\LaravelFilemanager\Lfm::routes();
     });
     
-
-    // User Management
+    // User Management Routes
     Route::resource('users', UsersController::class);
+    
+    // Profile Routes
+    Route::get('/admin.profile', [AdminController::class, 'profile'])->name('admin-profile');
+    Route::post('/profile/{id}', [AdminController::class, 'profileUpdate'])->name('admin.profile-update');
+     
+    // Password Change Routes
+    Route::get('admin.change-password', [AdminController::class, 'changePassword'])->name('admin.change-password.form');
+    Route::post('change-password/update', [AdminController::class, 'changePasswordStore'])->name('admin.change-password.store');
 
-    //profile 
-    Route::get('/profile', [AdminController::class, 'profile'])->name('admin-profile');
-    Route::post('/profile/{id}', [AdminController::class, 'profileUpdate'])->name('profile-update');
-
-    // Settings
+    
+    
+    // Settings Routes
     Route::get('settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('setting/update', [AdminController::class, 'settingsUpdate'])->name('settings.update');
-
-    // Notifications
+    
+    // Notification Routes
     Route::get('/notification/{id}', [NotificationController::class, 'show'])->name('admin.notification');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('all.notification');
     Route::delete('/notification/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
-
-    // Password Change
-    Route::get('change-password', [AdminController::class, 'changePassword'])->name('change.password.form');
-    Route::post('change-password', [AdminController::class, 'changPasswordStore'])->name('change.password');
-
-    // Bookings
+   
+    
+    
+    
+    // Booking Routes
     Route::resource('/admin/bookings', BookingController::class);
-
-    //electronic
+    
+    // Electronic Routes
     Route::resource('/admin/electronic', ElectronicController::class);
-
-    //furniture 
+    
+    // Furniture Routes
     Route::resource('/admin/furniture', FurnitureController::class);
-
-    //room
+    
+    // Room Routes
     Route::resource('/admin/room', RoomController::class);
 });
+
 
 // User Section
 Route::middleware(['auth'])->group(function () {
@@ -155,4 +169,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/{id}', [HomeController::class, 'profileUpdate'])->name('user-profile-update');
     Route::get('change-password', [HomeController::class, 'changePassword'])->name('user.change.password.form');
     Route::post('change-password', [HomeController::class, 'changPasswordStore'])->name('change.password');
+    Route::get('/profile', [FrontendController::class, 'profile'])->name('user-profile');
+    Route::post('/profile/{id}', [FrontendController::class, 'profileUpdate'])->name('user-profile-update');
+
+    // Change Password Routes
+    Route::get('change-password', [FrontendController::class, 'changePassword'])->name('user.change.password.form');
+    Route::post('change-password', [FrontendController::class, 'changPasswordStore'])->name('change.password');
 });

@@ -8,6 +8,7 @@ use App\Models\room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class BookingController extends Controller
 {
@@ -21,32 +22,23 @@ class BookingController extends Controller
         });
     }
 
-    /**
-     * Display a listing of bookings.
-     */
     public function index()
     {
-        $bookings = Bookings::with('listStudentBookings')
-            ->orderBy('booking_date', 'ASC')
-            ->orderBy('booking_time_start', 'ASC')
-            ->paginate(10);
+        $bookings = Bookings::with('room', 'listStudentBookings')
+        ->orderBy('booking_date', 'ASC')
+        ->orderBy('booking_time_start', 'ASC')
+        ->paginate(10);
     
+
         return view('backend.booking.index', compact('bookings'));
     }
-    
-    
-    /**
-     * Show the form for creating a new booking.
-     */
+
     public function create()
     {
         $students = User::where('role', 'student')->get();
         return view('backend.booking.create', compact('students'));
     }
 
-    /**
-     * Store a newly created booking in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -78,23 +70,16 @@ class BookingController extends Controller
         return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
     }
 
-    /**
-     * Show the form for editing the specified booking.
-     */
     public function edit($id)
     {
         $booking = Bookings::findOrFail($id);
         $rooms = room::all();
         $students = User::where('role', 'student')->get();
-    
-        // Get the students already associated with the booking
-        $selectedStudents = $booking->listStudentBookings->pluck('no_matriks')->toArray();
-    
+        $selectedStudents = $booking->listStudentBookings->pluck('no_matriks')->toArray(); // Fix: Use pluck on a collection
+
         return view('backend.booking.edit', compact('booking', 'rooms', 'students', 'selectedStudents'));
     }
-    
 
-    // Update the specified booking in storage
     public function update(Request $request, $id)
     {
         $booking = Bookings::findOrFail($id);
@@ -127,21 +112,14 @@ class BookingController extends Controller
         return redirect()->route('bookings.index')->with('success', 'Booking updated successfully.');
     }
 
-
-    /**
-     * Remove the specified booking from storage.
-     */
     public function destroy($id)
     {
         $booking = Bookings::findOrFail($id);
         $booking->delete();
 
-        return redirect()->route('backend.booking.index')->with('success', 'Booking deleted successfully.');
+        return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully.');
     }
 
-    /**
-     * Attach students to a booking.
-     */
     private function attachStudentsToBooking($booking, $students)
     {
         $booking->listStudentBookings()->detach();
@@ -152,11 +130,28 @@ class BookingController extends Controller
         }
     }
 
-    /**
-     * Calculate the duration of a booking in minutes.
-     */
     private function calculateDuration($start, $end)
     {
         return Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
     }
+    public function getBookingsByMonth()
+{
+    // Get the number of bookings grouped by month
+    $bookings = DB::table('bookings')
+        ->select(DB::raw('MONTH(booking_date) as month, COUNT(*) as total_bookings'))
+        ->groupBy(DB::raw('MONTH(booking_date)'))
+        ->orderBy(DB::raw('MONTH(booking_date)'), 'asc')
+        ->get();
+
+    // Format the data for the frontend
+    $formattedBookings = $bookings->map(function($booking) {
+        return [
+            'month' => date('F', mktime(0, 0, 0, $booking->month, 10)), // Get month name
+            'total_bookings' => $booking->total_bookings,
+        ];
+    });
+
+    return response()->json($formattedBookings);
+}
+
 }

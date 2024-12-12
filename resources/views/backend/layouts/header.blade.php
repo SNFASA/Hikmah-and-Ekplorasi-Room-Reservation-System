@@ -58,11 +58,11 @@
         </a>
         <!-- Dropdown - User Information -->
         <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-          <a class="dropdown-item" href="{{url('admin-profile')}}">
+          <a class="dropdown-item" href="{{url('admin.profile')}}">
             <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
             Profile
           </a>
-          <a class="dropdown-item" href="{{url('change.password.form')}}">
+          <a class="dropdown-item" href="{{url('admin.change-password')}}">
             <i class="fas fa-key fa-sm fa-fw mr-2 text-gray-400"></i>
             Change Password
           </a>

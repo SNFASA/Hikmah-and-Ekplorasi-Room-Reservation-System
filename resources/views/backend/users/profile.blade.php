@@ -1,4 +1,4 @@
-@extends('user.layouts.master')
+@extends('backend.layouts.master')
 
 @section('title','Admin Profile')
 
@@ -64,30 +64,38 @@
                               <option value="">-----Select Role-----</option>
                                   <option value="admin" {{(($profile->role=='Staff')? 'selected' : '')}}>Staff</option>
                                   <option value="user" {{(($profile->role=='Student')? 'selected' : '')}}>Student</option>
+                                  <option value="user" {{(($profile->role=='admin')? 'selected' : '')}}>Admin</option>
+
                           </select>
                             @error('role')
                                 <span class="text-danger">{{$message}}</span>
                             @enderror
                         </div>
+                        
                         <div class="form-group">
-                            <label for="facultyOffice" class="col-form-label">
+                            <label for="facultyOffice" class="col-form-label">Faculty Office</label>
                                 <select name="facultyOffice" id="" class="form-control">
                                     <option value="">-----Select Role-----</option>
                                     @foreach($facultyOffices as $office)
-                                        <option value="{{ $office->id }}">{{ $office->name }}</option>
-                                    @endforeach
+                                        <option value="{{ $office->no_facultyOffice }}" 
+                                            @if($profile->no_facultyOffice == $office->no_facultyOffice) selected @endif>
+                                            {{ $office->name }}
+                                        </option>
+                                     @endforeach
                                 </select>
-                            </label>
+
                         </div>
                         <div class="form-group">
-                            <label for="course" class="col-form-label">
+                            <label for="course" class="col-form-label">Course</label>
                                 <select name="course" id="" class="form-control">
                                     <option value="">-----Select course-----</option>
-                                        @foreach($courses as $course)
-                                            <option value="{{ $course->id }}">{{ $course->name }}</option>
-                                        @endforeach
-                                </select>
-                            </label>
+                                    @foreach($courses as $course)
+                                        <option value="{{ $course->no_course }}" 
+                                            @if($profile->no_course == $course->no_course) selected @endif>
+                                            {{ $course->name }}
+                                        </option>
+                                     @endforeach
+                                    </select>
                         </div>
 
                         <button type="submit" class="btn btn-success btn-sm">Update</button>
