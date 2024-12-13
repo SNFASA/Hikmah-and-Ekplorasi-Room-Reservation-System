@@ -18,6 +18,10 @@ trait RoleTrait
     {
         return $this->role === 'staff';
     }
+    public function isPpp()
+    {
+        return $this->role === 'ppp';
+    }
 
     public function canAccessStudentRoutes()
     {

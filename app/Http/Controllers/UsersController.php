@@ -27,17 +27,18 @@ class UsersController extends Controller
         $this->validate($request, [
             'no_matriks' => 'required|unique:users,no_matriks|max:255',
             'name' => 'required|max:255',
-            'facultyOffice' => 'required|max:255',
-            'course' => 'required|max:255',
+            'facultyOffice' => 'nullable|max:255',
+            'course' => 'nullable|max:255',
             'email' => 'required|email|unique:users,email|max:255',
             'password' => 'required|min:8|confirmed',
-            'role' => 'required',
+            'role' => 'required|in:student,staff,admin,ppp',
         ]);
 
         $data = $request->all();
         if ($request->filled('password')) {
             $data['password'] = Hash::make($request->password);
         }
+        \Log::info('Role being inserted: ' . $request->role);
 
         $status = User::create($data);
 
@@ -72,8 +73,8 @@ class UsersController extends Controller
         $this->validate($request, [
             'no_matriks' => 'required|max:255|unique:users,no_matriks,' . $id,
             'name' => 'required|max:255',
-            'facultyOffice' => 'required|max:255',
-            'course' => 'required|max:255',
+            'facultyOffice' => 'nullable|max:255',
+            'course' => 'nullable|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
             'password' => 'nullable|min:8|confirmed',
             'role' => 'required',

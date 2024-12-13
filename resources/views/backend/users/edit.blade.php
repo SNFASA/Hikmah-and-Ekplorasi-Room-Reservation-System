@@ -54,6 +54,8 @@
                 <option value="{{ $role->role }}" {{ $role->role == 'admin' ? 'selected' : '' }}>Admin</option>
                 <option value="{{ $role->role }}" {{ $role->role == 'student' ? 'selected' : '' }}>Student</option>
                 <option value="{{ $role->role }}" {{ $role->role == 'staff' ? 'selected' : '' }}>Staff</option>
+                <option value="{{ $role->role }}" {{ $role->role == 'ppp' ? 'selected' : '' }}>PPP</option>
+
             @endforeach
         </select>
         @error('role')

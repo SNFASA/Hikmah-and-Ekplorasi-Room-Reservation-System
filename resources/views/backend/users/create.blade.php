@@ -43,6 +43,7 @@
             <option value="admin">Admin</option>
             <option value="student">Student</option>
             <option value="staff">Staff</option>
+            <option value="ppp">PPP</option>
           </select>
           @error('role')
             <span class="text-danger">{{ $message }}</span>
