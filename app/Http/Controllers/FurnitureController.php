@@ -6,15 +6,18 @@ use Illuminate\Http\Request;
 
 class FurnitureController extends Controller
 {
+
+
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->user() || !auth()->user()->isAdmin()) {
-                abort(403, 'Unauthorized access. Admins only.');
+            if (!auth()->user() || (!auth()->user()->isAdmin() && !auth()->user()->isPpp())) {
+                 abort(403, 'Unauthorized access. Admins and PPP users only.');
             }
             return $next($request);
         });
     }
+
 
     public function index()
     {

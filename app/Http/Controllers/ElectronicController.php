@@ -9,17 +9,17 @@ use Carbon\Carbon;
 
 class ElectronicController extends Controller
 {
-    // Constructor with middleware to restrict access to admins
+    // Constructor with middleware to restrict access to admins and PPP users
+
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->user() || !auth()->user()->isAdmin()) {
-                abort(403, 'Unauthorized access. Admins only.');
+            if (!auth()->user() || (!auth()->user()->isAdmin() && !auth()->user()->isPpp())) {
+                abort(403, 'Unauthorized access. Admins and PPP users only.');
             }
             return $next($request);
         });
     }
-
     // Display a listing of all bookingsup
     public function index()
     {
