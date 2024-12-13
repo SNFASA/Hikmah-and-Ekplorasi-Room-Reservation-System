@@ -13,6 +13,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\FurnitureController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ScheduleController;
 
 
 // Authentication Routes
@@ -56,7 +57,18 @@ Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/{id}', [UsersController::class, 'update'])->name('backend.users.update');
     Route::delete('/{id}', [UsersController::class, 'destroy'])->name('backend.users.destroy');
 });
+//schedule
+Route::prefix('/admin/schedules')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [ScheduleController::class, 'index'])->name('backend.schedule.index'); 
+    Route::get('/create', [ScheduleController::class, 'create'])->name('backend.schedule.create');
+    Route::post('/', [ScheduleController::class, 'store'])->name('backend.schedule.store');
+    Route::get('/{id}', [ScheduleController::class, 'show'])->name('backend.schedule.show');
+    Route::get('/{id}/edit', [ScheduleController::class, 'edit'])->name('backend.schedule.edit');
+    Route::put('/{id}', [ScheduleController::class, 'update'])->name('backend.schedule.update');
+    Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('backend.schedule.destroy');
 
+
+});
 //bookings
 Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index'); 
@@ -159,6 +171,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // Room Routes
     Route::resource('/admin/room', RoomController::class);
+
+    //schedule
+    Route::resource('/admin/schedule', ScheduleController::class);
 });
 
 

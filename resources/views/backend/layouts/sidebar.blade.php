@@ -39,7 +39,20 @@
         <div class="sidebar-heading">
             LibraRoom
         </div>
-
+    <!-- Schedule -->
+    <li class="nav-item">
+      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#scheduleCollapse" aria-expanded="true" aria-controls="scheduleCollapse">
+        <i class="fas fa-calendar"></i>
+        <span>Schedul</span>
+      </a>
+      <div id="scheduleCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div class="bg-white py-2 collapse-inner rounded">
+          <h6 class="collapse-header">Schedule Options:</h6>
+          <a class="collapse-item" href="{{route('schedule.index')}}">Schedule</a>
+          <a class="collapse-item" href="{{route('schedule.create')}}">Add schedule</a>
+        </div>
+      </div>
+  </li>
     <!-- Booking -->
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#bookingCollapse" aria-expanded="true" aria-controls="bookingCollapse">

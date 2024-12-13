@@ -27,6 +27,10 @@ class room extends Model
     {
         return $this->belongsToMany(electronic::class, 'electronic_equipment_room', 'room_id', 'electronic_equipment_id', 'no_room', 'no_electronicEquipment');
     }
+    public function schedule()
+    {
+        return $this->belongsToMany(schedule::class, 'schedule_booking', 'roomid', 'invalid_date', 'invalid_time_start', 'invalid_time_end');
+    }
     
     // Count active rooms
     public static function countActiveRoom()

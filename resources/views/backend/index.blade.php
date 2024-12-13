@@ -38,7 +38,7 @@
                 <div class="h5 mb-0 font-weight-bold text-gray-800">{{\App\Models\electronic::countActiveElectronic()}}</div>
               </div>
               <div class="col-auto">
-                <i class="fas fa-desktop fa-2x text-gray-300"></i>
+                <i class="fas fa-desktop fa-2x text-gray-800"></i>
               </div>
             </div>
           </div>
