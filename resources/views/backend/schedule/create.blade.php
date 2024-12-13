@@ -69,17 +69,42 @@
     // Initialize Flatpickr for Date
     flatpickr("#flatpickrDate", {
         altInput: true,
-        altFormat: "F j, Y",
+        altFormat: "F j, Y", // Example: November 26, 2024
         dateFormat: "Y-m-d",
+        disable: [
+            // Disable unavailable dates (schedule_booking table)
+            @foreach ($unavailableSlots as $slot)
+                "{{ $slot->invalid_date }}", // Disable unavailable date
+            @endforeach
+            // Disable already booked dates (bookings table)
+            @foreach ($bookedSlots as $slot)
+                "{{ $slot->booking_date }}", // Disable already booked date
+            @endforeach
+        ]
     });
 
     // Initialize Flatpickr for Time Start
     flatpickr("#flatpickrTimeStart", {
-        enableTime: true,
-        noCalendar: true,
-        dateFormat: "H:i",
-        time_24hr: true,
-    });
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "H:i",
+    time_24hr: true,
+    disable: [
+        @foreach ($unavailableSlots as $slot)
+            {
+                from: "{{ $slot->invalid_date }} {{ $slot->invalid_time_start }}",
+                to: "{{ $slot->invalid_date }} {{ $slot->invalid_time_end }}",
+            },
+        @endforeach
+        @foreach ($bookedSlots as $slot)
+            {
+                from: "{{ $slot->booking_date }} {{ $slot->booking_time_start }}",
+                to: "{{ $slot->booking_date }} {{ $slot->booking_time_end }}",
+            },
+        @endforeach
+    ]
+});
+
 
     // Initialize Flatpickr for Time End
     flatpickr("#flatpickrTimeEnd", {

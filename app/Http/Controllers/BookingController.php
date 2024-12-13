@@ -35,10 +35,19 @@ class BookingController extends Controller
 
     public function create()
     {
+        // Fetch all unavailable dates and times from schedule_booking
+        $unavailableSlots = DB::table('schedule_booking')->get(['invalid_date', 'invalid_time_start', 'invalid_time_end']);
+    
+        // Fetch already booked dates and times from Bookings table
+        $bookedSlots = DB::table('bookings')
+            ->select('booking_date', 'booking_time_start', 'booking_time_end')
+            ->get();
+    
         $students = User::where('role', 'student')->get();
-        return view('backend.booking.create', compact('students'));
+    
+        return view('backend.booking.create', compact('students', 'unavailableSlots', 'bookedSlots'));
     }
-
+    
     public function store(Request $request)
     {
         $request->validate([
@@ -51,9 +60,42 @@ class BookingController extends Controller
             'students' => 'required|array|min:1',
             'students.*' => 'required|exists:users,no_matriks',
         ]);
-
+    
+        // Check if the selected date and time overlap with any unavailable time slots from schedule_booking
+        $conflictWithUnavailable = DB::table('schedule_booking')
+            ->where('invalid_date', $request->booking_date)
+            ->where(function ($query) use ($request) {
+                $query->where(function ($subQuery) use ($request) {
+                    // Check if the start time overlaps with any unavailable time
+                    $subQuery->where('invalid_time_start', '<', $request->booking_time_end)
+                             ->where('invalid_time_end', '>', $request->booking_time_start);
+                });
+            })
+            ->exists();
+    
+        if ($conflictWithUnavailable) {
+            return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
+        }
+    
+        // Check if the selected date and time overlap with any already booked slots for the selected room
+        $conflictWithBooked = DB::table('bookings')
+            ->where('no_room', $request->no_room)  // Ensure the same room is being checked
+            ->where('booking_date', $request->booking_date)
+            ->where(function ($query) use ($request) {
+                $query->where(function ($subQuery) use ($request) {
+                    // Check if the start time overlaps with any booked time
+                    $subQuery->where('booking_time_start', '<', $request->booking_time_end)
+                             ->where('booking_time_end', '>', $request->booking_time_start);
+                });
+            })
+            ->exists();
+    
+        if ($conflictWithBooked) {
+            return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
+        }
+    
         $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
-
+    
         $booking = Bookings::create([
             'booking_date' => $request->booking_date,
             'booking_time_start' => $request->booking_time_start,
@@ -64,12 +106,13 @@ class BookingController extends Controller
             'phone_number' => $request->phone_number,
             'status' => 'approved',
         ]);
-
+    
         $this->attachStudentsToBooking($booking, $request->students);
-
+    
         return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
     }
-
+    
+    
     public function edit($id)
     {
         $booking = Bookings::findOrFail($id);
@@ -94,6 +137,38 @@ class BookingController extends Controller
             'students' => 'required|array|min:1',
             'students.*' => 'required|exists:users,no_matriks',
         ]);
+                // Check if the selected date and time overlap with any unavailable time slots from schedule_booking
+                $conflictWithUnavailable = DB::table('schedule_booking')
+                ->where('invalid_date', $request->booking_date)
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subQuery) use ($request) {
+                        // Check if the start time overlaps with any unavailable time
+                        $subQuery->where('invalid_time_start', '<', $request->booking_time_end)
+                                 ->where('invalid_time_end', '>', $request->booking_time_start);
+                    });
+                })
+                ->exists();
+        
+            if ($conflictWithUnavailable) {
+                return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
+            }
+        
+            // Check if the selected date and time overlap with any already booked slots for the selected room
+            $conflictWithBooked = DB::table('bookings')
+                ->where('no_room', $request->no_room)  // Ensure the same room is being checked
+                ->where('booking_date', $request->booking_date)
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($subQuery) use ($request) {
+                        // Check if the start time overlaps with any booked time
+                        $subQuery->where('booking_time_start', '<', $request->booking_time_end)
+                                 ->where('booking_time_end', '>', $request->booking_time_start);
+                    });
+                })
+                ->exists();
+        
+            if ($conflictWithBooked) {
+                return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
+            }
 
         $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
 
@@ -135,7 +210,7 @@ class BookingController extends Controller
         return Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
     }
     public function getBookingsByMonth()
-{
+    {
     // Get the number of bookings grouped by month
     $bookings = DB::table('bookings')
         ->select(DB::raw('MONTH(booking_date) as month, COUNT(*) as total_bookings'))
@@ -152,6 +227,6 @@ class BookingController extends Controller
     });
 
     return response()->json($formattedBookings);
-}
+    }
 
 }
