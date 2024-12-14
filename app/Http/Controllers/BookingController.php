@@ -147,7 +147,7 @@ class BookingController extends Controller
                                  ->where('invalid_time_end', '>', $request->booking_time_start);
                     });
                 })
-                ->exists();
+                ->exists(); 
         
             if ($conflictWithUnavailable) {
                 return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);

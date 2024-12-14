@@ -118,8 +118,8 @@
     <div id="maintenanceCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
       <div class="bg-white py-2 collapse-inner rounded">
         <h6 class="collapse-header">Maintenance Options:</h6>
-        <a class="collapse-item" href="{{url('maintenance.index')}}">Maintenance</a>
-        <a class="collapse-item" href="{{url('maintenance.create')}}">Add Maintenance</a>
+        <a class="collapse-item" href="{{route('maintenance.index')}}">Maintenance</a>
+        <a class="collapse-item" href="{{route('maintenance.create')}}">Add Maintenance</a>
       </div>
     </div>
 </li>

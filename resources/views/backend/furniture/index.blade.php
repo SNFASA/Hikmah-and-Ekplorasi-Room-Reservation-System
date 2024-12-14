@@ -39,9 +39,9 @@
                 <tr>
                     <td>{{$data->no_furniture}}</td>
                     <td>{{$data->name}}</td>
-                    <td></td>{{$data->category}}</td>
+                    <td>{{$data->category}}</td>
                     <td>
-                        @if($data->status=='active')
+                        @if($data->status=='Active')
                             <span class="badge badge-success">{{$data->status}}</span>
                         @else
                             <span class="badge badge-warning">{{$data->status}}</span>

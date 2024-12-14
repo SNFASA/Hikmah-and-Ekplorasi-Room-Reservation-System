@@ -14,6 +14,7 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\FurnitureController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\MaintenanceController;
 
 
 // Authentication Routes
@@ -118,6 +119,18 @@ Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(functio
     Route::delete('/{id}', [RoomController::class, 'destroy'])->name('backend.room.destroy');
 });
 
+//maintenance
+Route::prefix('/admin/maintenances')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [MaintenanceController::class, 'index'])->name('backend.maintenance.index');
+    Route::get('/create', [MaintenanceController::class, 'create'])->name('backend.maintenance.create');
+    Route::post('/', [MaintenanceController::class, 'store'])->name('backend.maintenance.store');
+    Route::get('/{id}', [MaintenanceController::class, 'show'])->name('backend.maintenance.show');
+    Route::get('/{id}/edit', [MaintenanceController::class, 'edit'])->name('backend.maintenance.edit');
+    Route::put('/{id}', [MaintenanceController::class, 'update'])->name('backend.maintenance.update');
+    Route::delete('/{id}', [MaintenanceController::class, 'destroy'])->name('backend.maintenance.destroy');
+    Route::get('/maintenance/items', [MaintenanceController::class, 'getItems'])->name('maintenance.items');
+});
+
 
 // Admin Section
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -146,8 +159,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('admin.change-password', [AdminController::class, 'changePassword'])->name('admin.change-password.form');
     Route::post('change-password/update', [AdminController::class, 'changePasswordStore'])->name('admin.change-password.store');
 
-    
-    
     // Settings Routes
     Route::get('settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('setting/update', [AdminController::class, 'settingsUpdate'])->name('settings.update');
@@ -156,10 +167,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/notification/{id}', [NotificationController::class, 'show'])->name('admin.notification');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('all.notification');
     Route::delete('/notification/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
-   
-    
-    
-    
+
     // Booking Routes
     Route::resource('/admin/bookings', BookingController::class);
     
@@ -174,6 +182,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     //schedule
     Route::resource('/admin/schedule', ScheduleController::class);
+
+    //maintenance
+    Route::resource('/admin/maintenance', MaintenanceController::class);
 });
 
 

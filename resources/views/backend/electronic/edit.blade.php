@@ -22,7 +22,7 @@
       @endphp
 
       <div class="form-group">
-        <label for="category" class="col-form-label">Role</label>
+        <label for="category" class="col-form-label">Category</label>
         <select name="category" class="form-control">
             <option value="">-----Select Category-----</option>
               @foreach($categories as $category)
@@ -35,13 +35,11 @@
          @enderror
       </div>
       <div class="form-group">
-        <label for="status" class="col-form-label">Role</label>
+        <label for="status" class="col-form-label">Status</label>
         <select name="status" class="form-control">
             <option value="">-----Select Status-----</option>
-              @foreach($status as $st)
-                <option value="{{ $st->status }}" {{ $st->status == 'Active' ? 'selected' : '' }}>Active</option>
-                <option value="{{$st ->status }}" {{ $st->status == 'Damage' ? 'selected' : '' }}>Damage</option>
-              @endforeach
+            <option value="Active" {{(($electronics->status=='active') ? 'selected' : '')}}>Active</option>
+            <option value="Damage" {{(($electronics->status=='Damage') ? 'selected' : '')}}>Damage</option>
         </select>
           @error('status')
           <span class="text-danger">{{ $message }}</span>

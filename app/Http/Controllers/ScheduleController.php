@@ -28,18 +28,33 @@ class ScheduleController extends Controller
 
     public function create()
     {
+        // Fetch available rooms
         $rooms = DB::table('rooms')
-            ->select( 'no_room', 'name')
+            ->select('no_room', 'name')
             ->where('status', 'valid')
             ->get();
-
+    
+        // Fetch unavailable slots from the schedule_booking table
+        $unavailableSlots = DB::table('schedule_booking')
+            ->select('invalid_date', 'invalid_time_start', 'invalid_time_end')
+            ->get();
+    
+        // Fetch booked slots from the bookings table
+        $bookedSlots = DB::table('bookings')
+            ->select('booking_date', 'booking_time_start', 'booking_time_end')
+            ->get();
+    
+        // Pass all required variables to the view
         return view('backend.schedule.create', [
+            'rooms' => $rooms,
+            'unavailableSlots' => $unavailableSlots,
+            'bookedSlots' => $bookedSlots,
             'invalid_date' => null,
             'invalid_time_start' => null,
             'invalid_time_end' => null,
-            'rooms' => $rooms,
         ]);
     }
+    
 
     public function store(Request $request)
     {

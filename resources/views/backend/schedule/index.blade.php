@@ -53,7 +53,7 @@
                       @csrf 
                       @method('delete')
                           <button class="btn btn-danger btn-sm dltBtn" data-id={{$schedule->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
-                        </form>
+                    </form>
                     </td>
                     {{-- Delete Modal --}}
                     {{-- <div class="modal fade" id="delModal{{$user->id}}" tabindex="-1" role="dialog" aria-labelledby="#delModal{{$user->id}}Label" aria-hidden="true">
