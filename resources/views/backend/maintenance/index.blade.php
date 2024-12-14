@@ -42,7 +42,7 @@
                     <td>{{ $report->id}}</td>
                     <td>{{ $report->title}}</td>
                     <td>{{ $report->itemType}}</td>
-                    <td>{{ $report->item_id}}</td>
+                    <td>{{ $report->itemName}}</td>
                     <td>
                         
                         @if($report->status=='completed')

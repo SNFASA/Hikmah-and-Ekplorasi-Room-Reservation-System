@@ -23,7 +23,19 @@ class MaintenanceController extends Controller
 
     public function index()
     {
-        $maintenance = maintenance::orderBy('id', 'ASC')->paginate(10);
+        $maintenance = maintenance::orderBy('id', 'ASC')->paginate(10);   
+              // Assign `itemName` based on `itemType` for each maintenance record
+              foreach ($maintenance as $maintenances) {
+                  if ($maintenances->itemType == 'Furniture') {
+                      $maintenances->itemName = DB::table('furniture')->where('no_furniture', $maintenances->item_id)->value('name');
+                  } elseif ($maintenances->itemType == 'Electronic_equipment') {
+                      $maintenances->itemName = DB::table('electronic_equipment')->where('no_electronicEquipment', $maintenances->item_id)->value('name');
+                  } elseif ($maintenances->itemType == 'Other') {
+                      $maintenances->itemName = $maintenances->item_text;
+                  } else {
+                      $maintenances->itemName = 'Unknown';
+                  }
+              }
         return view('backend.maintenance.index')->with('maintenance', $maintenance);
     }
     

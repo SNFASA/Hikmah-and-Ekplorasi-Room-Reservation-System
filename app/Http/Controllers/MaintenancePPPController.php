@@ -19,15 +19,28 @@ class MaintenancePPPController extends Controller
             return $next($request);
         });
     }
-
-
     public function index()
     {
+        // Retrieve maintenance records with pagination
         $maintenance = maintenance::orderBy('id', 'ASC')->paginate(10);
-        return view('ppp.maintenance.index')->with('maintenance', $maintenance);
+    
+        // Assign `itemName` based on `itemType` for each maintenance record
+        foreach ($maintenance as $maintenances) {
+            if ($maintenances->itemType == 'Furniture') {
+                $maintenances->itemName = DB::table('furniture')->where('no_furniture', $maintenances->item_id)->value('name');
+            } elseif ($maintenances->itemType == 'Electronic_equipment') {
+                $maintenances->itemName = DB::table('electronic_equipment')->where('no_electronicEquipment', $maintenances->item_id)->value('name');
+            } elseif ($maintenances->itemType == 'Other') {
+                $maintenances->itemName = $maintenances->item_text;
+            } else {
+                $maintenances->itemName = 'Unknown';
+            }
+        }
+    
+        // Now return the view with the modified maintenance collection
+        return view('ppp.maintenance.index', compact('maintenance'));
     }
     
-
     public function create()
     {
         $rooms = room::all();
