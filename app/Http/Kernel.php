@@ -80,6 +80,7 @@ class Kernel extends HttpKernel
         //'admin' => \App\Http\Middleware\AdminMiddleware::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'user' => \App\Http\Middleware\User::class,
+        'ppp' => \App\Http\Middleware\ppp::class,
 
 
     ];

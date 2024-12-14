@@ -19,4 +19,11 @@ class maintenance extends Model
     {
         return ucfirst($value);
     }
+    public static function countActiveMaintenance(){
+      $data=maintenance::where('status','pending')->count();
+      if($data){
+          return $data;
+      }
+      return 0;
+  }
 }

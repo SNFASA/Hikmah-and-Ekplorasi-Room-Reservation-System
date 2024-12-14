@@ -1,4 +1,4 @@
-@extends('backend.layouts.master')
+@extends('ppp.layouts.master')
 @section('title','LibraRoom Reservation system ')
 @section('main-content')
  <!-- DataTales Example -->
@@ -10,7 +10,7 @@
      </div>
     <div class="card-header py-3">
       <h6 class="m-0 font-weight-bold text-primary float-left">Maintenance Report List</h6>
-      <a href="{{route('maintenance.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Report</a>
+      <a href="{{route('ppp.maintenance.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Report</a>
     </div>
     <div class="card-body">
       <div class="table-responsive">
@@ -56,8 +56,8 @@
                         @endif
                     </td>
                     <td>
-                        <a href="{{route('maintenance.edit',$report->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                        <form method="POST" action="{{route('maintenance.destroy',[$report->id])}}">
+                        <a href="{{route('ppp.maintenance.edit',$report->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
+                        <form method="POST" action="{{route('ppp.maintenance.destroy',[$report->id])}}">
                             @csrf 
                             @method('delete')
                                 <button class="btn btn-danger btn-sm dltBtn" data-id={{$report->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ElectronicController;
 use App\Models\room;
+use App\Http\Controllers\PPPController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\FrontendController;
@@ -15,6 +16,10 @@ use App\Http\Controllers\FurnitureController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\ElectronicPPPController;
+use App\Http\Controllers\FurniturePPPController;
+use App\Http\Controllers\RoomPPPController;
+use App\Http\Controllers\MaintenancePPPController;
 
 
 // Authentication Routes
@@ -96,6 +101,16 @@ Route::prefix('/admin/electronics')->middleware(['auth', 'role:admin'])->group(f
     Route::put('/{id}', [ElectronicController::class, 'update'])->name('backend.electronic.update');
     Route::delete('/{id}', [ElectronicController::class, 'destroy'])->name('backend.electronic.destroy');
 });
+//electronic PPP 
+Route::prefix('/ppp/electronics')->middleware(['auth', 'role:ppp'])->group(function () {
+    Route::get('/', [ElectronicPPPController::class, 'index'])->name('ppp.electronic.index');
+    Route::get('/create', [ElectronicPPPController::class, 'create'])->name('ppp.electronic.create');
+    Route::post('/', [ElectronicPPPController::class, 'store'])->name('ppp.electronic.store');
+    Route::get('/{id}', [ElectronicPPPController::class, 'show'])->name('ppp.electronic.show');
+    Route::get('/{id}/edit', [ElectronicPPPController::class, 'edit'])->name('ppp.electronic.edit');
+    Route::put('/{id}', [ElectronicPPPController::class, 'update'])->name('ppp.electronic.update');
+    Route::delete('/{id}', [ElectronicPPPController::class, 'destroy'])->name('ppp.electronic.destroy');
+});
 
 //furniture 
 Route::prefix('/admin/furnitures')->middleware(['auth', 'role:admin'])->group(function () {
@@ -106,6 +121,17 @@ Route::prefix('/admin/furnitures')->middleware(['auth', 'role:admin'])->group(fu
     Route::get('/{id}/edit', [FurnitureController::class, 'edit'])->name('backend.furniture.edit');
     Route::put('/{id}', [FurnitureController::class, 'update'])->name('backend.furniture.update');
     Route::delete('/{id}', [FurnitureController::class, 'destroy'])->name('backend.furniture.destroy');
+});
+
+//furniture PPP
+Route::prefix('/ppp/furnitures')->middleware(['auth', 'role:ppp'])->group(function () {
+    Route::get('/', [FurniturePPPController::class, 'index'])->name('ppp.furniture.index');
+    Route::get('/create', [FurniturePPPController::class, 'create'])->name('ppp.furniture.create');
+    Route::post('/', [FurniturePPPController::class, 'store'])->name('ppp.furniture.store');
+    Route::get('/{id}', [FurniturePPPController::class, 'show'])->name('ppp.furniture.show');
+    Route::get('/{id}/edit', [FurniturePPPController::class, 'edit'])->name('ppp.furniture.edit');
+    Route::put('/{id}', [FurniturePPPController::class, 'update'])->name('ppp.furniture.update');
+    Route::delete('/{id}', [FurniturePPPController::class, 'destroy'])->name('ppp.furniture.destroy');
 });
 
 //room 
@@ -130,9 +156,58 @@ Route::prefix('/admin/maintenances')->middleware(['auth', 'role:admin'])->group(
     Route::delete('/{id}', [MaintenanceController::class, 'destroy'])->name('backend.maintenance.destroy');
     Route::get('/maintenance/items', [MaintenanceController::class, 'getItems'])->name('maintenance.items');
 });
+//maintenance PPP
+Route::prefix('/ppp/maintenances')->middleware(['auth', 'role:ppp'])->group(function () {
+    Route::get('/', [MaintenancePPPController::class, 'index'])->name('ppp.maintenance.index');
+    Route::get('/create', [MaintenancePPPController::class, 'create'])->name('ppp.maintenance.create');
+    Route::post('/', [MaintenancePPPController::class, 'store'])->name('ppp.maintenance.store');
+    Route::get('/{id}', [MaintenancePPPController::class, 'show'])->name('ppp.maintenance.show');
+    Route::get('/{id}/edit', [MaintenancePPPController::class, 'edit'])->name('ppp.maintenance.edit');
+    Route::put('/{id}', [MaintenancePPPController::class, 'update'])->name('ppp.maintenance.update');
+    Route::delete('/{id}', [MaintenancePPPController::class, 'destroy'])->name('ppp.maintenance.destroy');
+    Route::get('/maintenance/items', [MaintenancePPPController::class, 'getItems'])->name('maintenance.items');
+});
 
 
-// Admin Section
+// PPP Section
+Route::middleware(['auth', 'role:ppp'])->group(function () {
+    // Dashboard and index
+    Route::get('/ppp', [PPPController::class, 'index'])->name('ppp.index');
+    Route::get('/ppp/dashboard', [PPPController::class, 'index'])->name('ppp.dashboard');
+
+
+    
+    // File Manager
+    Route::get('ppp/file-manager', function () {
+        return view('ppp.layouts.file-manager');
+    })->name('ppp.file-manager');
+    
+    // File manager routes (laravel-filemanager)
+    Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+        \UniSharp\LaravelFilemanager\Lfm::routes();
+    });
+    
+    // User Management Routes
+    Route::resource('users', UsersController::class);
+    
+    // Profile Routes
+    Route::get('/ppp.profile', [PPPController::class, 'profile'])->name('ppp-profile');
+    Route::post('ppp/profile/{id}', [PPPController::class, 'profileUpdate'])->name('ppp.profile-update');
+     
+    // Password Change Routes
+    Route::get('ppp.change-password', [PPPController::class, 'changePassword'])->name('ppp.change-password.form');
+    Route::post('ppp/change-password/update', [PPPController::class, 'changePasswordStore'])->name('ppp.change-password.store'); 
+    // Electronic Routes
+    Route::resource('/ppp/electronic', ElectronicPPPController::class); 
+    // Furniture Routes
+    Route::resource('/ppp/furniture', FurniturePPPController::class); 
+    // Room Routes
+    //Route::resource('/ppp/room', RoomPPPController::class);
+    //maintenance
+    Route::resource('/ppp/maintenance', MaintenancePPPController::class);
+});
+
+//admin section 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard and index
     Route::get('/admin', [AdminController::class, 'index'])->name('backend.index');
@@ -153,7 +228,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // Profile Routes
     Route::get('/admin.profile', [AdminController::class, 'profile'])->name('admin-profile');
-    Route::post('/profile/{id}', [AdminController::class, 'profileUpdate'])->name('admin.profile-update');
+    Route::post('admin/profile/{id}', [AdminController::class, 'profileUpdate'])->name('admin-profile-update');
      
     // Password Change Routes
     Route::get('admin.change-password', [AdminController::class, 'changePassword'])->name('admin.change-password.form');

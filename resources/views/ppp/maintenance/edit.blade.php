@@ -1,99 +1,88 @@
-@extends('backend.layouts.master')
+@extends('ppp.layouts.master')
 @section('title', 'LibraRoom Reservation System')
 @section('main-content')
 
 <div class="card">
     <h5 class="card-header">Update Maintenance Report</h5>
     <div class="card-body">
-        <form method="post" action="{{ route('maintenance.update', $maintenances->id) }}">
+        <form method="post" action="{{ route('ppp.maintenance.update', $maintenances->id) }}">
             @csrf
-            @method('PATCH') 
+            @method('PUT') 
+            
             <!-- Title -->
             <div class="form-group">
                 <label for="inputTitle" class="col-form-label">Title <span class="text-danger">*</span></label>
-                <input id="inputTitle" type="text" name="title" placeholder="Enter title" value="{{ $maintenances->title }}" class="form-control">
+                <input id="inputTitle" type="text" name="title" placeholder="Enter title" value="{{ $maintenances->title }}" class="form-control" disabled>
                 @error('title')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-            
+        
+            <!-- Description -->
             <div class="form-group">
                 <label for="description" class="col-form-label">Description</label>
-                <textarea class="form-control" id="description" name="description">{{ $maintenances->description }}</textarea>
+                <textarea class="form-control" id="description" name="description" disabled>{{ $maintenances->description }}</textarea>
                 @error('description')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-            
-            
+        
             <!-- Date -->
             <div class="form-group">
                 <label for="flatpickrDate" class="col-form-label">Date <span class="text-danger">*</span></label>
-                <input id="flatpickrDate" type="text" name="date_maintenance" value="{{ $maintenances->date_maintenance }}" class="form-control">
+                <input id="flatpickrDate" type="text" name="date_maintenance" value="{{ $maintenances->date_maintenance }}" class="form-control" disabled>
                 @error('date_maintenance')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-            
+        
             <!-- Item Type -->
             <div class="form-group">
                 <label for="itemType" class="col-form-label">Item Type</label>
-                <select name="itemType" id="itemType" class="form-control">
-                    <option value="">----- Select Item Type -----</option>
-                    <option value="furniture" {{ $maintenances->itemType == 'furniture' ? 'selected' : '' }}>Furniture</option>
-                    <option value="electronic_equipment" {{$maintenances->itemType == 'electronic_equipment' ? 'selected' : '' }}>Electronic</option>
-                    <option value="other" {{ $maintenances->itemType == 'other' ? 'selected' : '' }}>Other</option>
-                </select>
+                <input id="itemType" type="text" name="itemType" value="{{ $maintenances->itemType }}" class="form-control" disabled>
                 @error('itemType')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-            
+        
             <!-- Item -->
             <div class="form-group" id="itemid-wrapper">
                 <label for="itemid" class="col-form-label">Item</label>
-                <select name="itemid" id="itemid" class="form-control">
-                    <option value="">----- Select Item -----</option>
-                </select>
+                <input id="itemid" type="text" name="itemid" value="{{ $itemName }}" class="form-control" disabled>
                 @error('itemid')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-            
-            
+        
             <!-- Room -->
             <div class="form-group">
                 <label for="room_id" class="col-form-label">Room</label>
-                <select name="room_id" id="room_id" class="form-control">
-                    <option value="">----- Select Room -----</option>
-                    @foreach($rooms as $room)
-                    <option value="{{ $room->no_room }}" {{ $maintenances->room_id == $room->no_room ? 'selected' : '' }}>
-                        {{ $room->name }}
-                    </option>
-                    @endforeach
-                </select>
+                <input id="room_id" type="text" name="room_id" value="{{ $rooms->name ?? '' }}" class="form-control" disabled>
                 @error('room_id')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
+        
+            <!-- Status -->
             <div class="form-group">
                 <label for="status" class="col-form-label">Status <span class="text-danger">*</span></label>
                 <select name="status" class="form-control">
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In progress</option>
-                    <option value="completed">Completed</option>
-                    <option value="Failed">Failed</option>
+                    <option value="pending" {{ $maintenances->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                    <option value="in_progress" {{ $maintenances->status == 'in_progress' ? 'selected' : '' }}>In progress</option>
+                    <option value="completed" {{ $maintenances->status == 'completed' ? 'selected' : '' }}>Completed</option>
+                    <option value="failed" {{ $maintenances->status == 'failed' ? 'selected' : '' }}>Failed</option>
                 </select>
                 @error('status')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-            
+        
             <!-- Submit -->
             <div class="form-group mb-3">
                 <button class="btn btn-success" type="submit">Update</button>
             </div>
         </form>
+        
     </div>
 </div>
 

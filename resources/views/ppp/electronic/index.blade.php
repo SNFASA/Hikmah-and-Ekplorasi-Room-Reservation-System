@@ -1,4 +1,4 @@
-@extends('backend.layouts.master')
+@extends('ppp.layouts.master')
 @section('title','LibraRoom Reservation system ')
 @section('main-content')
  <!-- DataTales Example -->
@@ -9,58 +9,50 @@
          </div>
      </div>
     <div class="card-header py-3">
-      <h6 class="m-0 font-weight-bold text-primary float-left">Maintenance Report List</h6>
-      <a href="{{route('maintenance.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add User"><i class="fas fa-plus"></i> Add Report</a>
+      <h6 class="m-0 font-weight-bold text-primary float-left">Electronic equpment Lists</h6>
+      <a href="{{route('ppp.electronic.create')}}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add Electronic"><i class="fas fa-plus"></i> Add Electronic</a>
     </div>
     <div class="card-body">
       <div class="table-responsive">
-        @if($maintenance->isNotEmpty())
+        @if($electronics->isNotEmpty())
         <table class="table table-bordered" id="post-category-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
               <th>S.N.</th>
-              <th>Title</th>
-              <th>Type</th>
-              <th>Item</th>
+              <th>Name</th>
+              <th>Category</th>
               <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tfoot>
             <tr>
-                <th>S.N.</th>
-                <th>Title</th>
-                <th>Type</th>
-                <th>Item</th>
-                <th>Status</th>
-                <th>Action</th>
+              <th>S.N.</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Status</th>
+              <th>Action</th>
               </tr>
           </tfoot>
           <tbody>
-            @foreach($maintenance as $report)   
+            @foreach($electronics as $device)   
                 <tr>
-                    <td>{{ $report->id}}</td>
-                    <td>{{ $report->title}}</td>
-                    <td>{{ $report->itemType}}</td>
-                    <td>{{ $report->item_id}}</td>
+                    <td>{{$device->no_electronicEquipment}}</td>
+                    <td>{{$device->name}}</td>
+                    <td>{{$device->category}}</td>
                     <td>
-                        
-                        @if($report->status=='completed')
-                            <span class="badge badge-success">{{$report->status}}</span>
-                        @elseif($report->status =='pending')
-                            <span class="badge badge-warning">{{$report->status}}</span>
-                        @elseif($report->status=='in_progress')
-                            <span class="badge badge-info">{{$report->status}}</span>
+                        @if($device->status=='Active')
+                            <span class="badge badge-success">{{$device->status}}</span>
                         @else
-                            <span class="badge badge-danger">{{$report->status}}</span>
+                            <span class="badge badge-warning">{{$device->status}}</span>
                         @endif
                     </td>
                     <td>
-                        <a href="{{route('maintenance.edit',$report->id)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
-                        <form method="POST" action="{{route('maintenance.destroy',[$report->id])}}">
-                            @csrf 
-                            @method('delete')
-                                <button class="btn btn-danger btn-sm dltBtn" data-id={{$report->id}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
+                        <a href="{{route('ppp.electronic.edit',$device->no_electronicEquipment)}}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="edit" data-placement="bottom"><i class="fas fa-edit"></i></a>
+                    <form method="POST" action="{{route('ppp.electronic.destroy',[$device->no_electronicEquipment])}}">
+                      @csrf 
+                      @method('delete')
+                          <button class="btn btn-danger btn-sm dltBtn" data-id={{$device->no_electronicEquipment}} style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fas fa-trash-alt"></i></button>
                         </form>
                     </td>
                     {{-- Delete Modal --}}
@@ -87,9 +79,9 @@
             @endforeach
           </tbody>
         </table>
-        <span style="float:right">{{$maintenance ->links()}}</span>
+        <span style="float:right">{{$electronics->links()}}</span>
         @else
-          <h6 class="text-center">No maintenance report found!!! Please create report</h6>
+          <h6 class="text-center">No Electronics equpment found!!! Please create electronic equpment</h6>
         @endif
       </div>
     </div>

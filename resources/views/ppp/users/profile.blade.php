@@ -1,19 +1,19 @@
-@extends('backend.layouts.master')
+@extends('ppp.layouts.master')
 
-@section('title','Admin Profile')
+@section('title','PPP Profile')
 
 @section('main-content')
 
 <div class="card shadow mb-4">
     <div class="row">
         <div class="col-md-12">
-           @include('backend.layouts.notification')
+           @include('ppp.layouts.notification')
         </div>
     </div>
    <div class="card-header py-3">
      <h4 class=" font-weight-bold">Profile</h4>
      <ul class="breadcrumbs">
-         <li><a href="{{route('admin')}}" style="color:#999">Dashboard</a></li>
+        <li><a href="{{ route('ppp.dashboard') }}" style="color:#999">Dashboard</a></li>
          <li><a href="" class="active text-primary">Profile Page</a></li>
      </ul>
    </div>
@@ -33,7 +33,7 @@
                   </div>
             </div>
             <div class="col-md-8">
-                <form class="border px-4 pt-2 pb-3" method="POST" action="{{route('admin-profile-update',$profile->id)}}">
+                <form class="border px-4 pt-2 pb-3" method="POST" action="{{route('ppp.profile-update',$profile->id)}}">
                     @csrf
                     <div class="form-group">
                         <label for="inputTitle" class="col-form-label">No matriks</label>
@@ -56,49 +56,8 @@
                         @error('email')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
-                    </div>
-                    
-                      <div class="form-group">
-                          <label for="role" class="col-form-label">Role</label>
-                          <select name="role" class="form-control">
-                              <option value="">-----Select Role-----</option>
-                                  <option value="staff" {{(($profile->role=='Staff')? 'selected' : '')}}>Staff</option>
-                                  <option value="user" {{(($profile->role=='Student')? 'selected' : '')}}>Student</option>
-                                  <option value="admin" {{(($profile->role=='admin')? 'selected' : '')}}>Admin</option>
-
-                          </select>
-                            @error('role')
-                                <span class="text-danger">{{$message}}</span>
-                            @enderror
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="facultyOffice" class="col-form-label">Faculty Office</label>
-                                <select name="facultyOffice" id="" class="form-control">
-                                    <option value="">-----Select Role-----</option>
-                                    @foreach($facultyOffices as $office)
-                                        <option value="{{ $office->no_facultyOffice }}" 
-                                            @if($profile->no_facultyOffice == $office->no_facultyOffice) selected @endif>
-                                            {{ $office->name }}
-                                        </option>
-                                     @endforeach
-                                </select>
-
-                        </div>
-                        <div class="form-group">
-                            <label for="course" class="col-form-label">Course</label>
-                                <select name="course" id="" class="form-control">
-                                    <option value="">-----Select course-----</option>
-                                    @foreach($courses as $course)
-                                        <option value="{{ $course->no_course }}" 
-                                            @if($profile->no_course == $course->no_course) selected @endif>
-                                            {{ $course->name }}
-                                        </option>
-                                     @endforeach
-                                    </select>
-                        </div>
-
-                        <button type="submit" class="btn btn-success btn-sm">Update</button>
+                    </div> 
+                    <button type="submit" class="btn btn-success btn-sm">Update</button>
                 </form>
             </div>
         </div>
