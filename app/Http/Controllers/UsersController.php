@@ -31,7 +31,7 @@ class UsersController extends Controller
             'course' => 'nullable|max:255',
             'email' => 'required|email|unique:users,email|max:255',
             'password' => 'required|min:8|confirmed',
-            'role' => 'required|in:student,staff,admin,ppp',
+            'role' => 'required|in:user,admin,ppp',
         ]);
 
         $data = $request->all();

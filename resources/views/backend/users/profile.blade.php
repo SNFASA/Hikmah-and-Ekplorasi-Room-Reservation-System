@@ -62,8 +62,8 @@
                           <label for="role" class="col-form-label">Role</label>
                           <select name="role" class="form-control">
                               <option value="">-----Select Role-----</option>
-                                  <option value="staff" {{(($profile->role=='Staff')? 'selected' : '')}}>Staff</option>
-                                  <option value="user" {{(($profile->role=='Student')? 'selected' : '')}}>Student</option>
+                                  <option value="ppp" {{(($profile->role=='ppp')? 'selected' : '')}}>PPP</option>
+                                  <option value="user" {{(($profile->role=='user')? 'selected' : '')}}>User</option>
                                   <option value="admin" {{(($profile->role=='admin')? 'selected' : '')}}>Admin</option>
 
                           </select>

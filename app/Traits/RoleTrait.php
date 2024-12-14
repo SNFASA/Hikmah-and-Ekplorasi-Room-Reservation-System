@@ -9,23 +9,17 @@ trait RoleTrait
         return $this->role === 'admin';
     }
 
-    public function isStudent()
-    {
-        return $this->role === 'student';
-    }
-
-    public function isStaff()
-    {
-        return $this->role === 'staff';
+    public function isUser(){
+        return $this->role === 'user';
     }
     public function isPpp()
     {
         return $this->role === 'ppp';
     }
 
-    public function canAccessStudentRoutes()
+    public function canAccessUserRoutes()
     {
-        return $this->isAdmin() || $this->isStudent() || $this->isStaff();
+        return $this->isAdmin() || $this->isUser() || $this->isPpp();
     }
 
     public function hasRole($role)

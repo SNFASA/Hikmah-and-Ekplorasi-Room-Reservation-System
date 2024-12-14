@@ -10,7 +10,7 @@ class User
     public function handle(Request $request, Closure $next)
     {
         // Allow access if the user is a student or an admin
-        if (!auth()->check() || !auth()->user()->canAccessStudentRoutes()) {
+        if (!auth()->check() || !auth()->user()->canAccessUserRoutes()) {
             return redirect('/login')->with('error', 'Access restricted to students or staff.');
         }
         

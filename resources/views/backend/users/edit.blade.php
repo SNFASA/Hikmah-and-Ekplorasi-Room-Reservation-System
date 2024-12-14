@@ -52,8 +52,7 @@
             <option value="">-----Select Role-----</option>
             @foreach($roles as $role)
                 <option value="{{ $role->role }}" {{ $role->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="{{ $role->role }}" {{ $role->role == 'student' ? 'selected' : '' }}>Student</option>
-                <option value="{{ $role->role }}" {{ $role->role == 'staff' ? 'selected' : '' }}>Staff</option>
+                <option value="{{ $role->role }}" {{ $role->role == 'user' ? 'selected' : '' }}>User</option>
                 <option value="{{ $role->role }}" {{ $role->role == 'ppp' ? 'selected' : '' }}>PPP</option>
 
             @endforeach

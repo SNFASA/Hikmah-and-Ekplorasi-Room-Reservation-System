@@ -41,8 +41,7 @@
           <select name="role" class="form-control">
             <option value="">-----Select Role-----</option>
             <option value="admin">Admin</option>
-            <option value="student">Student</option>
-            <option value="staff">Staff</option>
+            <option value="user">User</option>
             <option value="ppp">PPP</option>
           </select>
           @error('role')
