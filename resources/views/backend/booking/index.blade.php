@@ -86,7 +86,7 @@
                     
                     </tbody>
                 </table>
-                <span style="float:right">{{ $bookings->links() }}</span>
+                <span style="float:right ">{{ $bookings->links() }}</span>
             @else
                 <h6 class="text-center">No bookings found! Please create a booking.</h6>
             @endif
@@ -99,18 +99,7 @@
 @push('styles')
     <link href="{{ asset('backend/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css" />
-    <style>
-        div.dataTables_wrapper div.dataTables_paginate {
-            display: none;
-        }
-        .zoom {
-            transition: transform .2s; /* Animation */
-        }
 
-        .zoom:hover {
-            transform: scale(3.2);
-        }
-    </style>
 @endpush
 
 @push('scripts')
