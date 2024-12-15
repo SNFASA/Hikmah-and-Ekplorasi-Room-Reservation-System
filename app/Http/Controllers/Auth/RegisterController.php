@@ -52,10 +52,10 @@ class RegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'user_type' => ['required', 'in:student,staff'], // Validate user type
-            'no_matriks' => ['required_if:user_type,student', 'string', 'max:255'],
-            'facultyOffice' => ['required_if:user_type,staff', 'string', 'max:255'],
-            'course' => ['required_if:user_type,student', 'string', 'max:255'], 
+            'user_type' => 'user',//lidate user type
+            'no_matriks' => ['required','string', 'max:255'],
+            'facultyOffice' => ['required','string', 'max:255'],
+            'course' => ['required','string', 'max:255'], 
             'receive_notifications' => ['boolean'],
         ]);
     }
@@ -72,7 +72,7 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'user_type' => $data['user_type'],             
+            'user_type' => 'user',             
             'no_matriks' => $data['no_matriks'] ?? null,   
             'facultyOffice' => $data['facultyOffice'] ?? null, 
             'course' => $data['course'] ?? null,           

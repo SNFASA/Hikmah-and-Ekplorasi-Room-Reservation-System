@@ -89,17 +89,18 @@ class LoginController extends Controller
                 'name' => $userSocial->getName(),
                 'email' => $userSocial->getEmail(),
                 'image' => $userSocial->getAvatar(),
-                'user_type' => 'student', // Assign default role as student
+                'user_type' => 'user',//sign default role as student
                 'password' => Hash::make(Str::random(8)), 
             ]);
 
             // Create a corresponding entry in the students table with specific attributes
-            Student::create([
+            user::create([
                 'user_id' => $newUser->id, // Link to user record with foreign key
                 'no_matriks' => $userSocial->getId(), 
                 'name' => $userSocial->getName(),
                 'facultyOffice' => null, 
                 'course' => null,
+                'status'=>'user',
                 'email' => $userSocial->getEmail(),
                 'password' => Hash::make(Str::random(8)), 
             ]);
