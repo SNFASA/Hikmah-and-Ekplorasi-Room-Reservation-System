@@ -20,7 +20,6 @@ class bookings extends Model
         'purpose',
         'no_room',
         'phone_number',
-        'list_student',
         'status',
     ];
 

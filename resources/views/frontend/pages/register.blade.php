@@ -72,7 +72,7 @@
                                     <div class="form-group">
                                         <label>User Type<span>*</span></label>
                                         <select name="user_type" required="required">
-                                            <option value="student" {{ old('user_type') == 'student' ? 'selected' : '' }}>Student</option>
+                                            <option value="user" {{ old('user_type') == 'user' ? 'selected' : '' }}>User</option>
                                             <option value="staff" {{ old('user_type') == 'staff' ? 'selected' : '' }}>Staff</option>
                                         </select>
                                         @error('user_type')

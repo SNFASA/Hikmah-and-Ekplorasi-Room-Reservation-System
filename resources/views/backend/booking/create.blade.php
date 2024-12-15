@@ -70,33 +70,20 @@
           @enderror
         </div>
 
-        <!-- Select Students -->
-        <div class="form-group">
-          <label for="students">Student<span class="text-danger">*</span></label>
-          <select id="students" name="students[]" class="form-control" >
-              <option value="">--Select Student--</option>
-              @foreach($students as $student)
-                  <option value="{{ $student->no_matriks }}">{{ $student->name }}</option>
-              @endforeach
-          </select>
-          @error('students')
-          <span class="text-danger">{{ $message }}</span>
-          @enderror
-      </div>
-        
-        <!-- Dynamically Added Students -->
-        <div class="form-group">
-            <label for="selected-students" class="col-form-label">Selected Students</label>
-            <ul id="selected-students" class="list-group">
-                <!-- Dynamically added students will appear here -->
-            </ul>
-        </div>
-        
-        <!-- Hidden Inputs for Form Submission -->
-        <div id="students-hidden-inputs"></div>
-        
-        <!-- Add Student Button -->
-        <button type="button" id="add-selected-student" class="btn btn-primary" style="margin-bottom: 20px;">Add Student</button>
+          <!-- Input for No Matriks -->
+          <div id="students-list" class="form-group">
+            <div class="form-group">
+                <label class="col-form-label">No Matriks:</label>
+                <input type="text" name="students[0][no_matriks]" required class="form-control">
+
+                <label for="name[]" class="col-form-label"> Name:</label>
+                <input type="text" name="students[0][name]" required class="form-control">
+            </div>
+          </div>
+          <button type="button" id="add-student"class="btn btn-primary" style="margin:10px 0 10px 0">Add Student</button>
+          <!-- Hidden Inputs for Form Submission -->
+          <div id="students-hidden-inputs"></div>
+
         
         <div class="form-group mb-3">
           <button type="reset" class="btn btn-warning">Reset</button>
@@ -139,64 +126,38 @@
         time_24hr: true,
     });
 
-    // Initialize an empty array to store selected students
-    const selectedStudents = [];
+    document.getElementById('add-student').addEventListener('click', function() {
+    const studentsList = document.getElementById('students-list');
+    const count = studentsList.children.length;
 
-    // Event listener for the 'Add Student' button
-    document.getElementById('add-selected-student').addEventListener('click', function() {
-        const studentSelect = document.getElementById('students');
-        
-        // Ensure the student select element exists
-        if (studentSelect) {
-            const selectedOptions = Array.from(studentSelect.selectedOptions);
-
-            selectedOptions.forEach(option => {
-                if (!selectedStudents.includes(option.value)) {
-                    selectedStudents.push(option.value);
-                    addStudentToList(option.value, option.text);
-                }
-            });
-
-            // Update hidden inputs for form submission
-            updateHiddenInputs();
-        } else {
-            console.error("Student select element not found");
-        }
-    });
-
-    // Function to add a student to the selected list
-    function addStudentToList(noMatriks, name) {
-        const list = document.getElementById('selected-students');
-        const listItem = document.createElement('li');
-        listItem.classList.add('list-group-item');
-        listItem.textContent = `${name} (No Matriks: ${noMatriks})`;
-
-        // Remove button to remove student from the list
-        const removeButton = document.createElement('button');
-        removeButton.textContent = 'Remove';
-        removeButton.classList.add('btn', 'btn-danger', 'btn-sm', 'ml-2');
-        removeButton.addEventListener('click', function() {
-            selectedStudents.splice(selectedStudents.indexOf(noMatriks), 1);
-            listItem.remove();
-            updateHiddenInputs();
-        });
-
-        listItem.appendChild(removeButton);
-        list.appendChild(listItem);
+    // Check if the number of students is within the allowed range
+    if (count >= 10) {
+        alert('You can only add a maximum of 10 students.');
+        return;
     }
 
-    // Function to update hidden inputs for form submission
-    function updateHiddenInputs() {
-        const hiddenInputsContainer = document.getElementById('students-hidden-inputs');
-        hiddenInputsContainer.innerHTML = ''; // Clear previous hidden inputs
+    const studentEntry = document.createElement('div');
+    studentEntry.classList.add('student-entry');
+    studentEntry.innerHTML = `
+      <label class="col-form-label" for="students{${count}][no_matriks]">No Matriks:</label>
+      <input type="text" name="students[${count}][no_matriks]" required class="form-control">
 
-        selectedStudents.forEach(noMatriks => {
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = 'students[]';
-            hiddenInput.value = noMatriks;
-            hiddenInputsContainer.appendChild(hiddenInput);
-        });
+      <label for="students[${count}[name]" class="col-form-label"> Name:</label>
+      <input type="text" name="students[${count}][name]" required class="form-control">
+    `;
+    studentsList.appendChild(studentEntry);
+});
+
+// Ensure at least 4 students are present before form submission
+document.getElementById('your-form-id').addEventListener('submit', function(event) {
+    const studentsList = document.getElementById('students-list');
+    const count = studentsList.children.length;
+
+    if (count < 4) {
+        alert('You must add at least 4 students before submitting the form.');
+        event.preventDefault(); // Stop form submission
     }
+});
+
 </script>
 @endpush

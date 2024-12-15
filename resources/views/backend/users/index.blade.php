@@ -14,6 +14,7 @@
     </div>
     <div class="card-body">
       <div class="table-responsive">
+        @if(count($users)>0)
         <table class="table table-bordered" id="user-dataTable" width="100%" cellspacing="0">
           <thead>
             <tr>
@@ -40,7 +41,7 @@
               </tr>
           </tfoot>
           <tbody>
-            @foreach($users as $user)   
+            @foreach($users as $user)  
             @php
                   $faculty = DB::table('faculty_offices')
                      ->where('no_facultyOffice', $user->facultyOffice)
@@ -90,7 +91,10 @@
             @endforeach
           </tbody>
         </table>
-        
+        <span style="float:right">{{$users->links()}}</span>
+        @else
+          <h6 class="text-center">No User found!!! Please create user<6>
+        @endif
       </div>
     </div>
 </div>
@@ -101,7 +105,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
   <style>
       div.dataTables_wrapper div.dataTables_paginate{
-          display: none;
+          display: false;
       }
   </style>
 @endpush
