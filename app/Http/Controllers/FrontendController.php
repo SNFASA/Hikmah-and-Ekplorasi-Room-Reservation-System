@@ -14,20 +14,17 @@ use Illuminate\Auth\Events\PasswordReset;
 class FrontendController extends Controller
 {
     // Redirect user based on role
-    public function index(Request $request)
-    {
-        if ($request->user()) {
-            return redirect()->route($request->user()->role);
-        }
-        return redirect()->route('login');
+    public function index(Request $request){
+        return redirect()->route($request->user()->role);
     }
-
+    
+    
     // Home method
     public function home()
     {
-        
-        return view('frontend.pages.home');
+        return view('frontend.index');
     }
+    
 
     // Show login form
     public function login()

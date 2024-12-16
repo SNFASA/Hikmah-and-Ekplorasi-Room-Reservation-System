@@ -40,6 +40,8 @@ Route::post('password-reset', [FrontendController::class, 'showResetForm'])->nam
 Route::get('login/{provider}/', [LoginController::class, 'redirect'])->name('login.redirect');
 Route::get('login/{provider}/callback/', [LoginController::class, 'Callback'])->name('login.callback');
 
+
+
 // Cache Clear
 Route::get('cache-clear', function () {
     Artisan::call('optimize:clear');
@@ -53,6 +55,8 @@ Route::get('storage-link', [AdminController::class, 'storageLink'])->name('stora
 // Home Route (Require Login)
 Route::get('/', [HomeController::class, 'index'])->name('user')->middleware('auth');
 Route::get('/home', [FrontendController::class, 'home'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+
 //User
 Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [UsersController::class, 'index'])->name('backend.users.index');
@@ -211,6 +215,7 @@ Route::middleware(['auth', 'role:ppp'])->group(function () {
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard and index
     Route::get('/admin', [AdminController::class, 'index'])->name('backend.index');
+    //  Route::get('/home', [FrontendController::class, 'home'])->name('home');
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     
     // File Manager
@@ -265,7 +270,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 // User Section
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', [FrontendController::class, 'home'])->name('home');
     Route::get('/profile', [HomeController::class, 'profile'])->name('user-profile');
     Route::post('/profile/{id}', [HomeController::class, 'profileUpdate'])->name('user-profile-update');
     Route::get('change-password', [HomeController::class, 'changePassword'])->name('user.change.password.form');
@@ -277,3 +281,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('change-password', [FrontendController::class, 'changePassword'])->name('user.change.password.form');
     Route::post('change-password', [FrontendController::class, 'changPasswordStore'])->name('change.password');
 });
+// Frontend Routes
