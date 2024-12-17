@@ -376,7 +376,7 @@
     .filter_button{
         /* height:20px; */
         text-align: center;
-        background:#FF6F61;
+        background:#0d6efd;
         padding:8px 16px;
         margin-top:10px;
         color: white;

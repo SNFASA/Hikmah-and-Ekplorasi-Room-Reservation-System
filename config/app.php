@@ -170,9 +170,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\CustomUMLServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-    ])->toArray(),
-    /*
-    |--------------------------------------------------------------------------
+    ])->toArray(),    /*
     | Class Aliases
     |--------------------------------------------------------------------------
     |

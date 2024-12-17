@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
+use App\Models\Room;
+use App\Helper;
 
 
 class FrontendController extends Controller
@@ -171,6 +173,13 @@ class FrontendController extends Controller
     
         return redirect()->route('user-profile')->with('success', 'Password changed successfully');
     }
+    public function search()
+    {
+        $roomTypes = getAllRoomTypes(); // Call the helper function
+        return view('frontend.layouts.header', compact('roomTypes'));
+    }
+
+
     
     
 }

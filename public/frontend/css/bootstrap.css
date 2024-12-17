@@ -133,7 +133,7 @@ body {
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.5;
-    color: #212529;
+    color: #193e91;
     text-align: left;
     background-color: #fff
 }
@@ -634,7 +634,7 @@ kbd {
     padding: .2rem .4rem;
     font-size: 90%;
     color: #fff;
-    background-color: #212529;
+    background-color: #193e91;
     border-radius: .2rem
 }
 
@@ -649,7 +649,7 @@ pre {
     margin-top: 0;
     margin-bottom: 1rem;
     font-size: 90%;
-    color: #212529
+    color: #193e91
 }
 
 pre code {
@@ -1845,7 +1845,7 @@ pre code {
 
 .table .thead-dark th {
     color: #fff;
-    background-color: #212529;
+    background-color: #193e91;
     border-color: #32383e
 }
 
@@ -1857,7 +1857,7 @@ pre code {
 
 .table-dark {
     color: #fff;
-    background-color: #212529
+    background-color: #193e91
 }
 
 .table-dark td,
@@ -2875,7 +2875,7 @@ fieldset[disabled] a.btn {
 }
 
 .btn-outline-light:hover {
-    color: #212529;
+    color: #193e91;
     background-color: #f8f9fa;
     border-color: #f8f9fa
 }
@@ -2894,7 +2894,7 @@ fieldset[disabled] a.btn {
 .btn-outline-light:not([disabled]):not(.disabled).active,
 .btn-outline-light:not([disabled]):not(.disabled):active,
 .show>.btn-outline-light.dropdown-toggle {
-    color: #212529;
+    color: #193e91;
     background-color: #f8f9fa;
     border-color: #f8f9fa;
     box-shadow: 0 0 0 .2rem rgba(248, 249, 250, .5)
@@ -3053,7 +3053,7 @@ tbody.collapse.show {
     padding: .5rem 0;
     margin: .125rem 0 0;
     font-size: 1rem;
-    color: #212529;
+    color: #193e91;
     text-align: left;
     list-style: none;
     background-color: #fff;
@@ -3097,7 +3097,7 @@ tbody.collapse.show {
     padding: .25rem 1.5rem;
     clear: both;
     font-weight: 400;
-    color: #212529;
+    color: #193e91;
     text-align: inherit;
     white-space: nowrap;
     background: 0 0;
@@ -4930,7 +4930,7 @@ tbody.collapse.show {
 }
 
 .list-group-item-action:active {
-    color: #212529;
+    color: #193e91;
     background-color: #e9ecef
 }
 
@@ -5683,7 +5683,7 @@ button.close {
 
 .popover-body {
     padding: .5rem .75rem;
-    color: #212529
+    color: #193e91
 }
 
 .carousel {

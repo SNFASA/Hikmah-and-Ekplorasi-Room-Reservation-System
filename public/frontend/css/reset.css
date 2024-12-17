@@ -254,7 +254,7 @@ big {
 	content: "";
 	height: 2px;
 	width: 50px;
-	background: #FF6F61;
+	background: #0d6efd;
 	left: 50%;
 	bottom: 0;
 	margin-left: -25px;
@@ -316,7 +316,7 @@ big {
 	display: inline-block;
 }
 .breadcrumbs ul li a:hover{
-	color:#FF6F61;
+	color:#0d6efd;
 }
 /*=============================
 	Start Demos CSS 
@@ -1142,7 +1142,7 @@ object {
 .modal-dialog .modal-content .modal-header .close:hover {
   color: #fff;
   border-color:transparent;
-  background:#FF6F61;
+  background:#0d6efd;
 }
 .modal-dialog .modal-content .modal-body {
 	padding: 0px;
@@ -1306,7 +1306,7 @@ object {
 	text-transform:lowercase;
 }
 .quickview-content .nice-select .list li:hover{
-	background:#FF6F61;
+	background:#0d6efd;
 	color:#fff;
 }
 
@@ -1340,7 +1340,7 @@ object {
   width: 5px;
   height: 5px;
   border-radius: 100%;
-  background-color: #FF6F61;
+  background-color: #0d6efd;
   content: "";
   left: 0;
   top: 50%;
@@ -1417,7 +1417,7 @@ object {
 }
 
 .quickview-content .quickview-action-wrap .quickview-cart a:hover {
-  background-color: #FF6F61;
+  background-color: #0d6efd;
   color:#2C3E50;
 }
 
@@ -1450,10 +1450,10 @@ object {
   margin-left: 30px;
 }
 .quickview-content .quickview-action-wrap .quickview-wishlist a:hover{
-	color:#FF6F61;
+	color:#0d6efd;
 }
 .quickview-content .quickview-action-wrap .quickview-compare a:hover {
-  color:#FF6F61;
+  color:#0d6efd;
 }
 @media only screen and (max-width: 767px) {
   .quickview-content .quickview-action-wrap .quickview-compare {
@@ -1660,7 +1660,7 @@ object {
 }
 .modal .owl-carousel .owl-nav div:hover{
 	color:#fff;
-	background:#FF6F61;
+	background:#0d6efd;
 }
 .modal .owl-carousel .owl-controls .owl-nav .owl-prev{
 	left:0;
@@ -1703,7 +1703,7 @@ object {
 	border: none;
 }
 .quickview-content .quantity .button .btn:hover{
-	color:#FF6F61;
+	color:#0d6efd;
 }
 .quickview-content .quantity .input-number {
 	border: 1px solid #eceded;
@@ -1733,7 +1733,7 @@ object {
 }
 .quickview-content .add-to-cart .btn:hover{
 	color:#fff;
-	background:#FF6F61;
+	background:#0d6efd;
 }
 .quickview-content .add-to-cart .btn.min {
 	padding: 0 20px;
@@ -1794,7 +1794,7 @@ object {
   
 }
 .default-social ul li a:hover {
-  color: #FF6F61;
+  color: #0d6efd;
 }
 /* End Modal Css */
 

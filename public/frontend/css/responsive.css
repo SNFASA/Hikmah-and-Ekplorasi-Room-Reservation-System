@@ -86,7 +86,7 @@ Version:1.0
 	font-size: 14px;
 }
 .header.shop .search-bar {
-	width: 445px;
+	width: 500px;
 }
 .header.shop .search-bar input {
 	padding: 0 52px 0 20px;
@@ -403,7 +403,7 @@ Version:1.0
 	display:none;
 }
 .slicknav_nav li:hover a{
-	color:#FF6F61;
+	color:#0d6efd;
 	background:transparent;
 }
 .slicknav_nav li:hover{
@@ -417,7 +417,7 @@ Version:1.0
 	background:transparent;
 }
 .slicknav_nav li .dropdown li a:hover{
-	color:#FF6F61;
+	color:#0d6efd;
 	background:transparent;
 }
 .slicknav_nav li .slicknav_item{
@@ -433,12 +433,12 @@ Version:1.0
 	padding-bottom:0px;
 }
 .slicknav_menu .slicknav_icon-bar {
-	background-color: #FF6F61;
+	background-color: #0d6efd;
 	box-shadow: none;
 	text-shadow: none;
 }
 .slicknav_nav .slicknav_arrow{
-	color:#FF6F61;
+	color:#0d6efd;
 }
 .slicknav_menu .slicknav_icon-bar {
 	display: block;
@@ -884,7 +884,7 @@ Version:1.0
 	width: 50%;
 	height: 100%;
 	border-bottom: 1px solid #e6ebee;
-	background: #FF6F61;
+	background: #0d6efd;
 	color: #fff;
 	border: none;
 }
@@ -1116,7 +1116,7 @@ Version:1.0
 	display:none;
 }
 .slicknav_nav li:hover a{
-	color:#FF6F61;
+	color:#0d6efd;
 	background:transparent;
 }
 .slicknav_nav li:hover{
@@ -1130,7 +1130,7 @@ Version:1.0
 	background:transparent;
 }
 .slicknav_nav li .dropdown li a:hover{
-	color:#FF6F61;
+	color:#0d6efd;
 	background:transparent;
 }
 .slicknav_nav li .slicknav_item{
@@ -1146,12 +1146,12 @@ Version:1.0
 	padding-bottom:0px;
 }
 .slicknav_menu .slicknav_icon-bar {
-	background-color: #FF6F61;
+	background-color: #0d6efd;
 	box-shadow: none;
 	text-shadow: none;
 }
 .slicknav_nav .slicknav_arrow{
-	color:#FF6F61;
+	color:#0d6efd;
 }
 .slicknav_menu .slicknav_icon-bar {
 	display: block;
@@ -1204,7 +1204,7 @@ Version:1.0
 	padding: 20px 0;
 }
 .header.shop .topbar {
-	background: #fff;
+	background: #193e91;
 }
 .header.shop .topbar .top-left{
 	text-align:center;
@@ -1221,7 +1221,7 @@ Version:1.0
 	padding: 5px 0;
 	border-bottom: 1px solid #eee;
 	text-align: left;
-	color: #2C3E50;
+	color: #193e91;
 }
 .header.shop.v3 .topbar .inner-content {
 	border:none;

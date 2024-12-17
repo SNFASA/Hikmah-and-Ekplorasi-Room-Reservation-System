@@ -282,3 +282,5 @@ Route::middleware(['auth'])->group(function () {
     Route::post('change-password', [FrontendController::class, 'changPasswordStore'])->name('change.password');
 });
 // Frontend Routes
+
+Route::post('/booking/search', [FrontendController::class, 'search'])->name('booking.search');
