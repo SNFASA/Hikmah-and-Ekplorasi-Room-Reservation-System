@@ -8,9 +8,6 @@
 					<div class="col-lg-5 col-md-6 col-12">
 						<!-- Single Widget -->
 						<div class="single-footer about">
-							<div class="logocustom">
-								<a href="index.html"><img src="{{asset('images/PTTA Logo Footer.png')}}" alt="#"></a>
-							</div>
 							@php
 								$settings=DB::table('settings')->get();
 							@endphp
