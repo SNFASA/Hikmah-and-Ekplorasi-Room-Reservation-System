@@ -50,6 +50,7 @@
         </div>
     </div>
     <!-- Middle Inner -->
+    @if(Route::currentRouteName() == 'home')
     <div class="container mt-5">
         <!-- Outer Box -->
         <div class="search-box">
@@ -131,6 +132,7 @@
                 </div>
             </div>
         </div>
+        @endif
 </header>
 
 <!-- Custom CSS -->

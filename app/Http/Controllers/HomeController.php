@@ -29,6 +29,9 @@ class HomeController extends Controller
     public function index(){
         return view('frontend.index');
     }
+    public function bookingform(){
+        return view('frontend.pages.bookingform');
+    }
 
     public function profile(){
         $profile=Auth()->user();

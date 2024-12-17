@@ -26,6 +26,9 @@ class FrontendController extends Controller
     {
         return view('frontend.index');
     }
+    public function bookingform(){
+        return view('frontend.pages.bookingform');
+    }
     
 
     // Show login form
