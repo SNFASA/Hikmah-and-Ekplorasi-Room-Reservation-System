@@ -4,19 +4,23 @@
 
 @section('main-content')
 <div class="container mt-5">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <!-- Outer Box -->
     <div class="search-box">
         <!-- Inner Box -->
         <div class="input-box shadow-lg">
-            <form id="filterForm" class="d-flex justify-content-center" method="GET" action="{{ route('filter.available.rooms') }}">
+            <form id="filterForm" class="d-flex justify-content-center" method="GET" action="{{ route('home') }}">
                 <div class="input-group rounded-pill">
                     <!-- WHERE (Dropdown) -->
                     <span class="input-group-text border-0 bg-white fw-bold">Type Room</span>
-                    <select name="type_room" class="form-control" aria-label="Select Room Type">
-                        <option value="All" {{ $type_room == 'All' ? 'selected' : '' }}>All</option>
-                        <option value="HIKMAH" {{ $type_room == 'HIKMAH' ? 'selected' : '' }}>HIKMAH</option>
-                        <option value="EKSLORASI" {{ $type_room == 'EKSLORASI' ? 'selected' : '' }}>EKSLORASI</option>
+                    <select name="type_room" class="form-control">
+                        <option value="All" {{ $type_room === 'All' ? 'selected' : '' }}>All</option>
+                        <option value="EKSPLORASI" {{ $type_room === 'EKSPLORASI' ? 'selected' : '' }}>Eksplorasi</option>
+                        <option value="MEETING" {{ $type_room === 'HIKMAH' ? 'selected' : '' }}>Hikmah</option>
+                        <!-- Add other options as needed -->
                     </select>
+                    
 
                     <!-- CHECK IN -->
                     <span class="input-group-text border-0 bg-white fw-bold">Check in</span>
@@ -91,68 +95,107 @@
 
 <!-- Results Section for Static Data -->
 <div class="product-area section">
-    <div class="container">
+    <div class="container mt-5">
         <div class="row">
-            <div class="col-12 text-center">
-                <h2>List Room Reservation</h2>
-            </div>
-        </div>
-        <div id="results" class="row">
-            <!-- The results will be inserted dynamically via JavaScript -->
+            @if ($rooms->isEmpty())
+    <p class="text-center">No rooms available to display.</p>
+@else
+    <div class="container mt-5">
+        <div class="row">
+            @foreach ($rooms as $room)
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="card">
+                        @if ($room->type_room === 'EKSPLORASI')
+                            <img src="{{ asset('images/OIP 2.jpeg') }}" class="card-img-top" alt="Room Image">
+                        @else
+                            <img src="{{ asset('images/OIP.jpeg') }}" class="card-img-top" alt="Room Image">
+                        @endif
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $room->name }}</h5>
+                            <p class="card-text">Capacity: {{ $room->capacity }}</p>
+                            <p class="card-text">Furniture: 
+                                {{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}
+                            </p>
+                            <p class="card-text">Electronics: 
+                                {{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}
+                            </p>
+                            <a href="/room/reserve/{{ $room->id }}" class="btn btn-primary">Reserve Now</a>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
         </div>
     </div>
+@endif
+
+        </div>
+    </div>
+    
 </div>
 
 @endsection
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const searchForm = document.getElementById('filterForm');
-            const resultsContainer = document.getElementById('results');
+document.addEventListener('DOMContentLoaded', function () {
+    const searchForm = document.getElementById('filterForm');
+    const resultsContainer = document.getElementById('results');
 
-            searchForm.addEventListener('submit', function (e) {
-                e.preventDefault(); // Prevent the default form submission
+    searchForm.addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
 
-                const formData = new FormData(searchForm);
+        const formData = new FormData(searchForm);
 
-                fetch('{{ route("filter.available.rooms") }}', {
-                    method: 'GET',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Accept': 'application/json',
-                    },
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    resultsContainer.innerHTML = ''; // Clear previous results
-                    if (data.length > 0) {
-                        data.forEach(room => {
-                            const roomCard = `
-                                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                                    <div class="card">
-                                        <img src="{{ asset('images/') }}/${room.type_room === 'EKSPLORASI' ? 'OIP2.jpeg' : 'OIP.jpeg'}" class="card-img-top" alt="Room Image">
-                                        <div class="card-body">
-                                            <h5 class="card-title">${room.name}</h5>
-                                            <p class="card-text">Capacity: ${room.capacity}</p>
-                                            <p class="card-text">Furniture: ${room.furnitures.map(f => f.name).join(', ') || 'N/A'}</p>
-                                            <p class="card-text">Electronics: ${room.electronics.map(e => e.name).join(', ') || 'N/A'}</p>
-                                            <a href="/room/reserve/${room.id}" class="btn btn-primary">Reserve Now</a>
-                                        </div>
-                                    </div>
-                                </div>`;
-                            resultsContainer.insertAdjacentHTML('beforeend', roomCard);
-                        });
-                    } else {
-                        resultsContainer.innerHTML = '<p class="col-12 text-center">No rooms available for the selected criteria.</p>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    alert('An error occurred while searching for rooms. Please try again later.');
+        // Make an AJAX request to the filter route
+        fetch('{{ route("filter.available.rooms") }}?' + new URLSearchParams(Object.fromEntries(formData)), {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json()) // Parse the JSON response
+        .then(data => {
+            resultsContainer.innerHTML = ''; // Clear previous results
+
+            // Check if there are any rooms available
+            if (data.length > 0) {
+                data.forEach(room => {
+                    // Ensure furnitures and electronics are arrays and have a fallback value
+                    const furnitureNames = Array.isArray(room.furnitures) ? room.furnitures.map(f => f.name).join(', ') : 'N/A';
+                    const electronicsNames = Array.isArray(room.electronics) ? room.electronics.map(e => e.name).join(', ') : 'N/A';
+
+                    // Create the HTML card for each room
+                    const roomCard = `
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                            <div class="card">
+                                <img src="{{ asset('images/') }}/${room.type_room === 'EKSPLORASI' ? 'OIP2.jpeg' : 'OIP.jpeg'}" class="card-img-top" alt="Room Image">
+                                <div class="card-body">
+                                    <h5 class="card-title">${room.name}</h5>
+                                    <p class="card-text">Capacity: ${room.capacity}</p>
+                                    <p class="card-text">Furniture: ${furnitureNames}</p>
+                                    <p class="card-text">Electronics: ${electronicsNames}</p>
+                                    <a href="/room/reserve/${room.id}" class="btn btn-primary">Reserve Now</a>
+                                </div>
+                            </div>
+                        </div>`;
+
+                    // Append the room card to the results container
+                    resultsContainer.insertAdjacentHTML('beforeend', roomCard);
                 });
-            });
+            } else {
+                // Display a message when no rooms match the criteria
+                resultsContainer.innerHTML = '<p class="col-12 text-center">No rooms available for the selected criteria.</p>';
+            }
+        })
+        .catch(error => {
+            // Log error and show an alert to the user
+            console.error('Fetch error:', error);
+            alert('An error occurred while searching for rooms. Please try again later.');
         });
+    });
+});
+
+
     </script>
 @endpush

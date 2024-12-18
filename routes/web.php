@@ -282,10 +282,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('change-password', [FrontendController::class, 'changePassword'])->name('user.change.password.form');
     Route::post('change-password', [FrontendController::class, 'changPasswordStore'])->name('change.password');
 });
-// Frontend Routes
 
-// This is for showing the filter form on the home page
-Route::get('/home', [BookingController::class, 'showFilterForm'])->name('home');
 
-// This is the route that handles the filter form submission and returns filtered rooms
-Route::get('/filter-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms');
+// Booking form and filters
+Route::get('/booking-filter', [BookingController::class, 'showFilterForm'])->name('booking.filter.form');
+Route::get('/filter-available-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms');

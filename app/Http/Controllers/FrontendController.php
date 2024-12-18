@@ -23,13 +23,24 @@ class FrontendController extends Controller
     public function index(Request $request){
         return redirect()->route($request->user()->role);
     }
-    
-    
     // Home method
     public function home()
     {
-        return view('frontend.index');
+        $rooms = collect(); // Empty collection as a placeholder
+        $type_room = 'All'; // Default value for type_room
+        $date = null;
+        $start_time = null;
+        $end_time = null;
+        $furniture_category = [];
+        $electronic_category = [];
+        $furnitureCategories = Furniture::getFurnitureCategories();
+        $electronicCategories = Electronic::getElectronicCategories();
+        return view('frontend.index', compact('rooms', 'type_room', 
+        'date', 'start_time', 'end_time', 'furniture_category', 'electronic_category',
+        'furnitureCategories', 'electronicCategories'));
     }
+    
+    
     public function bookingform(){
         return view('frontend.pages.bookingform');
     }

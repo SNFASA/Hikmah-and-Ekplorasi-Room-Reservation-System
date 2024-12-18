@@ -271,29 +271,29 @@ public function edit($id)
     }
     public function showFilterForm()
     {
-        // Get furniture and electronic categories
-        $furnitureCategories = Furniture:: getFurnitureCategories(); // Or your custom method to get categories
-        $electronicCategories = Electronic::getElectronicCategories(); // Or your custom method to get categories
+        $furnitureCategories = Furniture::getFurnitureCategories();
+        $electronicCategories = Electronic::getElectronicCategories();
+        $rooms = collect(); // Empty collection for rooms
+        $type_room = 'All'; // Default value
     
-        // Default values for filters
-        $type_room = 'All';
         $date = null;
         $start_time = null;
         $end_time = null;
         $furniture_category = [];
         $electronic_category = [];
     
-        // Pass these values to the view
         return view('frontend.index', compact(
-            'furnitureCategories', 'electronicCategories', 'type_room', 'date', 
-            'start_time', 'end_time', 'furniture_category', 'electronic_category'
+            'furnitureCategories', 'electronicCategories', 'rooms', 
+            'type_room', 'date', 'start_time', 'end_time', 
+            'furniture_category', 'electronic_category'
         ));
     }
-
+    
+    
     // Filter available rooms based on selected criteria
     public function filterAvailableRooms(Request $request)
     {
-        // Validate the filter inputs
+        // Validate the request
         $validated = $request->validate([
             'type_room' => 'nullable|string',
             'date' => 'nullable|date',
@@ -302,52 +302,11 @@ public function edit($id)
             'furniture_category' => 'nullable|array',
             'electronic_category' => 'nullable|array',
         ]);
-
-        // Get the filter values
-        $type_room = $validated['type_room'] ?? 'All';
-        $date = $validated['date'] ?? null;
-        $start_time = $validated['start_time'] ?? null;
-        $end_time = $validated['end_time'] ?? null;
-        $furniture_category = $validated['furniture_category'] ?? [];
-        $electronic_category = $validated['electronic_category'] ?? [];
-
-        // Build the query to get rooms
-        $query = Room::query();
-
-        // Filter by room type
-        if ($type_room && $type_room !== 'All') {
-            $query->where('type_room', $type_room);
-        }
-
-        // Filter by availability based on date and time
-        if ($date && $start_time && $end_time) {
-            $query->whereDoesntHave('schedule', function ($q) use ($date, $start_time, $end_time) {
-                $q->where('invalid_date', $date)
-                  ->where(function ($q2) use ($start_time, $end_time) {
-                      $q2->whereBetween('invalid_time_start', [$start_time, $end_time])
-                         ->orWhereBetween('invalid_time_end', [$start_time, $end_time]);
-                  });
-            });
-        }
-
-        // Filter by available furniture category
-        if ($furniture_category) {
-            $query->whereHas('furnitures', function ($q) use ($furniture_category) {
-                $q->whereIn('category', $furniture_category);
-            });
-        }
-
-        // Filter by available electronic equipment category
-        if ($electronic_category) {
-            $query->whereHas('electronics', function ($q) use ($electronic_category) {
-                $q->whereIn('category', $electronic_category);
-            });
-        }
-
-        // Get the rooms
-        $availableRooms = $query->get();
-
-        return response()->json($availableRooms);
+    
+        // Redirect back to the home route with the filter parameters
+        return redirect()->route('home', $request->query());
     }
+    
+    
 }
 
