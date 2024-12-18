@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title','LibraRoom Reservation system ')
+@section('title','Room Create')
 @section('main-content')
 
 <div class="card">

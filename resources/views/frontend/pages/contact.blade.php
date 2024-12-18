@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-
+@section('title','LibraRoom Reservation system ')
 @section('main-content')
 	<!-- Breadcrumbs -->
 	<div class="breadcrumbs">

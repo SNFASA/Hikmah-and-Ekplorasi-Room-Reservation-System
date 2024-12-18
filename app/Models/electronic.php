@@ -27,4 +27,9 @@ class electronic extends Model
     {
         return $this->belongsToMany(room::class, 'electronic_equipment_room', 'electronic_equipment_id', 'room_id', 'no_electronicEquipment', 'no_room');
     }
+    public static function getElectronicCategories()
+    {
+    return self::select('category')->distinct()->get();
+    }
+
 }

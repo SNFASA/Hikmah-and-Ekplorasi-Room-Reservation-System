@@ -1,178 +1,158 @@
 @extends('frontend.layouts.master')
-@section('title','E-SHOP || HOME PAGE')
+
+@section('title','LibraRoom Reservation system')
+
 @section('main-content')
-<!-- Start Product Area -->
-<!-- Start Product Area -->
+<div class="container mt-5">
+    <!-- Outer Box -->
+    <div class="search-box">
+        <!-- Inner Box -->
+        <div class="input-box shadow-lg">
+            <form id="filterForm" class="d-flex justify-content-center" method="GET" action="{{ route('filter.available.rooms') }}">
+                <div class="input-group rounded-pill">
+                    <!-- WHERE (Dropdown) -->
+                    <span class="input-group-text border-0 bg-white fw-bold">Type Room</span>
+                    <select name="type_room" class="form-control" aria-label="Select Room Type">
+                        <option value="All" {{ $type_room == 'All' ? 'selected' : '' }}>All</option>
+                        <option value="HIKMAH" {{ $type_room == 'HIKMAH' ? 'selected' : '' }}>HIKMAH</option>
+                        <option value="EKSLORASI" {{ $type_room == 'EKSLORASI' ? 'selected' : '' }}>EKSLORASI</option>
+                    </select>
+
+                    <!-- CHECK IN -->
+                    <span class="input-group-text border-0 bg-white fw-bold">Check in</span>
+                    <input type="date" value="{{ $date }}" class="form-control border-0" name="date" aria-label="Check in">
+
+                    <!-- START TIME -->
+                    <span class="input-group-text border-0 bg-white fw-bold">Start time</span>
+                    <input type="time" name="start_time" value="{{ $start_time }}" class="form-control border-0" aria-label="Start time">
+
+                    <!-- END TIME -->
+                    <span class="input-group-text border-0 bg-white fw-bold">End time</span>
+                    <input type="time" name="end_time" value="{{ $end_time }}" class="form-control border-0" aria-label="End time">
+
+                    <!-- GUEST COUNT -->
+                    <span class="input-group-text border-0 bg-white fw-bold">Guest</span>
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-outline-primary btn-sm" type="button" id="decreaseGuests">-</button>
+                        <input type="text" id="guestCount" class="form-control text-center border-0" value="1" style="width: 50px;" readonly>
+                        <button class="btn btn-outline-primary btn-sm"  type="button" id="increaseGuests">+</button>
+                    </div>
+
+                    <!-- SEARCH BUTTON -->
+                    <button class="btn btn-primary rounded-circle px-3" type="submit">
+                        <i class="bi bi-search text-white"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div> 
+</div>
+
+<!-- Filters -->
+<div class="container mt-5">
+    <div class="row">
+        <!-- Furniture Dropdown -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Furniture</label>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" id="furnitureDropdown" data-bs-toggle="dropdown">
+                    Select Furniture
+                </button>
+                <ul class="dropdown-menu p-2 multiselect-container">
+                    @foreach ($furnitureCategories as $furniture)
+                        <li><label class="form-check-label w-100">
+                            <input type="checkbox" name="furniture_category[]" value="{{ $furniture->category }}" class="form-check-input" 
+                            {{ in_array($furniture->category, $furniture_category) ? 'checked' : '' }}> {{ $furniture->category }}
+                        </label></li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+
+        <!-- Electronic Equipment Dropdown -->
+        <div class="col-md-6 mb-3">
+            <label class="form-label">Electronic Equipment</label>
+            <div class="dropdown">
+                <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" id="electronicsDropdown" data-bs-toggle="dropdown">
+                    Select Equipment
+                </button>
+                <ul class="dropdown-menu p-2 multiselect-container">
+                    @foreach ($electronicCategories as $electronics)
+                        <li><label class="form-check-label w-100">
+                            <input type="checkbox" name="electronic_category[]" value="{{ $electronics->category }}" class="form-check-input" 
+                            {{ in_array($electronics->category, $electronic_category) ? 'checked' : '' }}> {{ $electronics->category }}
+                        </label></li>
+                    @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>  
+</div>
+
+<!-- Results Section for Static Data -->
 <div class="product-area section">
     <div class="container">
         <div class="row">
-            <div class="col-12">
-                <div class="section-title">
-                    <h2>List Room Reservation</h2>
-                </div>
+            <div class="col-12 text-center">
+                <h2>List Room Reservation</h2>
             </div>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="product-info">
-                    <div class="tab-content isotope-grid" id="myTabContent">
-                         <!-- Start Single Tab -->
-                            <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item ">
-                                <div class="single-product">
-                                    <div class="card" style="width: 18rem; margin-left: 20px;">
-                                        <img class="card-img-top" src="{{asset('images/OIP.jpeg')}}" alt="Card image cap">
-                                        <div class="card-body">
-                                          <h5 class="card-title">Card title</h5>
-                                          <p class="card-text">Capacity : 5 guest </p>
-                                          <p class="card-text">Furniture: Chiar , desk , JapanisTable</p>
-                                          <p class="card-text">Electronic Equipment: Computer</p>
-                                          <a href="#"class="btn btn-lg btn-primary">Reserve Now</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item ">
-                                <div class="single-product">
-                                    <div class="card" style="width: 18rem;">
-                                        <img class="card-img-top" src="{{asset('images/OIP.jpeg')}}" alt="Card image cap">
-                                        <div class="card-body">
-                                          <h5 class="card-title">Card title</h5>
-                                          <p class="card-text">Capacity : 5 guest </p>
-                                          <p class="card-text">Furniture: Chiar , desk , JapanisTable</p>
-                                          <p class="card-text">Electronic Equipment: Computer</p>
-                                          <a href="#"class="btn btn-lg btn-primary">Reserve Now</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                         <!--/ End Single Tab -->
-
-
-                    <!--/ End Single Tab -->
-
-                    </div>
-                </div>
-            </div>
+        <div id="results" class="row">
+            <!-- The results will be inserted dynamically via JavaScript -->
         </div>
     </div>
 </div>
+
 @endsection
 
-@push('styles')
-    <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=5f2e5abf393162001291e431&product=inline-share-buttons' async='async'></script>
-    <script type='text/javascript' src='https://platform-api.sharethis.com/js/sharethis.js#property=5f2e5abf393162001291e431&product=inline-share-buttons' async='async'></script>
-    <style>
-        /* Banner Sliding */
-        #Gslider .carousel-inner {
-        background: #000000;
-        color:black;
-        }
-
-        #Gslider .carousel-inner{
-        height: 550px;
-        }
-        #Gslider .carousel-inner img{
-            width: 100% !important;
-            opacity: .8;
-        }
-
-        #Gslider .carousel-inner .carousel-caption {
-        bottom: 60%;
-        }
-
-        #Gslider .carousel-inner .carousel-caption h1 {
-        font-size: 50px;
-        font-weight: bold;
-        line-height: 100%;
-        color: #0d6efd;
-        }
-
-        #Gslider .carousel-inner .carousel-caption p {
-        font-size: 18px;
-        color: black;
-        margin: 28px 0 28px 0;
-        }
-
-        #Gslider .carousel-indicators {
-        bottom: 70px;
-        }
-    </style>
-@endpush
-
 @push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchForm = document.getElementById('filterForm');
+            const resultsContainer = document.getElementById('results');
 
-        /*==================================================================
-        [ Isotope ]*/
-        var $topeContainer = $('.isotope-grid');
-        var $filter = $('.filter-tope-group');
+            searchForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Prevent the default form submission
 
-        // filter items on button click
-        $filter.each(function () {
-            $filter.on('click', 'button', function () {
-                var filterValue = $(this).attr('data-filter');
-                $topeContainer.isotope({filter: filterValue});
-            });
+                const formData = new FormData(searchForm);
 
-        });
-
-        // init Isotope
-        $(window).on('load', function () {
-            var $grid = $topeContainer.each(function () {
-                $(this).isotope({
-                    itemSelector: '.isotope-item',
-                    layoutMode: 'fitRows',
-                    percentPosition: true,
-                    animationEngine : 'best-available',
-                    masonry: {
-                        columnWidth: '.isotope-item'
+                fetch('{{ route("filter.available.rooms") }}', {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    resultsContainer.innerHTML = ''; // Clear previous results
+                    if (data.length > 0) {
+                        data.forEach(room => {
+                            const roomCard = `
+                                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                                    <div class="card">
+                                        <img src="{{ asset('images/') }}/${room.type_room === 'EKSPLORASI' ? 'OIP2.jpeg' : 'OIP.jpeg'}" class="card-img-top" alt="Room Image">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${room.name}</h5>
+                                            <p class="card-text">Capacity: ${room.capacity}</p>
+                                            <p class="card-text">Furniture: ${room.furnitures.map(f => f.name).join(', ') || 'N/A'}</p>
+                                            <p class="card-text">Electronics: ${room.electronics.map(e => e.name).join(', ') || 'N/A'}</p>
+                                            <a href="/room/reserve/${room.id}" class="btn btn-primary">Reserve Now</a>
+                                        </div>
+                                    </div>
+                                </div>`;
+                            resultsContainer.insertAdjacentHTML('beforeend', roomCard);
+                        });
+                    } else {
+                        resultsContainer.innerHTML = '<p class="col-12 text-center">No rooms available for the selected criteria.</p>';
                     }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    alert('An error occurred while searching for rooms. Please try again later.');
                 });
             });
         });
-
-        var isotopeButton = $('.filter-tope-group button');
-
-        $(isotopeButton).each(function(){
-            $(this).on('click', function(){
-                for(var i=0; i<isotopeButton.length; i++) {
-                    $(isotopeButton[i]).removeClass('how-active1');
-                }
-
-                $(this).addClass('how-active1');
-            });
-        });
     </script>
-    <script>
-         function cancelFullScreen(el) {
-            var requestMethod = el.cancelFullScreen||el.webkitCancelFullScreen||el.mozCancelFullScreen||el.exitFullscreen;
-            if (requestMethod) { // cancel full screen.
-                requestMethod.call(el);
-            } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-                var wscript = new ActiveXObject("WScript.Shell");
-                if (wscript !== null) {
-                    wscript.SendKeys("{F11}");
-                }
-            }
-        }
-
-        function requestFullScreen(el) {
-            // Supports most browsers and their versions.
-            var requestMethod = el.requestFullScreen || el.webkitRequestFullScreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-
-            if (requestMethod) { // Native full screen.
-                requestMethod.call(el);
-            } else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-                var wscript = new ActiveXObject("WScript.Shell");
-                if (wscript !== null) {
-                    wscript.SendKeys("{F11}");
-                }
-            }
-            return false
-        }
-    </script>
-
 @endpush

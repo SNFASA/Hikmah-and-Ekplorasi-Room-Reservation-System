@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use App\Models\Room;
 use App\Helper;
+use App\Models\furniture;
+use App\Models\electronic;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 
 class FrontendController extends Controller
@@ -176,13 +180,4 @@ class FrontendController extends Controller
     
         return redirect()->route('user-profile')->with('success', 'Password changed successfully');
     }
-    public function search()
-    {
-        $roomTypes = getAllRoomTypes(); // Call the helper function
-        return view('frontend.layouts.header', compact('roomTypes'));
-    }
-
-
-    
-    
 }

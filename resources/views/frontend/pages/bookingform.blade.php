@@ -1,7 +1,5 @@
 @extends('frontend.layouts.master')
-
-@section('title','Checkout page')
-
+@section('title','Checkout Room')
 @section('main-content')
     <!-- Breadcrumbs -->
     <div class="breadcrumbs">
@@ -106,7 +104,7 @@
                                                 <span class="shipping">Hikmah 19</span>
                                             </li>
                                             <li class="shipping">Capacity<span>5 guest</span></li>
-                                            <li class="shipping">Furniture<span>Chair, Desk, Withbound</span></li>
+                                            <li class="shipping">Furniture<span>Chair, Desk</span></li>
                                             <li class="shipping">Electronic equipment<span>Computer , LCD projector</span></li>
                                         </ul>
                                     </div>

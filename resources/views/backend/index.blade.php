@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title','LibraRoom Reservation system|| DASHBOARD')
+@section('title','LibraRoom Reservation system')
 @section('main-content')
 <div class="container-fluid">
     @include('backend.layouts.notification')

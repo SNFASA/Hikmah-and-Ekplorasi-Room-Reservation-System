@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title','E-SHOP || Booking Page')
+@section('title',' LibraRoom Reservation system')
 @section('main-content')
 
 <!-- DataTales Example -->

@@ -50,89 +50,7 @@
         </div>
     </div>
     <!-- Middle Inner -->
-    @if(Route::currentRouteName() == 'home')
-    <div class="container mt-5">
-        <!-- Outer Box -->
-        <div class="search-box">
-            <!-- Inner Box -->
-            <div class="input-box shadow-lg">
-                <form class="d-flex justify-content-center">
-                    <div class="input-group rounded-pill">
-                        <!-- WHERE (Dropdown) -->
-                        <span class="input-group-text border-0 bg-white fw-bold">Type Room</span>
-                        <select class="form-select border-0" aria-label="Select Destination">
-                            <option  value="city">City</option>
-                            <option value="beach">Beach</option>
-                        </select>
 
-                        <!-- CHECK IN -->
-                        <span class="input-group-text border-0 bg-white fw-bold">Check in</span>
-                        <input type="date" class="form-control border-0" aria-label="Check in">
-
-                        <!-- START TIME -->
-                        <span class="input-group-text border-0 bg-white fw-bold">Start time</span>
-                        <input type="time" class="form-control border-0" aria-label="Start time">
-
-                        <!-- END TIME -->
-                        <span class="input-group-text border-0 bg-white fw-bold">End time</span>
-                        <input type="time" class="form-control border-0" aria-label="End time">
-
-                        <!-- WHO -->
-                        <span class="input-group-text border-0 bg-white fw-bold">Guest</span>
-                        <div class="d-flex align-items-center">
-                            <button class="btn btn-outline-primary btn-sm" type="button" id="decreaseGuests">-</button>
-                            <input type="text" id="guestCount" class="form-control text-center border-0" value="1" style="width: 50px;" readonly>
-                            <button class="btn btn-outline-primary btn-sm"  type="button" id="increaseGuests">+</button>
-                        </div>
-
-                        <!-- SEARCH BUTTON -->
-                        <button class="btn btn-primary rounded-circle px-3" type="submit">
-                            <i class="bi bi-search text-white"></i>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Outer Box -->  
-        
-    </div>
-        <div class="container mt-5"> 
-            <!-- Row for Furniture and Electronic Equipment -->
-            <div class="row">
-                <!-- Furniture Dropdown -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Furniture</label>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            Select Furniture
-                        </button>
-                        <ul class="dropdown-menu p-2 multiselect-container">
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> Table</label></li>
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> Chair</label></li>
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> Sofa</label></li>
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> Bed</label></li>
-                        </ul>
-                    </div>
-                </div>
-    
-                <!-- Electronic Equipment Dropdown -->
-                <div class="col-md-6 mb-3">
-                    <label class="form-label">Electronic Equipment</label>
-                    <div class="dropdown">
-                        <button class="btn btn-outline-primary w-100 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                            Select Equipment
-                        </button>
-                        <ul class="dropdown-menu p-2 multiselect-container">
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> TV</label></li>
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> Laptop</label></li>
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> Fan</label></li>
-                            <li><label class="form-check-label w-100"><input type="checkbox" class="form-check-input"> Microwave</label></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-        @endif
 </header>
 
 <!-- Custom CSS -->
@@ -187,33 +105,7 @@
             let count = parseInt(guestCount.value);
             guestCount.value = count + 1;
         });
-    });
-    document.addEventListener("DOMContentLoaded", function () {
-            const furnitureDropdown = document.getElementById("furnitureDropdown");
-            const electronicsDropdown = document.getElementById("electronicsDropdown");
-
-            function updateButtonLabel(button, container) {
-                const selectedItems = Array.from(container.querySelectorAll("input[type=checkbox]:checked"))
-                    .map(checkbox => checkbox.nextElementSibling.innerText)
-                    .join(", ");
-                button.innerText = selectedItems || "Select Options";
-            }
-
-            // Handle Furniture Dropdown
-            document.querySelectorAll("#furnitureDropdown + .dropdown-menu input[type=checkbox]").forEach(input => {
-                input.addEventListener("change", function () {
-                    updateButtonLabel(furnitureDropdown, furnitureDropdown.nextElementSibling);
-                });
-            });
-
-            // Handle Electronics Dropdown
-            document.querySelectorAll("#electronicsDropdown + .dropdown-menu input[type=checkbox]").forEach(input => {
-                input.addEventListener("change", function () {
-                    updateButtonLabel(electronicsDropdown, electronicsDropdown.nextElementSibling);
-                });
-            });
-        });
-        
+    });  
 </script>
     <!-- Bootstrap Icons -->
     <link

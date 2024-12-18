@@ -10,10 +10,7 @@ class room extends Model
     use HasFactory;
 
     protected $primaryKey = 'no_room';
-    protected$no_room;
-    protected $name;
-    protected $capacity;
-    protected $status;
+    protected $fillable = ['no_room', 'name', 'capacity', 'status', 'type_room'];
 
     public $incrementing = true;     // set no_room is  auto-incrementing
     protected $keyType = 'string';    // Use 'string' if no_room is a string type, otherwise 'int'
@@ -37,5 +34,9 @@ class room extends Model
     {
         $data = self::where('status', 'valid')->count();
         return $data ?: 0;
+    }
+    public static function getRoomType()
+    {
+    return self::select('type_room')->distinct()->get();
     }
 }

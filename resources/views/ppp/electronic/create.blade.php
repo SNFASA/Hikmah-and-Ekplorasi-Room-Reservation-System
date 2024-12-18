@@ -1,5 +1,5 @@
 @extends('ppp.layouts.master')
-@section('title','LibraRoom Reservation system ')
+@section('title','Electronic Create')
 @section('main-content')
 
 <div class="card">

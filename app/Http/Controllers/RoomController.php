@@ -7,6 +7,7 @@ use App\Models\furniture;
 use App\Models\electronic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class RoomController extends Controller
 {
@@ -165,4 +166,5 @@ class RoomController extends Controller
 
         return redirect()->route('backend.room.index')->with('success', 'Room deleted successfully.');
     }
+    
 }

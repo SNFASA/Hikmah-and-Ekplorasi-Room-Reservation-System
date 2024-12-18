@@ -25,4 +25,9 @@ class furniture extends Model
     {
         return $this->belongsToMany(room::class, 'furniture_room', 'furniture_id', 'room_id', 'no_furniture', 'no_room');
     }
+    public static function getFurnitureCategories()
+    {
+    return self::select('category')->distinct()->get();
+    }
+
 }

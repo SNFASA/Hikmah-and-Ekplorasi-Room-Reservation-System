@@ -284,4 +284,8 @@ Route::middleware(['auth'])->group(function () {
 });
 // Frontend Routes
 
-Route::post('/booking/search', [FrontendController::class, 'search'])->name('booking.search');
+// This is for showing the filter form on the home page
+Route::get('/home', [BookingController::class, 'showFilterForm'])->name('home');
+
+// This is the route that handles the filter form submission and returns filtered rooms
+Route::get('/filter-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms');
