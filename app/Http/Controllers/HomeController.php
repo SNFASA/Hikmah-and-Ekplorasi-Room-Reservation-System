@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Rules\MatchOldPassword;
 use Hash;
 use App\Models\Room;
+use Carbon\Carbon;
 use App\Models\Furniture;
 use App\Models\Electronic;
 class HomeController extends Controller
@@ -32,27 +33,27 @@ class HomeController extends Controller
          $query = Room::query();
          $furnitureCategories = Furniture::getFurnitureCategories();
          $electronicCategories = Electronic::getElectronicCategories();
+         
          // Handle type_room filter
          $type_room = $request->get('type_room', 'All');
          if ($type_room !== 'All') {
              $query->where('type_room', $type_room);
          }
      
-         // Handle date, start_time, and end_time filters
          $date = $request->get('date', null);
          $start_time = $request->get('start_time', null);
          $end_time = $request->get('end_time', null);
      
          if ($date && $start_time && $end_time) {
+             // You can directly use the 24-hour formatted time
              $query->whereDoesntHave('schedule', function ($q) use ($date, $start_time, $end_time) {
                  $q->where('invalid_date', $date)
-                     ->where(function ($q2) use ($start_time, $end_time) {
-                         $q2->whereBetween('invalid_time_start', [$start_time, $end_time])
-                             ->orWhereBetween('invalid_time_end', [$start_time, $end_time]);
-                     });
+                   ->where(function ($q2) use ($start_time, $end_time) {
+                       $q2->whereBetween('invalid_time_start', [$start_time, $end_time])
+                           ->orWhereBetween('invalid_time_end', [$start_time, $end_time]);
+                   });
              });
          }
-     
          // Handle furniture_category filter
          $furniture_category = $request->get('furniture_category', []);
          if (!empty($furniture_category)) {
@@ -74,9 +75,10 @@ class HomeController extends Controller
          // Pass variables to the view
          return view('frontend.index', compact(
              'rooms', 'type_room', 'date', 'start_time', 'end_time',
-              'furniture_category', 'electronic_category', 'furnitureCategories', 'electronicCategories'
+             'furniture_category', 'electronic_category', 'furnitureCategories', 'electronicCategories'
          ));
      }
+     
      
     public function bookingform(){
         return view('frontend.pages.bookingform');
