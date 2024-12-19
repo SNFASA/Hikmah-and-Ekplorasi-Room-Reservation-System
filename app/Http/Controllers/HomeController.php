@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Rules\MatchOldPassword;
 use Hash;
+use Illuminate\Support\Facades\DB;
 use App\Models\Room;
 use Carbon\Carbon;
 use App\Models\Furniture;
@@ -43,17 +44,20 @@ class HomeController extends Controller
          $date = $request->get('date', null);
          $start_time = $request->get('start_time', null);
          $end_time = $request->get('end_time', null);
-     
          if ($date && $start_time && $end_time) {
-             // You can directly use the 24-hour formatted time
-             $query->whereDoesntHave('schedule', function ($q) use ($date, $start_time, $end_time) {
-                 $q->where('invalid_date', $date)
-                   ->where(function ($q2) use ($start_time, $end_time) {
-                       $q2->whereBetween('invalid_time_start', [$start_time, $end_time])
-                           ->orWhereBetween('invalid_time_end', [$start_time, $end_time]);
-                   });
-             });
-         }
+            $conflictWithUnavailable = DB::table('schedule_booking')
+                ->where('invalid_date', $date)
+                ->where(function ($query) use ($start_time, $end_time) {
+                    $query->where('invalid_time_start', '<', $end_time)
+                          ->where('invalid_time_end', '>', $start_time);
+                })
+                ->exists();
+    
+            if ($conflictWithUnavailable) {
+               // return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
+            }
+        }
+
          // Handle furniture_category filter
          $furniture_category = $request->get('furniture_category', []);
          if (!empty($furniture_category)) {
@@ -71,7 +75,8 @@ class HomeController extends Controller
          }
      
          $rooms = $query->get();
-     
+         \Log::info($query->toSql());
+
          // Pass variables to the view
          return view('frontend.index', compact(
              'rooms', 'type_room', 'date', 'start_time', 'end_time',

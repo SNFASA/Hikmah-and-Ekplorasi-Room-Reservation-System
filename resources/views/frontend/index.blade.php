@@ -17,7 +17,7 @@
                     <select name="type_room" class="form-control">
                         <option value="All" {{ $type_room === 'All' ? 'selected' : '' }}>All</option>
                         <option value="EKSPLORASI" {{ $type_room === 'EKSPLORASI' ? 'selected' : '' }}>Eksplorasi</option>
-                        <option value="MEETING" {{ $type_room === 'HIKMAH' ? 'selected' : '' }}>Hikmah</option>
+                        <option value="HIKMAH" {{ $type_room === 'HIKMAH' ? 'selected' : '' }}>Hikmah</option>
                         <!-- Add other options as needed -->
                     </select>
                     
@@ -178,7 +178,7 @@
                                         <p class="card-text">Capacity: ${room.capacity}</p>
                                         <p class="card-text">Furniture: ${furnitureNames}</p>
                                         <p class="card-text">Electronics: ${electronicsNames}</p>
-                                        <a href="/room/reserve/${room.id}" class="btn btn-primary">Reserve Now</a>
+                                        <a href="{{ route('room.reserve', ['id' => $room->id]) }}" class="btn btn-primary">Reserve Now</a>
                                     </div>
                                 </div>
                             </div>`;
