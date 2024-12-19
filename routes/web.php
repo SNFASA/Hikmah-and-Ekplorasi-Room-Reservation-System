@@ -56,6 +56,7 @@ Route::get('storage-link', [AdminController::class, 'storageLink'])->name('stora
 Route::get('/', [HomeController::class, 'index'])->name('user')->middleware('auth');
 Route::get('/home', [FrontendController::class, 'home'])->name('home');
 Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/booking-form', [HomeController::class, 'bookingForm'])->name('booking.form');
 
 //User
 Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
@@ -286,4 +287,5 @@ Route::middleware(['auth'])->group(function () {
 // Booking form and filters
 Route::get('/booking-filter', [BookingController::class, 'showFilterForm'])->name('booking.filter.form');
 Route::get('/filter-available-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms');
-Route::get('/room.reserve', [HomeController::class, 'bookingForm'])->name('room.reserve');
+Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])->name('room.reserve');
+Route::post('/room.reserve/{id}', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');

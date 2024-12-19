@@ -42,6 +42,7 @@ class FrontendController extends Controller
     
     
     public function bookingform(){
+        
         return view('frontend.pages.bookingform');
     }
     
@@ -191,4 +192,6 @@ class FrontendController extends Controller
     
         return redirect()->route('user-profile')->with('success', 'Password changed successfully');
     }
+
+
 }

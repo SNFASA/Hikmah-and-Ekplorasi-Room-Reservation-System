@@ -307,6 +307,94 @@ public function edit($id)
         return redirect()->route('home', $request->query());
     }
     
-    
+    public function showBookingForm($id, Request $request)
+     {
+         $room = Room::findOrFail($id);
+         $furnitureCategories = Furniture::getFurnitureCategories();
+         $electronicCategories = Electronic::getElectronicCategories();
+ 
+         $date = $request->query('date');
+         $start_time = $request->query('start_time');
+         $end_time = $request->query('end_time');
+ 
+         return view('frontend.pages.bookingform', [
+             'room' => $room,
+             'date' => $date,
+             'start_time' => $start_time,
+             'end_time' => $end_time,
+             'furnitureCategories' => $furnitureCategories,
+             'electronicCategories' => $electronicCategories,
+         ]);
+     }
+     public function storeBookingForm(Request $request)
+     {
+         $request->validate([
+             'booking_date' => 'required|date',
+             'booking_time_start' => 'required|date_format:H:i',
+             'booking_time_end' => 'required|date_format:H:i|after:booking_time_start',
+             'purpose' => 'required|string|max:255',
+             'no_room' => 'required|exists:rooms,no_room',
+             'phone_number' => 'required|string|max:15',
+             'students' => 'required|array|min:4',
+             'students.*.no_matriks' => 'required|max:255',
+             'students.*.name' => 'required|max:255',
+         ]);
+ 
+         $students = $request->input('students');
+         foreach ($students as $student) {
+             User::firstOrCreate(
+                 ['no_matriks' => $student['no_matriks']],
+                 [
+                     'name' => $student['name'],
+                     'facultyOffice' => null,
+                     'course' => null,
+                     'email' => $student['no_matriks'] . '@student.uthm.edu.my',
+                     'password' => Hash::make($student['no_matriks']),
+                     'role' => 'user',
+                 ]
+             );
+         }
+ 
+         $conflictWithUnavailable = DB::table('schedule_booking')
+             ->where('invalid_date', $request->booking_date)
+             ->where(function ($query) use ($request) {
+                 $query->where('invalid_time_start', '<', $request->booking_time_end)
+                       ->where('invalid_time_end', '>', $request->booking_time_start);
+             })
+             ->exists();
+ 
+         if ($conflictWithUnavailable) {
+             return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
+         }
+ 
+         $conflictWithBooked = DB::table('bookings')
+             ->where('no_room', $request->no_room)
+             ->where('booking_date', $request->booking_date)
+             ->where(function ($query) use ($request) {
+                 $query->where('booking_time_start', '<', $request->booking_time_end)
+                       ->where('booking_time_end', '>', $request->booking_time_start);
+             })
+             ->exists();
+ 
+         if ($conflictWithBooked) {
+             return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
+         }
+ 
+         $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
+         $booking = Bookings::create([
+             'booking_date' => $request->date,
+             'booking_time_start' => $request->start_time,
+             'booking_time_end' => $request->end_time,
+             'duration' => $duration,
+             'purpose' => $request->purpose,
+             'no_room' => $request->no_room,
+             'phone_number' => $request->phone_number,
+             'status' => 'approved',
+         ]);
+ 
+         $this->attachStudentsToBooking($booking, $students);
+ 
+         return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
+     }
 }
 

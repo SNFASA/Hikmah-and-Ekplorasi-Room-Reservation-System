@@ -14,7 +14,7 @@
                 <div class="input-group rounded-pill">
                     <!-- WHERE (Dropdown) -->
                     <span class="input-group-text border-0 bg-white fw-bold">Type Room</span>
-                    <select name="type_room" class="form-control">
+                    <select name="type_room" class="form-control border-0">
                         <option value="All" {{ $type_room === 'All' ? 'selected' : '' }}>All</option>
                         <option value="EKSPLORASI" {{ $type_room === 'EKSPLORASI' ? 'selected' : '' }}>Eksplorasi</option>
                         <option value="HIKMAH" {{ $type_room === 'HIKMAH' ? 'selected' : '' }}>Hikmah</option>
@@ -28,11 +28,11 @@
 
                     <!-- START TIME -->
                     <span class="input-group-text border-0 bg-white fw-bold">Start time</span>
-                    <input type="time" id="start_time" name="start_time" class="form-control" value="{{ old('start_time', $start_time) }}">
+                    <input type="time" id="start_time" name="start_time" class="form-control border-0" value="{{ old('start_time', $start_time) }}">
 
                     <!-- END TIME -->
                     <span class="input-group-text border-0 bg-white fw-bold">End time</span>
-                    <input type="time" id="end_time" name="end_time" class="form-control" value="{{ old('end_time', $end_time) }}">
+                    <input type="time" id="end_time" name="end_time" class="form-control border-0" value="{{ old('end_time', $end_time) }}">
 
                     <!-- GUEST COUNT -->
                     <span class="input-group-text border-0 bg-white fw-bold">Guest</span>
@@ -119,7 +119,7 @@
                             <p class="card-text">Electronics: 
                                 {{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}
                             </p>
-                            <a href="/room/reserve/{{ $room->id }}" class="btn btn-primary">Reserve Now</a>
+                            <a href="{{ route('room.reserve', ['id' => $room->no_room , 'type_room' => $room->type_room, 'capacity' => $room->capacity, 'furnitures' => $room->furnitures, 'electronics' => $room->electronics , 'date' => $date, 'start_time'=> $start_time, 'end_time' => $end_time]) }}" class="btn btn-primary">Reserve Now</a>
                         </div>
                     </div>
                 </div>
@@ -178,7 +178,7 @@
                                         <p class="card-text">Capacity: ${room.capacity}</p>
                                         <p class="card-text">Furniture: ${furnitureNames}</p>
                                         <p class="card-text">Electronics: ${electronicsNames}</p>
-                                        <a href="{{ route('room.reserve', ['id' => $room->id]) }}" class="btn btn-primary">Reserve Now</a>
+                                        <a href="{{ route('room.reserve', ['id' => $room->no_room , 'type_room' => $room->type_room, 'capacity' => $room->capacity, 'furnitures' => $room->furnitures, 'electronics' => $room->electronics]) }}" class="btn btn-primary">Reserve Now</a>
                                     </div>
                                 </div>
                             </div>`;

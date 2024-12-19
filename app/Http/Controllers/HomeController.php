@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Bookings;
 use App\Rules\MatchOldPassword;
 use Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\Support\Renderable;
+use  Illuminate\Http\RedirectRespons;
 use App\Models\Room;
 use Carbon\Carbon;
 use App\Models\Furniture;
@@ -29,7 +32,7 @@ class HomeController extends Controller
      * @return \Illuminate\Contracts\Support\Renderable
      */
 
-     public function index(Request $request)
+     public function index(Request $request): Renderable
      {
          $query = Room::query();
          $furnitureCategories = Furniture::getFurnitureCategories();
@@ -54,7 +57,7 @@ class HomeController extends Controller
                 ->exists();
     
             if ($conflictWithUnavailable) {
-               // return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
+                return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
             }
         }
 
@@ -85,9 +88,7 @@ class HomeController extends Controller
      }
      
      
-    public function bookingform(){
-        return view('frontend.pages.bookingform');
-    }
+     
 
     public function profile(){
         $profile=Auth()->user();

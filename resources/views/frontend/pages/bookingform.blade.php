@@ -20,7 +20,7 @@
     <!-- Start Checkout -->
     <section class="shop checkout section">
         <div class="container">
-                <form class="form" method="POST" action="">
+                <form class="form" method="POST" action="{{route('bookingformStore', ['id' => $room->no_room])}}">
                     @csrf
                     <div class="row"> 
 
@@ -33,46 +33,46 @@
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Propose<span>*</span></label>
-                                            <input type="text" name="propose" placeholder="proposes booking" value="" value="">
-                                           {{-- @error('propose')
+                                            <input type="text" name="propose" placeholder="proposes booking"  value="{{old('propose')}}" required>
+                                            @error('propose')
                                                 <span class='text-danger'>{{$message}}</span>
-                                            @enderror--}}
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Phone number<span>*</span></label>
-                                            <input type="text" name="phone_number" placeholder="011 12345678" value="">
-                                           {{-- @error('phone_number')
+                                            <input type="text" name="phone_number" placeholder="011 12345678" value="{{old('phone_number')}}" required>
+                                            @error('phone_number')
                                                 <span class='text-danger'>{{$message}}</span>
-                                            @enderror--}}
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Start Time<span>*</span></label>
-                                            <input type="time" name="booking_time_start" placeholder="" value="">
-                                           {{-- @error('booking_time_start')
+                                            <input type="time" name="booking_time_start" placeholder="" value="{{old('booking_time_start',$start_time)}}" required disabled>
+                                           @error('booking_time_start')
                                                 <span class='text-danger'>{{$message}}</span>
-                                            @enderror--}}
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>End Time<span>*</span></label>
-                                            <input type="time" name="booking_time_end" placeholder="" value="">
-                                          {{--  @error('booking_time_end')
+                                            <input type="time" name="booking_time_end" placeholder="" value="{{old('booking_time_end', $end_time)}}" required disabled>
+                                           @error('booking_time_end')
                                                 <span class='text-danger'>{{$message}}</span>
-                                            @enderror--}}
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Date <span>*</span></label>
-                                            <input type="date" name="booking_date" placeholder="" required value="">
-                                           {{-- @error('phone')
+                                            <input type="date" name="booking_date" placeholder="" required value="{{old('booking_date', $date)}}" disabled>
+                                            @error('booking_date')
                                                 <span class='text-danger'>{{$message}}</span>
-                                            @enderror --}}
+                                            @enderror
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-12">
@@ -97,17 +97,21 @@
                                 <!-- Order Widget -->
                                 <div class="single-widget">
                                     <h2>Room Details</h2>
-                                    <div class="content">
-                                        <img class="card-img-top" src="{{asset('images/OIP.jpeg')}}" alt="Card image cap">
-                                        <ul>
-										    <li class="order_subtotal" data-price="">Room
-                                                <span class="shipping">Hikmah 19</span>
-                                            </li>
-                                            <li class="shipping">Capacity<span>5 guest</span></li>
-                                            <li class="shipping">Furniture<span>Chair, Desk</span></li>
-                                            <li class="shipping">Electronic equipment<span>Computer , LCD projector</span></li>
-                                        </ul>
-                                    </div>
+                                        <div class="content">
+                                            @if ($room->type_room === 'EKSPLORASI')
+                                                <img src="{{ asset('images/OIP 2.jpeg') }}" class="card-img-top" alt="Room Image">
+                                            @else
+                                                <img src="{{ asset('images/OIP.jpeg') }}" class="card-img-top" alt="Room Image">
+                                            @endif
+                                            <ul>
+                                                <li class="order_subtotal" data-price="">Room
+                                                    <span class="shipping">{{$room->name}}</span>
+                                                </li>
+                                                <li class="shipping">Capacity<span>{{$room->capacity}} Guest</span></li>
+                                                <li class="shipping">Furniture<span>{{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}</span></li>
+                                                <li class="shipping">Electronic<span> {{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}</span> <br>Equipment</li>
+                                            </ul>
+                                        </div>
                                 </div>
                                 <!--/ End Order Widget -->
                                 <!-- Button Widget -->
