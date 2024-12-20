@@ -326,7 +326,7 @@ public function edit($id)
              'electronicCategories' => $electronicCategories,
          ]);
      }
-     public function storeBookingForm(Request $request)
+     public function storeBookingForm( $id,Request $request)
      {
          $request->validate([
              'booking_date' => 'required|date',
@@ -382,9 +382,9 @@ public function edit($id)
  
          $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
          $booking = Bookings::create([
-             'booking_date' => $request->date,
-             'booking_time_start' => $request->start_time,
-             'booking_time_end' => $request->end_time,
+            'booking_date' => $request->booking_date,
+            'booking_time_start' => $request->booking_time_start,
+            'booking_time_end' => $request->booking_time_end,
              'duration' => $duration,
              'purpose' => $request->purpose,
              'no_room' => $request->no_room,
@@ -394,7 +394,7 @@ public function edit($id)
  
          $this->attachStudentsToBooking($booking, $students);
  
-         return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
+         return redirect()->route('home')->with('success', 'Booking created successfully.');
      }
 }
 

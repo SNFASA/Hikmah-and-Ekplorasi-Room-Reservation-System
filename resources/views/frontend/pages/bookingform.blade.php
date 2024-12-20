@@ -28,13 +28,14 @@
                             <div class="checkout-form">
                                 <h2>Make Your Checkout Here</h2>
                                 <p>Please register in booking to checkout more quickly</p>
+                                <input type="hidden" name="no_room" value="{{ $room->no_room }}">
                                 <!-- Form -->
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Propose<span>*</span></label>
-                                            <input type="text" name="propose" placeholder="proposes booking"  value="{{old('propose')}}" required>
-                                            @error('propose')
+                                            <input type="text" name="purpose" placeholder="proposes booking"  value="{{old('purpose')}}" required>
+                                            @error('purpose')
                                                 <span class='text-danger'>{{$message}}</span>
                                             @enderror
                                         </div>
@@ -52,6 +53,7 @@
                                         <div class="form-group">
                                             <label>Start Time<span>*</span></label>
                                             <input type="time" name="booking_time_start" placeholder="" value="{{old('booking_time_start',$start_time)}}" required disabled>
+                                            <input type = "hidden" name="booking_time_start" value="{{$start_time}}" >
                                            @error('booking_time_start')
                                                 <span class='text-danger'>{{$message}}</span>
                                             @enderror
@@ -61,6 +63,7 @@
                                         <div class="form-group">
                                             <label>End Time<span>*</span></label>
                                             <input type="time" name="booking_time_end" placeholder="" value="{{old('booking_time_end', $end_time)}}" required disabled>
+                                            <input type = "hidden" name="booking_time_end" value="{{$end_time}}" >
                                            @error('booking_time_end')
                                                 <span class='text-danger'>{{$message}}</span>
                                             @enderror
@@ -70,6 +73,7 @@
                                         <div class="form-group">
                                             <label>Date <span>*</span></label>
                                             <input type="date" name="booking_date" placeholder="" required value="{{old('booking_date', $date)}}" disabled>
+                                            <input type = "hidden" name="booking_date" value="{{$date}}" >
                                             @error('booking_date')
                                                 <span class='text-danger'>{{$message}}</span>
                                             @enderror
