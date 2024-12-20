@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->integer('capacity');
             $table->string('status');
-            $table->unsignedBigInteger('furniture')->index(); // Foreign key to furniture
-            $table->unsignedBigInteger('electronicEquipment')->index(); // Foreign key to electronic_equipment
+           $table->string('type_room');
     
             // Set up foreign key relationships
            // $table->foreign('furniture')->references('no_furniture')->on('furniture')->onDelete('cascade')->onUpdate('cascade');

@@ -10,19 +10,17 @@ class CreateBookingsTable extends Migration
         Schema::create('bookings', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->date('booking_date');
-            $table->time('booking_time');
+            $table->time('booking_time_start');
+            $table->time('booking_time_end');
             $table->string('purpose');
+            $table->integer('duration');
             $table->unsignedBigInteger('no_room');
             $table->string('phone_number', 15);
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->unsignedBigInteger('list_student')->nullable(); // Add the new column
             $table->timestamps();
 
             // Foreign key to rooms table
            //$table->foreign('no_room')->references('no_room')->on('rooms')->onDelete('restrict')->onUpdate('cascade');
-
-            // Foreign key to list_student_booking table
-            //$table->foreign('list_student')->references('id')->on('list_student_booking')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 
