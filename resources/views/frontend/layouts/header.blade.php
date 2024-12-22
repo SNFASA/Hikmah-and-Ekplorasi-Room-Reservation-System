@@ -61,7 +61,7 @@
                     </div>
                     <div class="right-content">
                         <ul class="list-main">
-                            <li><i class="ti-bookmark"><a href="">My Booking</a></i></li>
+                            <li><i class="ti-bookmark"><a href="{{route('my.bookings')}}">My Booking</a></i></li>
                         </ul>
                     </div>
                     <div class="right-content">

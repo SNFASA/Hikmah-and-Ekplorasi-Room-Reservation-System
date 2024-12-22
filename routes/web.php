@@ -292,3 +292,7 @@ Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])-
 Route::post('/room.reserve/{id}', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
 // calander booking home page
 Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');
+//My Booking
+Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my.bookings');
+// cancel booking 
+Route::delete('/cancel-booking/{id}', [BookingController::class, 'cancelBooking'])->name('cancel.booking');

@@ -426,5 +426,52 @@ public function edit($id)
      
          return view('frontend.pages.calendarBooking', ['events' => $events]);
      }
+
+     //My. booking 
+     public function myBookings(Request $request)
+     {
+         // Get the current user's no_matriks
+         $userNoMatriks = auth()->user()->no_matriks;
+     
+         // Fetch all bookings associated with the authenticated user
+         $bookings = DB::table('bookings')
+             ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
+             ->leftJoin('booking_user', 'bookings.id', '=', 'booking_user.booking_id')
+             ->leftJoin('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+             ->leftJoin('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
+             ->select(
+                 'rooms.name as room_name',
+                 'bookings.id as booking_id',
+                 'bookings.booking_date',
+                 'bookings.booking_time_start',
+                 'bookings.booking_time_end',
+                 'users.name as student_name', // Fetch all student names
+                 'users.no_matriks as student_no_matriks'
+             )
+             ->whereIn('bookings.id', function ($query) use ($userNoMatriks) {
+                 $query->select('booking_user.booking_id')
+                     ->from('booking_user')
+                     ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+                     ->where('list_student_booking.no_matriks', $userNoMatriks);
+             })
+             ->get();
+     
+         // Group bookings by booking ID
+         $groupedBookings = $bookings->groupBy('booking_id')->map(function ($group) {
+             $details = $group->first(); // Get the details for the booking
+             $details->students = $group->pluck('student_name')->filter()->unique()->toArray(); // Collect unique student names
+             return $details;
+         });
+        // dd($bookings);
+
+         // Pass data to the view
+         return view('frontend.pages.Mybooking', ['bookingDetails' => $groupedBookings]);
+     }
+    public function cancelBooking($id){
+        $booking = Bookings::findOrFail($id);
+        $booking->delete();
+
+        return redirect()->route('home')->with('success', 'Booking deleted successfully.');
+    }
 }
 
