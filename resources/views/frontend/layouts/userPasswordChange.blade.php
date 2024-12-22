@@ -1,4 +1,4 @@
-@extends('user.layouts.master')
+@extends('frontend.layouts.master')
 @section('main-content')
 <div class="container">
     <div class="row">

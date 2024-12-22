@@ -93,7 +93,7 @@ class HomeController extends Controller
     public function profile(){
         $profile=Auth()->user();
         // return $profile;
-        return view('user.users.profile')->with('profile',$profile);
+        return view('frontend.pages.profile')->with('profile',$profile);
     }
 
     public function profileUpdate(Request $request,$id){
@@ -110,7 +110,7 @@ class HomeController extends Controller
         return redirect()->back();
     }
     public function changePassword(){
-        return view('user.layouts.userPasswordChange');
+        return view('frontend.layouts.userPasswordChange');
     }
     public function changPasswordStore(Request $request)
     {

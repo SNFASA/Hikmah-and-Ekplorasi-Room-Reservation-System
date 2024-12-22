@@ -10,7 +10,7 @@
                 <div class="logoCus">
                     <a href="{{ route('home') }}"><img src="{{ asset('images/uthm.png') }}" alt="logo"></a>
                 </div>
-                <div class="col-lg-6 col-md-12 col-12">
+                <div class="cols-lg-4 col-md-3 col-3">
                     <div class="top-left">
                         <ul class="list-main">
                             @php
@@ -27,19 +27,54 @@
                         </ul>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-12 col-12">
+                <div class="col-lg-9 col-md-9 col-9">
+                    <div class="right-content">
+                        <ul class="list-main">
+                            <li>
+                                <i class="ti-power-off"></i>
+                                <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+                                    {{ __('Logout') }}
+                                </a>
+                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+                            </li>
+                              
+                        </ul>
+                    </div>
+                    @if(Auth::user()->role == 'user')
+                        <div class="right-content">
+                            <ul class="list-main">
+                                <li><i class="ti-key"><a href="{{ route('user.change.password.form') }}">Change Password</a></i></li>      
+                            </ul>
+                        </div>
+                        <div class="right-content">
+                            <ul class="list-main">
+                                <li><i class="ti-user"><a href="{{route('user-profile')}}">Profile</a></i></li>
+                            </ul>
+                        </div>
+                    @endif
+                    <div class="right-content">
+                        <ul class="list-main">
+                            <li><i class="ti-calendar"><a href="">Schedule Booking</a></i></li>
+                        </ul>
+                    </div>
+                    <div class="right-content">
+                        <ul class="list-main">
+                            <li><i class="ti-bookmark"><a href="">My Booking</a></i></li>
+                        </ul>
+                    </div>
                     <div class="right-content">
                         <ul class="list-main">
                             @auth 
                                 @if(Auth::user()->role == 'admin')
                                     <li><i class="ti-user"></i> <a href="{{ route('admin') }}">Dashboard</a></li>
-                                @else 
-                                    <li><i class="ti-user"></i> <a href="{{ route('user') }}">Dashboard</a></li>
+                                @elseif(Auth::user()->role == 'ppp') 
+                                   <li><i class="ti-user"></i> <a href="{{ route('ppp.dashboard') }}">Dashboard</a></li>
                                 @endif
-                                <li><i class="ti-power-off"></i> <a href="{{ route('user.logout') }}">Logout</a></li>
                             @else
                                 <li><i class="ti-power-off"></i>
-                                    <a href="{{ route('login.form') }}">Login</a> / 
+                                    <a href="{{ route('login.form') }}">Login</a> ||
                                     <a href="{{ route('register.form') }}">Register</a>
                                 </li>
                             @endauth

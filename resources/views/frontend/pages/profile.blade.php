@@ -1,19 +1,14 @@
-@extends('user.layouts.master')
+@extends('frontend.layouts.master')
 
-@section('title','Admin Profile')
+@section('title','User Profile')
 
 @section('main-content')
 
 <div class="card shadow mb-4">
-    <div class="row">
-        <div class="col-md-12">
-           @include('backend.layouts.notification')
-        </div>
-    </div>
    <div class="card-header py-3">
      <h4 class=" font-weight-bold">Profile</h4>
      <ul class="breadcrumbs">
-         <li><a href="{{route('admin')}}" style="color:#999">Dashboard</a></li>
+         <li><a href="{{route('home')}}" style="color:#999">Home</a></li>
          <li><a href="" class="active text-primary">Profile Page</a></li>
      </ul>
    </div>
@@ -26,13 +21,14 @@
                     </div>
                     <div class="card-body mt-4 ml-2">
                       <h5 class="card-title text-left"><small><i class="fas fa-user"></i> {{$profile->name}}</small></h5>
+                      <p class="card-text text-left"><small><i class="fas fa-envelope"></i> {{$profile->no_matriks}}</small></p>
                       <p class="card-text text-left"><small><i class="fas fa-envelope"></i> {{$profile->email}}</small></p>
                       <p class="card-text text-left"><small class="text-muted"><i class="fas fa-hammer"></i> {{$profile->role}}</small></p>
                     </div>
                   </div>
             </div>
             <div class="col-md-8">
-                <form class="border px-4 pt-2 pb-3" method="POST" action="{{route('admin.profile-update', auth()->user()->id) }}">
+                <form class="border px-4 pt-2 pb-3" method="POST" action="{{route('user-profile-update', $profile->id) }}">
                     @csrf
                     <div class="form-group">
                         <label for="inputTitle" class="col-form-label">Name</label>
@@ -41,44 +37,38 @@
                       <span class="text-danger">{{$message}}</span>
                       @enderror
                       </div>
+                      <div class="form-group">
+                        <label for="inputnoMatriks" class="col-form-label">No MAtriks</label>
+                      <input id="inputNoMatriks"  type="text" name="no_matriks" placeholder="Enter NO Matriks"  value="{{$profile->no_matriks}}" class="form-control">
+                      @error('no_matriks')
+                      <span class="text-danger">{{$message}}</span>
+                      @enderror
+                    </div>
               
                       <div class="form-group">
                           <label for="inputEmail" class="col-form-label">Email</label>
-                        <input id="inputEmail" disabled type="email" name="email" placeholder="Enter email"  value="{{$profile->email}}" class="form-control">
+                        <input id="inputEmail"  type="email" name="email" placeholder="Enter email"  value="{{$profile->email}}" class="form-control">
                         @error('email')
                         <span class="text-danger">{{$message}}</span>
                         @enderror
                       </div>
-                      <div class="form-group">
-                          <label for="role" class="col-form-label">Role</label>
-                          <select name="role" class="form-control">
-                              <option value="">-----Select Role-----</option>
-                                  <option value="admin" {{(($profile->role=='Staff')? 'selected' : '')}}>Staff</option>
-                                  <option value="user" {{(($profile->role=='Student')? 'selected' : '')}}>Student</option>
-                          </select>
-                            @error('role')
-                                <span class="text-danger">{{$message}}</span>
-                            @enderror
-                        </div>
                         <div class="form-group">
-                            <label for="facultyOffice" class="col-form-label">
+                            <label for="facultyOffice" class="col-form-label">Faculty Office</label>
                                 <select name="facultyOffice" id="" class="form-control">
                                     <option value="">-----Select Role-----</option>
                                     @foreach($facultyOffices as $office)
-                                        <option value="{{ $office->id }}">{{ $office->name }}</option>
+                                        <option value="{{ $office->no_facultyOffice }}">{{ $office->name }}</option>
                                     @endforeach
                                 </select>
-                            </label>
                         </div>
                         <div class="form-group">
-                            <label for="course" class="col-form-label">
+                            <label for="course" class="col-form-label">Course</label>
                                 <select name="course" id="" class="form-control">
                                     <option value="">-----Select course-----</option>
                                         @foreach($courses as $course)
-                                            <option value="{{ $course->id }}">{{ $course->name }}</option>
+                                            <option value="{{ $course->no_course }}">{{ $course->name }}</option>
                                         @endforeach
                                 </select>
-                            </label>
                         </div>
 
                         <button type="submit" class="btn btn-success btn-sm">Update</button>

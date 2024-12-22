@@ -19,6 +19,17 @@ use Illuminate\Validation\Rule;
 
 class FrontendController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            // Allow access if the user is either an admin, a user, or a PPP
+            if (!auth()->user() || 
+                (!auth()->user()->isAdmin() && !auth()->user()->isUser() && !auth()->user()->isPpp())) {
+                abort(403, 'Unauthorized access.');
+            }
+            return $next($request);
+        });
+    }
     // Redirect user based on role
     public function index(Request $request){
         return redirect()->route($request->user()->role);
@@ -155,25 +166,38 @@ class FrontendController extends Controller
     }
     public function profile() {
         // Fetch the authenticated user's profile data
-        $user = auth()->user();
-        return view('frontend.profile', compact('user'));
+        $profile = auth()->user(); // Fetch the authenticated user
+        $facultyOffices = DB::table('faculty_Offices')->get(); // Get all faculty offices
+        $courses = DB::table('courses')->get(); // Get all courses
+        return view('frontend.pages.profile', compact('profile', 'facultyOffices', 'courses'));
     }
     
     public function profileUpdate(Request $request, $id) {
-        // Update the user's profile with validation
-        $request->validate([
-            'name' => 'required|string|max:255',
-            // other fields to validate
+        $user = User::findOrFail($id);
+    
+        $data = $request->validate([  
+            'name' => 'required|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'no_matriks' => 'required|max:255|unique:users,no_matriks,' . $id,
+            'facultyOffice' => 'required|max:255',
+            'course' => 'required|max:255',
+            'password' => 'nullable|min:8|confirmed',
+            'role' => 'user',
         ]);
     
-        $user = User::findOrFail($id);
-        $user->update($request->all());
+        if ($request->password) {
+            $data['password'] = Hash::make($request->password);
+        }
+    
+        $user->fill($data)->save();
+    
+        session()->flash('success', 'Successfully updated your profile');
     
         return redirect()->route('user-profile')->with('success', 'Profile updated successfully');
     }
     
     public function changePassword() {
-        return view('frontend.changePassword');
+        return view('frontend.layouts.userPasswordChange');
     }
     
     public function changPasswordStore(Request $request) {

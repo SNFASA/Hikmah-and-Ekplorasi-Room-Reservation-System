@@ -270,9 +270,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 
 // User Section
-Route::middleware(['auth'])->group(function () {
-    Route::get('/profile', [HomeController::class, 'profile'])->name('user-profile');
-    Route::post('/profile/{id}', [HomeController::class, 'profileUpdate'])->name('user-profile-update');
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/user', [HomeController::class, 'index'])->name('user');
+    Route::get('user/',[HomeController::class, 'index'])->name('user.index');
     Route::get('change-password', [HomeController::class, 'changePassword'])->name('user.change.password.form');
     Route::post('change-password', [HomeController::class, 'changPasswordStore'])->name('change.password');
     Route::get('/profile', [FrontendController::class, 'profile'])->name('user-profile');

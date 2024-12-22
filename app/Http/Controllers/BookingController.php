@@ -21,12 +21,15 @@ class BookingController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->user() || !auth()->user()->isAdmin()) {
-                abort(403, 'Unauthorized access. Admins only.');
+            // Allow access if the user is either an admin, a user, or a PPP
+            if (!auth()->user() || 
+                (!auth()->user()->isAdmin() && !auth()->user()->isUser() && !auth()->user()->isPpp())) {
+                abort(403, 'Unauthorized access.');
             }
             return $next($request);
         });
     }
+    
 
     public function index()
     {
