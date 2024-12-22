@@ -5,13 +5,7 @@
 @section('main-content')
 
 <div class="card shadow mb-4">
-   <div class="card-header py-3">
-     <h4 class=" font-weight-bold">Profile</h4>
-     <ul class="breadcrumbs">
-         <li><a href="{{route('home')}}" style="color:#999">Home</a></li>
-         <li><a href="" class="active text-primary">Profile Page</a></li>
-     </ul>
-   </div>
+    <h4 class=" font-weight-bold" style="margin: 30px 20px 20px 30px ;">User Profile</h4>
    <div class="card-body">
         <div class="row">
             <div class="col-md-4">

@@ -80,6 +80,11 @@
                             @endauth
                         </ul>
                     </div>
+                    <div class="right-content">
+                        <ul class="list-main">
+                            <li><i class="ti-home"><a href="{{ route('home') }}">Home</a></i></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
