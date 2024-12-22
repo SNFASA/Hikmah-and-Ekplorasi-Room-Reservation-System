@@ -284,8 +284,11 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 });
 
 
-// Booking form and filters
+// Booking form and filters home page 
 Route::get('/booking-filter', [BookingController::class, 'showFilterForm'])->name('booking.filter.form');
 Route::get('/filter-available-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms');
+//checkout room booking home page
 Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])->name('room.reserve');
 Route::post('/room.reserve/{id}', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
+// calander booking home page
+Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');

@@ -399,5 +399,32 @@ public function edit($id)
  
          return redirect()->route('home')->with('success', 'Booking created successfully.');
      }
+     public function calendar()
+     {
+        $bookings = DB::table('bookings')
+        ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
+        ->select(
+            'booking_date as start',
+            DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
+            DB::raw("CONCAT('Booked: ', rooms.name) as title"), // Add room name to the title
+            DB::raw("'primary' as color")
+        )
+        ->get();
+
+        $invalidSchedules = DB::table('schedule_booking')
+        ->join('rooms', 'schedule_booking.roomid', '=', 'rooms.no_room')
+        ->select(
+            'invalid_date as start',
+            DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
+            DB::raw("CONCAT('Invalid: ', rooms.name) as title"), // Add room name to the title
+            DB::raw("'danger' as color")
+        )
+        ->get();
+     
+         // Merge events
+         $events = $bookings->merge($invalidSchedules);
+     
+         return view('frontend.pages.calendarBooking', ['events' => $events]);
+     }
 }
 

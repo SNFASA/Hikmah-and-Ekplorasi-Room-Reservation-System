@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\furniture;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FurniturePPPController extends Controller
 {
@@ -97,5 +98,33 @@ class FurniturePPPController extends Controller
         $furniture->delete();
 
         return redirect()->route('ppp.furniture.index')->with('success', 'furniture deleted successfully.');
+    }
+
+    public function calendar()
+    {
+        // Fetch bookings
+        $bookings = DB::table('bookings')
+            ->select(
+                'booking_date as start',
+                DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
+                DB::raw("'Booked' as title"),
+                DB::raw("'primary' as color")
+            )
+            ->get();
+    
+        // Fetch invalid schedule bookings
+        $invalidSchedules = DB::table('schedule_booking')
+            ->select(
+                'invalid_date as start',
+                DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
+                DB::raw("'Invalid' as title"),
+                DB::raw("'danger' as color")
+            )
+            ->get();
+    
+        // Merge events
+        $events = $bookings->merge($invalidSchedules);
+    
+        return view('frontend.pages.calendarBooking', ['events' => $events]);
     }
 }
