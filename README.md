@@ -1,80 +1,257 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Booking Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
 
-## About Laravel
+The Booking Management System allows users to manage room and equipment bookings. It also facilitates user account management, maintenance scheduling, and booking records.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### User Management
 
-## Learning Laravel
+- Create, view, edit, and delete user accounts.
+- Change password functionality.
+- User role and faculty/office assignment.
+- Course management.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Booking Management
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Create and manage bookings for rooms and equipment.
+- Attach users to bookings.
+- View bookings by month and purpose.
+- Cancel bookings.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Room Management
 
-## Laravel Sponsors
+- Add, edit, view, and delete rooms.
+- Track room capacity and status.
+- Associate equipment with rooms.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Equipment Management
 
-### Premium Partners
+- Add, edit, view, and delete equipment.
+- Categorize equipment and track its status.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### Maintenance
 
-## Contributing
+- Schedule maintenance for rooms and equipment.
+- Record maintenance details and track status.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Database Design
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The system is built around several key entities:
 
-## Security Vulnerabilities
+1. **User**
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   - Includes attributes such as `name`, `email`, `role`, and `faculty/office`.
+   - Relationship with `List_User` for further categorization.
+
+2. **Booking**
+
+   - Includes booking date, time, purpose, and associated room.
+   - Relationship with `Booking_user` to link users to bookings.
+
+3. **Room**
+
+   - Includes attributes like `capacity` and `status`.
+   - Linked with `Room_equipment` for equipment management.
+
+4. **Equipment**
+
+   - Includes attributes such as `name`, `category`, and `status`.
+
+5. **Schedule Booking**
+
+   - Tracks invalid booking times for rooms.
+
+6. **Maintenance**
+
+   - Tracks maintenance records for both rooms and equipment.
+
+---
+
+## Class Diagram
+
+Below is the system's class diagram:
+
+
+
+The diagram outlines the relationships and interactions between the system’s entities, controllers, and views.
+
+---
+
+## How to Use
+
+### Setting Up the System
+
+1. Clone the repository.
+2. Import the database schema provided.
+3. Configure the environment variables in the `.env` file.
+4. Start the application server.
+
+### Managing Users
+
+1. Navigate to the User Management module.
+2. Add, update, or delete user accounts.
+3. Assign roles and faculties as needed.
+
+### Creating Bookings
+
+1. Go to the Booking module.
+2. Fill in the booking details and select the associated room or equipment.
+3. Save the booking.
+
+### Viewing Reports
+
+1. Access the Reports section.
+2. View room or equipment usage, maintenance logs, or monthly bookings.
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is licensed under the MIT License.
+
+---
+
+## Contributions
+
+Feel free to submit issues and pull requests to improve the system.
+
+# Booking Management System
+
+## Overview
+
+The Booking Management System allows users to manage room and equipment bookings. It also facilitates user account management, maintenance scheduling, and booking records.
+
+---
+
+## Features
+
+### User Management
+
+- Create, view, edit, and delete user accounts.
+- Change password functionality.
+- User role and faculty/office assignment.
+- Course management.
+
+### Booking Management
+
+- Create and manage bookings for rooms and equipment.
+- Attach users to bookings.
+- View bookings by month and purpose.
+- Cancel bookings.
+
+### Room Management
+
+- Add, edit, view, and delete rooms.
+- Track room capacity and status.
+- Associate equipment with rooms.
+
+### Equipment Management
+
+- Add, edit, view, and delete equipment.
+- Categorize equipment and track its status.
+
+### Maintenance
+
+- Schedule maintenance for rooms and equipment.
+- Record maintenance details and track status.
+
+  ![ADMIN](./images/1.png)
+  ![PPP](./images/2.png)
+![HOME 1](./images/3.png)
+![HOME 2](./images/4.png)
+![MY BOOKING](./images/5.png)
+![BOOKING CHECK OUT](./images/7.png)
+![PROFILE](./images/6.png)
+---
+
+## Database Design
+
+The system is built around several key entities:
+
+1. **User**
+
+   - Includes attributes such as `name`, `email`, `role`, and `faculty/office`.
+   - Relationship with `List_User` for further categorization.
+
+2. **Booking**
+
+   - Includes booking date, time, purpose, and associated room.
+   - Relationship with `Booking_user` to link users to bookings.
+
+3. **Room**
+
+   - Includes attributes like `capacity` and `status`.
+   - Linked with `Room_equipment` for equipment management.
+
+4. **Equipment**
+
+   - Includes attributes such as `name`, `category`, and `status`.
+
+5. **Schedule Booking**
+
+   - Tracks invalid booking times for rooms.
+
+6. **Maintenance**
+
+   - Tracks maintenance records for both rooms and equipment.
+
+[View the EERD ](./EERD librarRoom reservation system PDF.pdf)
 
 
+---
+
+## Class Diagram
+
+Below is the system's class diagram:
+
+![Class Diagram](./images/8.png)
 
 
+The diagram outlines the relationships and interactions between the system’s entities, controllers, and views.
 
-table database :
-student: <no.matriks (pk), name , facultyOffice(index) , course(index)>
-staff : <no.staff (pk), name , facultyOffice(index ),role>
-facultyOffice : <no.facultyOffice (pk), name , department(index)>
-department : <no.department (pk), name>
-course : <no.course (pk), name , department(index)>
-room : <no.room (pk), name , capacity, furniture(index),electric equpment(index)>
-furniture : <no.furniture (pk), name , category>
-electronicEquipment : <no.electronicEquipment (pk), name , category>
+---
+
+## How to Use
+
+### Setting Up the System
+
+1. Clone the repository.
+2. Import the database schema provided.
+3. Configure the environment variables in the `.env` file.
+4. Start the application server.
+
+### Managing Users
+
+1. Navigate to the User Management module.
+2. Add, update, or delete user accounts.
+3. Assign roles and faculties as needed.
+
+### Creating Bookings
+
+1. Go to the Booking module.
+2. Fill in the booking details and select the associated room or equipment.
+3. Save the booking.
+
+### Viewing Reports
+
+1. Access the Reports section.
+2. View room or equipment usage, maintenance logs, or monthly bookings.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
+
+---
+
+## Contributions
+
+Feel free to submit issues and pull requests to improve the system.
+
