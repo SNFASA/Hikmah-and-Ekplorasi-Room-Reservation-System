@@ -1,20 +1,39 @@
 {
-    "private": true,
+    "name": "@snfasa/libra-room-reservation",
+    "version": "1.0.0",
+    "description": "A description of your package",
     "type": "module",
     "scripts": {
         "dev": "vite",
         "build": "vite build"
     },
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.7.1",
+        "@snfasa/libra-room-reservation": "file:",
+        "flatpickr": "^4.6.13",
+        "jquery": "^3.7.1",
+        "laravel-echo": "^1.17.1",
+        "lodash": "^4.17.21",
+        "popper.js": "^1.16.1",
+        "pusher-js": "^8.4.0-rc2",
+        "vue": "^3.5.13"
+    },
     "devDependencies": {
         "@popperjs/core": "^2.11.6",
-        "axios": "^1.6.4",
-        "bootstrap": "^5.2.3",
+        "axios": "^1.7.9",
+        "bootstrap": "^5.3.3",
         "laravel-vite-plugin": "^1.0.0",
         "sass": "^1.56.1",
         "vite": "^5.0.0"
     },
-    "dependencies": {
-        "@fortawesome/fontawesome-free": "^6.7.1",
-        "flatpickr": "^4.6.13"
-    }
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/SNFASA/LibraRoom-Reservation-System.git"
+    },
+    "author": "SYED NABIL <syednabil.0413@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/SNFASA/LibraRoom-Reservation-System/issues"
+    },
+    "homepage": "https://github.com/SNFASA/LibraRoom-Reservation-System#readme"
 }
