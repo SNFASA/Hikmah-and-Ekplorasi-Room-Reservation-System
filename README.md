@@ -161,13 +161,13 @@ The Booking Management System allows users to manage room and equipment bookings
 - Schedule maintenance for rooms and equipment.
 - Record maintenance details and track status.
 
-  ![ADMIN](./images/1.png)
-  ![PPP](./images/2.png)
-![HOME 1](./images/3.png)
-![HOME 2](./images/4.png)
-![MY BOOKING](./images/5.png)
-![BOOKING CHECK OUT](./images/7.png)
-![PROFILE](./images/6.png)
+  ![ADMIN](/public./images/1.png)
+  ![PPP](./public/images/2.png)
+![HOME 1](./public/images/3.png)
+![HOME 2](./public/images/4.png)
+![MY BOOKING](./public/images/5.png)
+![BOOKING CHECK OUT](./public/images/7.png)
+![PROFILE](./public/images/6.png)
 ---
 
 ## Database Design
@@ -210,7 +210,7 @@ The system is built around several key entities:
 
 Below is the system's class diagram:
 
-![Class Diagram](./images/8.png)
+![Class Diagram](./public/images/8.png)
 
 
 The diagram outlines the relationships and interactions between the system’s entities, controllers, and views.
