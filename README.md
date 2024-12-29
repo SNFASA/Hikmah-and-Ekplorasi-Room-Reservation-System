@@ -38,13 +38,27 @@ The Booking Management System allows users to manage room and equipment bookings
 - Schedule maintenance for rooms and equipment.
 - Record maintenance details and track status.
 
-  ![ADMIN](/public./images/1.png)
+ ### ADMIN DASHBOARD
+  [ADMIN](/public./images/1.png)
+
+### PPP STAFF DASHBOARD
 ![PPP](./public/images/2.png)
+
+### HOME PAGE 
 ![HOME 1](./public/images/3.png)
+
+### HOME PAGE 
 ![HOME 2](./public/images/4.png)
+
+### MY BOOKING LIST
 ![MY BOOKING](./public/images/5.png)
+
+### BOOKING FORM CHECK OUT
 ![BOOKING CHECK OUT](./public/images/7.png)
-![PROFILE](./public/images/6.png)
+
+### PROFILE USER
+[PROFILE](./public/images/6.png)
+
 ---
 
 ## Database Design
@@ -78,7 +92,7 @@ The system is built around several key entities:
 
    - Tracks maintenance records for both rooms and equipment.
 
-[View the EERD](./EERD%20librarRoom%20reservation%20system%20PDF.pdf)
+![View the EERD](./EERD%20librarRoom%20reservation%20system%20PDF.pdf)
 
 
 
