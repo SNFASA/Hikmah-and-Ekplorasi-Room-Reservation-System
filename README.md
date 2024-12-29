@@ -38,13 +38,13 @@ The Booking Management System allows users to manage room and equipment bookings
 - Schedule maintenance for rooms and equipment.
 - Record maintenance details and track status.
 
-  ![ADMIN](/public./images/1.png)
-  ![PPP](./public/images/2.png)
-![HOME 1](./public/images/3.png)
-![HOME 2](./public/images/4.png)
-![MY BOOKING](./public/images/5.png)
-![BOOKING CHECK OUT](./public/images/7.png)
-![PROFILE](./public/images/6.png)
+  [ADMIN](/public./images/1.png)
+  [PPP](./public/images/2.png)
+[HOME 1](./public/images/3.png)
+[HOME 2](./public/images/4.png)
+[MY BOOKING](./public/images/5.png)
+[BOOKING CHECK OUT](./public/images/7.png)
+[PROFILE](./public/images/6.png)
 ---
 
 ## Database Design
