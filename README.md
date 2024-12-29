@@ -39,7 +39,7 @@ The Booking Management System allows users to manage room and equipment bookings
 - Record maintenance details and track status.
 
  ### ADMIN DASHBOARD
-  [ADMIN](/public./images/1.png)
+  ![ADMIN](/public./images/1.png)
 
 ### PPP STAFF DASHBOARD
 ![PPP](./public/images/2.png)
