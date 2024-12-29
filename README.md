@@ -57,7 +57,7 @@ The Booking Management System allows users to manage room and equipment bookings
 ![BOOKING CHECK OUT](./public/images/7.png)
 
 ### PROFILE USER
-[PROFILE](./public/images/6.png)
+![PROFILE](./public/images/6.png)
 
 ---
 
