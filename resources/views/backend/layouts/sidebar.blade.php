@@ -50,6 +50,7 @@
           <h6 class="collapse-header">Schedule Options:</h6>
           <a class="collapse-item" href="{{route('schedule.index')}}">Schedule</a>
           <a class="collapse-item" href="{{route('schedule.create')}}">Add schedule</a>
+          <a class="collapse-item" href="{{ route('show.calendar.admin') }}">Calendar</a>
         </div>
       </div>
   </li>

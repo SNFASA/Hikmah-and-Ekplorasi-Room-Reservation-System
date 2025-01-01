@@ -92,8 +92,6 @@ Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(func
     Route::get('/booking', [BookingController::class, 'roomChart'])->name('backend.booking.Chart');
     Route::post('/bookings/remove-student', [BookingController::class, 'removeStudent'])->name('bookings.remove-student');
     Route::get('bookings/chart', [BookingController::class, 'getBookingsByMonth'])->name('bookings.getBookingsByMonth');
-
-
 });
 
 //electronic 
@@ -291,7 +289,8 @@ Route::get('/filter-available-rooms', [BookingController::class, 'filterAvailabl
 Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])->name('room.reserve');
 Route::post('/room.reserve/{id}', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
 // calander booking home page
-Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');
+Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');  
+Route::get('/calendarAdmin', [BookingController::class, 'calendarAdmin'])->name('show.calendar.admin');
 //My Booking
 Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my.bookings');
 // cancel booking 
