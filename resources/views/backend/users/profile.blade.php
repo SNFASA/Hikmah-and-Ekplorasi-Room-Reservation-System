@@ -85,19 +85,6 @@
                                 </select>
 
                         </div>
-                        <div class="form-group">
-                            <label for="course" class="col-form-label">Course</label>
-                                <select name="course" id="" class="form-control">
-                                    <option value="">-----Select course-----</option>
-                                    @foreach($courses as $course)
-                                        <option value="{{ $course->no_course }}" 
-                                            @if($profile->no_course == $course->no_course) selected @endif>
-                                            {{ $course->name }}
-                                        </option>
-                                     @endforeach
-                                    </select>
-                        </div>
-
                         <button type="submit" class="btn btn-success btn-sm">Update</button>
                 </form>
             </div>

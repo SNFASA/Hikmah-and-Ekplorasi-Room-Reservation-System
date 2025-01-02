@@ -83,8 +83,20 @@ class ScheduleController extends Controller
             ->where('status', 'valid')
             ->get();
     
-        return view('backend.schedule.edit', compact('schedule', 'rooms'));
+        // Fetch unavailable and booked slots
+        $unavailableSlots = DB::table('schedule_booking')
+            ->select('invalid_date', 'invalid_time_start', 'invalid_time_end')
+            ->get();
+    
+        $bookedSlots = DB::table('bookings')
+            ->select('booking_date', 'booking_time_start', 'booking_time_end')
+            ->get();
+    
+        // Pass schedule and other data to the view
+        return view('backend.schedule.edit', compact('schedule', 'rooms', 'unavailableSlots', 'bookedSlots'));
     }
+    
+    
     
     public function update(Request $request, $id)
     {

@@ -26,16 +26,22 @@ class MaintenanceController extends Controller
         $maintenance = maintenance::orderBy('id', 'ASC')->paginate(10);   
               // Assign `itemName` based on `itemType` for each maintenance record
               foreach ($maintenance as $maintenances) {
-                  if ($maintenances->itemType == 'Furniture') {
-                      $maintenances->itemName = DB::table('furniture')->where('no_furniture', $maintenances->item_id)->value('name');
-                  } elseif ($maintenances->itemType == 'Electronic_equipment') {
-                      $maintenances->itemName = DB::table('electronic_equipment')->where('no_electronicEquipment', $maintenances->item_id)->value('name');
-                  } elseif ($maintenances->itemType == 'Other') {
-                      $maintenances->itemName = $maintenances->item_text;
-                  } else {
-                      $maintenances->itemName = 'Unknown';
-                  }
-              }
+                if (strtolower($maintenances->itemType) == 'furniture') {
+                    $maintenances->itemName = DB::table('furniture')
+                        ->where('no_furniture', $maintenances->item_id)
+                        ->value('name') ?? 'Unknown Furniture';
+                } elseif (strtolower($maintenances->itemType) == 'electronic_equipment') {
+                    $maintenances->itemName = DB::table('electronic_equipment')
+                        ->where('no_electronicEquipment', $maintenances->item_id)
+                        ->value('name') ?? 'Unknown Electronic Equipment';
+                } elseif (strtolower($maintenances->itemType) == 'other') {
+                    $maintenances->itemName = $maintenances->item_text ?? 'No Details Provided';
+                } else {
+                    $maintenances->itemName = 'Unknown';
+                }
+            }
+            //dd($maintenance->items());
+
         return view('backend.maintenance.index')->with('maintenance', $maintenance);
     }
     
@@ -45,8 +51,7 @@ class MaintenanceController extends Controller
         $rooms = room::all();
         return view('backend.maintenance.create', compact( 'rooms' ));
     }
-
-
+   
     public function store(Request $request)
     {
         $request->validate([
@@ -77,7 +82,6 @@ class MaintenanceController extends Controller
     
         return redirect()->route('backend.maintenance.index')->with('success', 'Maintenance report created successfully.');
     }
-    
     // Show the form for editing the specified 
     public function edit($id)
     {   

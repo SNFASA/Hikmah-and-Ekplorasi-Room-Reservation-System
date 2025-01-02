@@ -26,12 +26,16 @@ class MaintenancePPPController extends Controller
     
         // Assign `itemName` based on `itemType` for each maintenance record
         foreach ($maintenance as $maintenances) {
-            if ($maintenances->itemType == 'Furniture') {
-                $maintenances->itemName = DB::table('furniture')->where('no_furniture', $maintenances->item_id)->value('name');
-            } elseif ($maintenances->itemType == 'Electronic_equipment') {
-                $maintenances->itemName = DB::table('electronic_equipment')->where('no_electronicEquipment', $maintenances->item_id)->value('name');
-            } elseif ($maintenances->itemType == 'Other') {
-                $maintenances->itemName = $maintenances->item_text;
+            if (strtolower($maintenances->itemType) == 'furniture') {
+                $maintenances->itemName = DB::table('furniture')
+                    ->where('no_furniture', $maintenances->item_id)
+                    ->value('name') ?? 'Unknown Furniture';
+            } elseif (strtolower($maintenances->itemType) == 'electronic_equipment') {
+                $maintenances->itemName = DB::table('electronic_equipment')
+                    ->where('no_electronicEquipment', $maintenances->item_id)
+                    ->value('name') ?? 'Unknown Electronic Equipment';
+            } elseif (strtolower($maintenances->itemType) == 'other') {
+                $maintenances->itemName = $maintenances->item_text ?? 'No Details Provided';
             } else {
                 $maintenances->itemName = 'Unknown';
             }
