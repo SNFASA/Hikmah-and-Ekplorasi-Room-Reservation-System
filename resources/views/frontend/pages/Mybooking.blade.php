@@ -33,7 +33,14 @@
                 <button class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete">
                     <i class="fas fa-trash-alt" data-id="{{ $booking->booking_id }}">CANCEL</i>
                 </button>
-            </form>            
+            </form> 
+            <form method="POST" action="{{ route('cancel.booking', $booking->booking_id) }}">
+              @csrf
+              @method('delete')
+              <button class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete">
+                  <i class="fas fa-trash-alt" data-id="{{ $booking->booking_id }}">EDIT</i>
+              </button>
+          </form>         
         </div>
     @empty
         <p>You have no bookings.</p>

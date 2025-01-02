@@ -500,5 +500,7 @@ public function edit($id)
     
         return view('backend.schedule.calender', ['events' => $events]);
     }
+
+    
 }
 
