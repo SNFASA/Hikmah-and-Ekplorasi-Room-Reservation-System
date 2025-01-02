@@ -76,11 +76,11 @@
                     <input type="text" name="students[{{ $index }}][no_matriks]" value="{{ $student->no_matriks }}" class="form-control">
                     <label>Name:</label>
                     <input type="text" name="students[{{ $index }}][name]" value="{{ $student->name ?? '' }}" class="form-control">
+                    <button type="button" class="btn btn-danger remove-student" style="margin:10px 0">Remove</button>
                 </div>
-            @endforeach
-            
+                @endforeach
             </div>
-            <button type="button" id="add-student" style="margin:10px 0 10px 0" class="btn btn-primary">Add Student</button>
+            <button type="button" id="add-student" class="btn btn-primary" style="margin:10px 0">Add Student</button>
 
             <!-- Submit Button -->
             <div class="form-group mb-3">
@@ -127,44 +127,51 @@
     });
     
     // Add student input fields dynamically
-    document.getElementById('add-student').addEventListener('click', function() {
+    
+    document.getElementById('add-student').addEventListener('click', function () {
         const studentsList = document.getElementById('students-list');
         const count = studentsList.children.length;
-    
-        // Maximum of 10 students can be added
+
         if (count >= 10) {
             alert('You can only add a maximum of 10 students.');
             return;
         }
-    
-        // Create a new student input group
+
         const studentEntry = document.createElement('div');
-        studentEntry.classList.add('student-entry', 'form-group');
+        studentEntry.classList.add('student-entry');
         studentEntry.innerHTML = `
-            <label class="col-form-label" for="students[${count}][no_matriks]">No Matriks:</label>
-            <input type="text" name="students[${count}][no_matriks]" required class="form-control">
-
-            <button type="button" class="btn btn-danger remove-student" style="margin-top: 10px;">Remove</button>
-
+            <label>No Matriks:</label>
+            <input type="text" name="students[${count}][no_matriks]" class="form-control" required>
+            <label>Name:</label>
+            <input type="text" name="students[${count}][name]" class="form-control" required>
+            <button type="button" class="btn btn-danger remove-student" style="margin:10px 0">Remove</button>
         `;
         studentsList.appendChild(studentEntry);
-    
-        // Attach event listener to remove button
-        studentEntry.querySelector('.remove-student').addEventListener('click', function() {
+
+        // Add event listener for new remove buttons
+        attachRemoveEvent(studentEntry.querySelector('.remove-student'));
+    });
+
+    function attachRemoveEvent(button) {
+        button.addEventListener('click', function () {
+            const studentEntry = button.closest('.student-entry');
             studentEntry.remove();
         });
-    });
-    
-    // Ensure at least 4 students are added before form submission
-    document.querySelector('form').addEventListener('submit', function(event) {
+    }
+
+    // Attach event listeners to existing remove buttons
+    document.querySelectorAll('.remove-student').forEach(attachRemoveEvent);
+
+    document.getElementById('your-form-id').addEventListener('submit', function (event) {
         const studentsList = document.getElementById('students-list');
         const count = studentsList.children.length;
-    
+
         if (count < 4) {
             alert('You must add at least 4 students before submitting the form.');
-            event.preventDefault(); // Prevent form submission
+            event.preventDefault();
         }
     });
+
     </script>
     @endpush
     

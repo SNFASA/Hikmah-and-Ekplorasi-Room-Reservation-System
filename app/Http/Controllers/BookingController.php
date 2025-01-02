@@ -146,7 +146,7 @@ public function edit($id)
     return view('backend.booking.edit', compact('booking', 'rooms', 'students', 'selectedStudents'));
 }
 
-    public function update(Request $request, $id)
+public function update(Request $request, $id)
     {
         $booking = Bookings::findOrFail($id);
 
@@ -220,17 +220,17 @@ public function edit($id)
 
 
         return redirect()->route('bookings.index')->with('success', 'Booking updated successfully.');
-    }
+}
 
-    public function destroy($id)
+public function destroy($id)
     {
         $booking = Bookings::findOrFail($id);
         $booking->delete();
 
         return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully.');
-    }
+}
 
-    private function attachStudentsToBooking($booking, $students)
+private function attachStudentsToBooking($booking, $students)
     {
         // Detach any existing students from the booking
         $booking->listStudentBookings()->detach();
@@ -247,13 +247,13 @@ public function edit($id)
                 $booking->listStudentBookings()->attach($studentBooking->id);
             }
         }
-    }
+}
     
-    private function calculateDuration($start, $end)
+private function calculateDuration($start, $end)
     {
         return Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
-    }
-    public function getBookingsByMonth()
+}
+public function getBookingsByMonth()
     {
         // Get the number of bookings grouped by month
         $bookings = DB::table('bookings')
@@ -271,8 +271,8 @@ public function edit($id)
         });
 
         return response()->json($formattedBookings);
-    }
-    public function showFilterForm()
+}
+public function showFilterForm()
     {
         $furnitureCategories = Furniture::getFurnitureCategories();
         $electronicCategories = Electronic::getElectronicCategories();
@@ -290,11 +290,9 @@ public function edit($id)
             'type_room', 'date', 'start_time', 'end_time', 
             'furniture_category', 'electronic_category'
         ));
-    }
-    
-    
+}  
     // Filter available rooms based on selected criteria
-    public function filterAvailableRooms(Request $request)
+public function filterAvailableRooms(Request $request)
     {
         // Validate the request
         $validated = $request->validate([
@@ -308,28 +306,28 @@ public function edit($id)
     
         // Redirect back to the home route with the filter parameters
         return redirect()->route('home', $request->query());
-    }
+}
     
-    public function showBookingForm($id, Request $request)
-     {
-         $room = Room::findOrFail($id);
-         $furnitureCategories = Furniture::getFurnitureCategories();
-         $electronicCategories = Electronic::getElectronicCategories();
- 
-         $date = $request->query('date');
-         $start_time = $request->query('start_time');
-         $end_time = $request->query('end_time');
- 
-         return view('frontend.pages.bookingform', [
-             'room' => $room,
-             'date' => $date,
-             'start_time' => $start_time,
-             'end_time' => $end_time,
-             'furnitureCategories' => $furnitureCategories,
-             'electronicCategories' => $electronicCategories,
-         ]);
-     }
-     public function storeBookingForm( $id,Request $request)
+public function showBookingForm($id, Request $request)
+        {
+            $room = Room::findOrFail($id);
+            $furnitureCategories = Furniture::getFurnitureCategories();
+            $electronicCategories = Electronic::getElectronicCategories();
+    
+            $date = $request->query('date');
+            $start_time = $request->query('start_time');
+            $end_time = $request->query('end_time');
+    
+            return view('frontend.pages.bookingform', [
+                'room' => $room,
+                'date' => $date,
+                'start_time' => $start_time,
+                'end_time' => $end_time,
+                'furnitureCategories' => $furnitureCategories,
+                'electronicCategories' => $electronicCategories,
+            ]);
+}
+public function storeBookingForm( $id,Request $request)
      {
          $request->validate([
              'booking_date' => 'required|date',
@@ -398,8 +396,8 @@ public function edit($id)
          $this->attachStudentsToBooking($booking, $students);
  
          return redirect()->route('home')->with('success', 'Booking created successfully.');
-     }
-     public function calendar()
+}
+public function calendar()
      {
         $bookings = DB::table('bookings')
         ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
@@ -425,10 +423,10 @@ public function edit($id)
          $events = $bookings->merge($invalidSchedules);
      
          return view('frontend.pages.calendarBooking', ['events' => $events]);
-     }
+}
 
      //My. booking 
-     public function myBookings(Request $request)
+public function myBookings(Request $request)
      {
          // Get the current user's no_matriks
          $userNoMatriks = auth()->user()->no_matriks;
@@ -466,15 +464,15 @@ public function edit($id)
 
          // Pass data to the view
          return view('frontend.pages.Mybooking', ['bookingDetails' => $groupedBookings]);
-     }
-    public function cancelBooking($id){
+}
+public function cancelBooking($id){
         $booking = Bookings::findOrFail($id);
         $booking->delete();
 
         return redirect()->route('home')->with('success', 'Booking deleted successfully.');
-    }
-    public function calendarAdmin()
-    {
+}
+public function calendarAdmin()
+{
        $bookings = DB::table('bookings')
        ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
        ->select(
@@ -499,8 +497,99 @@ public function edit($id)
         $events = $bookings->merge($invalidSchedules);
     
         return view('backend.schedule.calender', ['events' => $events]);
+}
+public function Formedit($id)
+{
+    $booking = Bookings::findOrFail($id);
+    $room = Room::findOrFail($id);
+    $furnitureCategories = Furniture::getFurnitureCategories();
+    $electronicCategories = Electronic::getElectronicCategories();
+    
+    // Fetch all students with their role as 'student'
+    $students = User::where('role', 'student')->get();
+    
+    // Join `list_student_booking` and `users` to get both `no_matriks` and `name`
+    $selectedStudents = DB::table('list_student_booking')
+        ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks') 
+        ->whereIn('list_student_booking.id', $booking->listStudentBookings->pluck('id')) 
+        ->select('list_student_booking.no_matriks', 'users.name')
+        ->get();
+
+    return view('frontend.pages.bookingedit', compact('booking', 'room', 'students', 'selectedStudents', 'furnitureCategories', 'electronicCategories'));
+}
+
+public function Formupdate(Request $request, $id)
+{
+    // Retrieve the booking by ID
+    $booking = Bookings::findOrFail($id);
+
+    // Format the time inputs
+    $request->merge([
+        'booking_time_start' => date('H:i', strtotime($request->input('booking_time_start'))),
+        'booking_time_end' => date('H:i', strtotime($request->input('booking_time_end'))),
+    ]);
+
+    // Validate the inputs
+    $request->validate([
+        'booking_date' => 'required|date',
+        'booking_time_start' => 'required|date_format:H:i',
+        'booking_time_end' => 'required|date_format:H:i|after:booking_time_start',
+        'purpose' => 'required|string|max:255',
+        'no_room' => 'required|exists:rooms,no_room',
+        'phone_number' => 'required|string|max:15',
+        'students' => 'required|array|min:4',
+        'students.*.no_matriks' => 'required|max:255',
+        'students.*.name' => 'required|max:255',
+    ]);
+
+    // Check for scheduling conflicts
+    $conflictWithUnavailable = DB::table('schedule_booking')
+        ->where('invalid_date', $request->booking_date)
+        ->where(function ($query) use ($request) {
+            $query->where('invalid_time_start', '<', $request->booking_time_end)
+                  ->where('invalid_time_end', '>', $request->booking_time_start);
+        })
+        ->exists();
+
+    if ($conflictWithUnavailable) {
+        return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
     }
 
-    
+    $conflictWithBooked = DB::table('bookings')
+        ->where('no_room', $request->no_room)
+        ->where('booking_date', $request->booking_date)
+        ->where(function ($query) use ($request) {
+            $query->where('booking_time_start', '<', $request->booking_time_end)
+                  ->where('booking_time_end', '>', $request->booking_time_start);
+        })
+        ->exists();
+
+    if ($conflictWithBooked) {
+        return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
+    }
+
+    // Update booking data
+    $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
+    $booking->update([
+        'booking_date' => $request->booking_date,
+        'booking_time_start' => $request->booking_time_start,
+        'booking_time_end' => $request->booking_time_end,
+        'duration' => $duration,
+        'purpose' => $request->purpose,
+        'no_room' => $request->no_room,
+        'phone_number' => $request->phone_number,
+        'status' => 'approved',
+    ]);
+
+    // Update students
+    $students = $request->input('students');
+    $this->attachStudentsToBooking($booking, $students);
+
+    return redirect()->route('home')->with('success', 'Booking updated successfully.');
+}
+
+
+
+
 }
 

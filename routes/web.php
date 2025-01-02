@@ -295,3 +295,6 @@ Route::get('/calendarAdmin', [BookingController::class, 'calendarAdmin'])->name(
 Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my.bookings');
 // cancel booking 
 Route::delete('/cancel-booking/{id}', [BookingController::class, 'cancelBooking'])->name('cancel.booking');
+//edit 
+Route::get('booking/{id}/edit', [BookingController::class, 'Formedit'])->name('booking.edit');
+Route::put('booking/{id}', [BookingController::class, 'Formupdate'])->name('booking.update');
