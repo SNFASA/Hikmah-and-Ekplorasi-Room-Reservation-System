@@ -8,7 +8,8 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 class RegisterController extends Controller
 {
     use RegistersUsers;
@@ -37,7 +38,9 @@ class RegisterController extends Controller
      */
     public function showRegistrationForm()
     {
-        return view('frontend.pages.register'); // Adjust the view path as needed
+        $facultyOffices = DB::table('faculty_Offices')->get(); // Get all faculty offices
+        $courses = DB::table('courses')->get(); // Get all courses
+        return view('auth.register', compact('facultyOffices', 'courses')); // Adjust the view path as needed
     }
 
     /**
@@ -72,12 +75,12 @@ class RegisterController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'user_type' => 'user',             
+            'role' => 'user',             
             'no_matriks' => $data['no_matriks'] ?? null,   
             'facultyOffice' => $data['facultyOffice'] ?? null, 
             'course' => $data['course'] ?? null,           
-            'receive_notifications' => $data['receive_notifications'] ?? false,
         ]);
+
     }
 
     /**
@@ -93,7 +96,7 @@ class RegisterController extends Controller
         $user = $this->create($request->all());
 
         // Optional: You can log in the user after registration
-        // Auth::login($user);
+         Auth::login($user);
 
         return redirect($this->redirectTo)->with('success', 'Registration successful! Welcome, ' . $user->name);
     }

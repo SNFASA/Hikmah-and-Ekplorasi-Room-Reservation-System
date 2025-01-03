@@ -23,7 +23,7 @@ use App\Http\Controllers\MaintenancePPPController;
 
 
 // Authentication Routes
-Auth::routes(['register' => false]);
+Auth::routes(['register' => true]);
 
 
 // User Login/Registration Routes

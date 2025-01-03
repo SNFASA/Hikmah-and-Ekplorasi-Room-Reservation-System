@@ -68,18 +68,6 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>User Type<span>*</span></label>
-                                        <select name="user_type" required="required">
-                                            <option value="user" {{ old('user_type') == 'user' ? 'selected' : '' }}>User</option>
-                                            <option value="staff" {{ old('user_type') == 'staff' ? 'selected' : '' }}>Staff</option>
-                                        </select>
-                                        @error('user_type')
-                                            <span class="text-danger">{{$message}}</span>
-                                        @enderror
-                                    </div>
-                                </div>
                                 <!-- Additional fields based on user type -->
                                 <div class="col-12">
                                     <div class="form-group">
@@ -106,12 +94,6 @@
                                         @error('course')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
-                                    </div>
-                                </div>
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>Receive Notifications</label>
-                                        <input type="checkbox" name="receive_notifications" value="1" {{ old('receive_notifications') ? 'checked' : '' }}>
                                     </div>
                                 </div>
                                 <div class="col-12">
