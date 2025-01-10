@@ -95,51 +95,51 @@
 
 <!-- Results Section for Static Data -->
 <div class="product-area section">
-    <div  id="results" class="container mt-5">
-        <div class="row">
-            @if ($rooms->isEmpty())
-    <p class="text-center">No rooms available to display.</p>
-@else
-    <div class="container mt-5">
-        <div  class="row">
-            @foreach ($rooms as $room)
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <div class="card">
-                        @if ($room->type_room === 'EKSPLORASI')
-                            <img src="{{ asset('images/OIP 2.jpeg') }}" class="card-img-top" alt="Room Image">
-                        @else
-                            <img src="{{ asset('images/OIP.jpeg') }}" class="card-img-top" alt="Room Image">
-                        @endif
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $room->name }}</h5>
-                            <p class="card-text">Capacity: {{ $room->capacity }}</p>
-                            <p class="card-text">Furniture: 
-                                {{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}
-                            </p>
-                            <p class="card-text">Electronics: 
-                                {{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}
-                            </p>
-                            <a href="{{ route('room.reserve', [
-                                'id' => $room->no_room, // Correct reference to $room->no_room
-                                'type_room' => $room->type_room,
-                                'capacity' => $room->capacity,
-                                'furnitures' => $room->furnitures->pluck('name')->toArray(),
-                                'electronics' => $room->electronics->pluck('name')->toArray(),
-                                'date' => $date,
-                                'start_time'=> $start_time,
-                                'end_time' => $end_time
-                            ]) }}" class="btn btn-primary">Reserve Now</a>
+    <div id="results" class="container mt-5">
+        {{-- No Request and No Result --}}
+        @if (!request()->hasAny(['furniture_category', 'electronic_category', 'date', 'start_time', 'end_time']) && $rooms->isEmpty())
+            <p class="text-center">Welcome! Use the filter options to search for rooms.</p>
+        
+        {{-- Has Request but No Result --}}
+        @elseif (request()->hasAny(['furniture_category', 'electronic_category', 'date', 'start_time', 'end_time']) && $rooms->isEmpty())
+            <p class="text-center">No rooms available matching your search criteria. Please try different filters.</p>
+        
+        {{-- Has Request and Has Result --}}
+        @else
+            <div class="container mt-5">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+                    @foreach ($rooms as $room)
+                        <div class="col">
+                            <div class="card h-100">
+                                {{-- Display Room Image Based on Type --}}
+                                <img src="{{ asset($room->type_room === 'EKSPLORASI' ? 'images/OIP 2.jpeg' : 'images/OIP.jpeg') }}" class="card-img-top" alt="Room Image">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ $room->name }}</h5>
+                                    <p class="card-text">Capacity: {{ $room->capacity }}</p>
+                                    <p class="card-text">Furniture: 
+                                        {{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}
+                                    </p>
+                                    <p class="card-text">Electronics: 
+                                        {{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}
+                                    </p>
+                                    <a href="{{ route('room.reserve', [
+                                        'id' => $room->no_room,
+                                        'type_room' => $room->type_room,
+                                        'capacity' => $room->capacity,
+                                        'furnitures' => $room->furnitures,
+                                        'electronics' => $room->electronics,
+                                        'date' => $date,
+                                        'start_time' => $start_time,
+                                        'end_time' => $end_time,
+                                    ]) }}" class="btn btn-primary">Reserve Now</a>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endif
     </div>
-@endif
-
-        </div>
-    </div>
-    
 </div>
 
 @endsection
@@ -180,33 +180,45 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(response => response.json()) // Parse the JSON response
         .then(data => {
-            resultsContainer.innerHTML = ''; // Clear previous results
+    resultsContainer.innerHTML = ''; // Clear previous results
 
-            // Check if there are any rooms available
-            if (data.success && data.rooms.length > 0) {
-                data.rooms.forEach(room => {
-                    const furnitureNames = room.furnitures.length ? room.furnitures.map(f => f.name).join(', ') : 'N/A';
-                    const electronicsNames = room.electronics.length ? room.electronics.map(e => e.name).join(', ') : 'N/A';
+    // No Request and No Result
+    if (!searchForm.querySelectorAll('input[name]:checked').length && data.rooms.length === 0) {
+        resultsContainer.innerHTML = '<p class="text-center">Welcome! Use the filter options to search for rooms.</p>';
+    }
+    // Has Request but No Result
+    else if (data.rooms.length === 0) {
+        resultsContainer.innerHTML = '<p class="text-center">No rooms available matching your search criteria. Please try different filters.</p>';
+    }
+    // Has Request and Has Result
+    else {
+        const rowContainer = document.createElement('div');
+        rowContainer.className = 'row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4';
 
-                    const roomCard = `
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                            <div class="card">
-                                <img src="{{ asset('images/') }}/${room.type_room === 'EKSPLORASI' ? 'OIP 2.jpeg' : 'OIP.jpeg'}" class="card-img-top" alt="Room Image">
-                                <div class="card-body">
-                                    <h5 class="card-title">${room.name}</h5>
-                                    <p class="card-text">Capacity: ${room.capacity}</p>
-                                    <p class="card-text">Furniture: ${furnitureNames}</p>
-                                    <p class="card-text">Electronics: ${electronicsNames}</p>
-                                    <a href="{{ route('room.reserve', ['id' => $room->no_room , 'type_room' => $room->type_room, 'capacity' => $room->capacity, 'furnitures' => $room->furnitures, 'electronics' => $room->electronics]) }}" class="btn btn-primary">Reserve Now</a>
-                                </div>
-                            </div>
-                        </div>`;
-                    resultsContainer.insertAdjacentHTML('beforeend', roomCard);
-                });
-            } else {
-                resultsContainer.innerHTML = '<p class="col-12 text-center">No rooms available for the selected criteria.</p>';
-            }
-        })
+        data.rooms.forEach(room => {
+            const furnitureNames = room.furnitures.length ? room.furnitures.map(f => f.name).join(', ') : 'N/A';
+            const electronicsNames = room.electronics.length ? room.electronics.map(e => e.name).join(', ') : 'N/A';
+
+            const roomCard = `
+            <div class="col">
+                <div class="card h-100">
+                    <img src="{{ asset('images/') }}/${room.type_room === 'EKSPLORASI' ? 'OIP 2.jpeg' : 'OIP.jpeg'}" class="card-img-top" alt="Room Image">
+                    <div class="card-body">
+                        <h5 class="card-title">${room.name}</h5>
+                        <p class="card-text">Capacity: ${room.capacity}</p>
+                        <p class="card-text">Furniture: ${furnitureNames}</p>
+                        <p class="card-text">Electronics: ${electronicsNames}</p>
+                        <a href="/room.reserve/${room.id}" class="btn btn-primary">Reserve Now</a>
+                    </div>
+                </div>
+            </div>`;
+            rowContainer.insertAdjacentHTML('beforeend', roomCard);
+        });
+
+        resultsContainer.appendChild(rowContainer);
+    }
+})
+
         .catch(error => {
             console.error('Fetch error:', error);
             alert('An error occurred while searching for rooms. Please try again later.');
