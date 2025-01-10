@@ -37,6 +37,7 @@ class FrontendController extends Controller
     // Home method
     public function home()
     {
+    
         $rooms = collect(); // Empty collection as a placeholder
         $type_room = 'All'; // Default value for type_room
         $date = null;

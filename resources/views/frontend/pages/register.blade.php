@@ -27,7 +27,7 @@
                 <div class="col-lg-6 offset-lg-3 col-12">
                     <div class="login-form">
                         <h2>Register</h2>
-                        <p>Please register in order to checkout more quickly</p>
+                        <p>Please register in room reservation to checkout more quickly</p>
                         <!-- Form -->
                         <form class="form" method="post" action="{{route('register.submit')}}">
                             @csrf
@@ -37,6 +37,15 @@
                                         <label>Your Name<span>*</span></label>
                                         <input type="text" name="name" placeholder="" required="required" value="{{old('name')}}">
                                         @error('name')
+                                            <span class="text-danger">{{$message}}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>No. Matriks<span>*</span></label>
+                                        <input type="text" name="no_matriks" placeholder="" required="required" value="{{old('no_matriks')}}">
+                                        @error('no_matriks')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
                                     </div>
@@ -61,23 +70,14 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label>Confirm Password<span>*</span></label>
-                                        <input type="password" name="password_confirmation" placeholder="" required="required">
+                                        <label  class="col-form-label">Confirm Password<span>*</span></label>
+                                        <input  class="form-control" type="password" name="password_confirmation" placeholder="" required="required">
                                         @error('password_confirmation')
                                             <span class="text-danger">{{$message}}</span>
                                         @enderror
                                     </div>
                                 </div>
                                 <!-- Additional fields based on user type -->
-                                <div class="col-12">
-                                    <div class="form-group">
-                                        <label>No. Matriks<span>*</span></label>
-                                        <input type="text" name="no_matriks" placeholder="" required="required" value="{{old('no_matriks')}}">
-                                        @error('no_matriks')
-                                            <span class="text-danger">{{$message}}</span>
-                                        @enderror
-                                    </div>
-                                </div>
                                 <div class="col-12">
                                     <div class="form-group">
                                         <label>Faculty Office<span>*</span></label>

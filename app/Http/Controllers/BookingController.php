@@ -292,21 +292,75 @@ public function showFilterForm()
         ));
 }  
     // Filter available rooms based on selected criteria
-public function filterAvailableRooms(Request $request)
+    public function filterAvailableRooms(Request $request)
     {
-        // Validate the request
-        $validated = $request->validate([
-            'type_room' => 'nullable|string',
-            'date' => 'nullable|date',
-            'start_time' => 'nullable|date_format:H:i',
-            'end_time' => 'nullable|date_format:H:i',
-            'furniture_category' => 'nullable|array',
-            'electronic_category' => 'nullable|array',
-        ]);
+        try {
+            // Log incoming request data for debugging
+            \Log::info('Request Data:', $request->all());
     
-        // Redirect back to the home route with the filter parameters
-        return redirect()->route('home', $request->query());
-}
+            // Validate input
+            $validated = $request->validate([
+                'type_room' => 'nullable|string',
+                'date' => 'nullable|date',
+                'start_time' => 'nullable|date_format:H:i',
+                'end_time' => 'nullable|date_format:H:i',
+                'furniture_category' => 'nullable|array',
+                'furniture_category.*' => 'string',
+                'electronic_category' => 'nullable|array',
+                'electronic_category.*' => 'string',
+            ]);
+    
+            $query = Room::query();
+    
+            // Filter by type_room
+            $type_room = $request->get('type_room', 'All');
+            if ($type_room !== 'All') {
+                $query->where('type_room', $type_room);
+            }
+    
+            // Booking time conflict filter
+            $date = $request->get('date');
+            $start_time = $request->get('start_time');
+            $end_time = $request->get('end_time');
+            if ($date && $start_time && $end_time) {
+                $conflictWithUnavailable = DB::table('schedule_booking')
+                    ->where('invalid_date', $date)
+                    ->where(function ($subQuery) use ($start_time, $end_time) {
+                        $subQuery->where('invalid_time_start', '<', $end_time)
+                            ->where('invalid_time_end', '>', $start_time);
+                    })
+                    ->exists();
+    
+                if ($conflictWithUnavailable) {
+                    return response()->json(['error' => 'Selected time is unavailable due to a schedule conflict.'], 400);
+                }
+            }
+    
+            // Filter by furniture_category
+            $furniture_category = $request->get('furniture_category', []);
+            if (!empty($furniture_category)) {
+                $query->whereHas('furnitures', function ($q) use ($furniture_category) {
+                    $q->whereIn('category', $furniture_category);
+                });
+            }
+    
+            // Filter by electronic_category
+            $electronic_category = $request->get('electronic_category', []);
+            if (!empty($electronic_category)) {
+                $query->whereHas('electronics', function ($q) use ($electronic_category) {
+                    $q->whereIn('category', $electronic_category);
+                });
+            }
+    
+            // Get filtered rooms
+            $rooms = $query->with(['furnitures', 'electronics'])->get();
+    
+            return response()->json(['success' => true, 'rooms' => $rooms]);
+        } catch (\Exception $e) {
+            \Log::error('Error in filterAvailableRooms:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
     
 public function showBookingForm($id, Request $request)
         {

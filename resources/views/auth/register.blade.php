@@ -16,8 +16,8 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label>Your Name<span>*</span></label>
-                                    <input type="text" name="name" placeholder="" required="required" value="{{old('name')}}">
+                                    <label class="col-form-label">Your Name<span>*</span></label>
+                                    <input class="form-control" type="text" name="name" placeholder="" required="required" value="{{old('name')}}">
                                     @error('name')
                                         <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -25,8 +25,17 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label>Your Email<span>*</span></label>
-                                    <input type="email" name="email" placeholder="" required="required" value="{{old('email')}}">
+                                    <label class="col-form-label">No. Matriks<span>*</span></label>
+                                    <input class="form-control" type="text" name="no_matriks" placeholder="" required="required" value="{{old('no_matriks')}}">
+                                    @error('no_matriks')
+                                        <span class="text-danger">{{$message}}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="col-form-label">Your Email<span>*</span></label>
+                                    <input class="form-control" type="email" name="email" placeholder="" required="required" value="{{old('email')}}">
                                     @error('email')
                                         <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -34,8 +43,8 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label>Password<span>*</span></label>
-                                    <input type="password" name="password" placeholder="" required="required">
+                                    <label class="col-form-label">Password<span>*</span></label>
+                                    <input  class="form-control" type="password" name="password" placeholder="" required="required">
                                     @error('password')
                                         <span class="text-danger">{{$message}}</span>
                                     @enderror
@@ -43,23 +52,15 @@
                             </div>
                             <div class="col-12">
                                 <div class="form-group">
-                                    <label>Confirm Password<span>*</span></label>
-                                    <input type="password" name="password_confirmation" placeholder="" required="required">
+                                    <label class="col-form-label">Confirm Password<span>*</span></label>
+                                    <input class="form-control" type="password" name="password_confirmation" placeholder="" required="required">
                                     @error('password_confirmation')
                                         <span class="text-danger">{{$message}}</span>
                                     @enderror
                                 </div>
                             </div>
                             <!-- Additional fields based on user type -->
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label>No. Matriks<span>*</span></label>
-                                    <input type="text" name="no_matriks" placeholder="" required="required" value="{{old('no_matriks')}}">
-                                    @error('no_matriks')
-                                        <span class="text-danger">{{$message}}</span>
-                                    @enderror
-                                </div>
-                            </div>
+
                             <div class="col-12">
                                 <div class="form-group">
                                     <label for="facultyOffice" class="col-form-label">Faculty Office</label>

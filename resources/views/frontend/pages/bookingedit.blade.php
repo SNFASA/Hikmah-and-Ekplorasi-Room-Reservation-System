@@ -26,8 +26,8 @@
                     <div class="row"> 
                         <div class="col-lg-8 col-12">
                             <div class="checkout-form">
-                                <h2>Make Your Checkout Here</h2>
-                                <p>Please register in booking to checkout more quickly</p>
+                                <h2>Make Your Update Booking Here</h2>
+                                <p>Please Update in booking to checkout more quickly</p>
                                 <!-- Form -->
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-12">
