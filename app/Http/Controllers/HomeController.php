@@ -9,7 +9,7 @@ use App\Rules\MatchOldPassword;
 use Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Support\Renderable;
-use  Illuminate\Http\RedirectRespons;
+use Illuminate\Http\RedirectResponse;
 use App\Models\Room;
 use Carbon\Carbon;
 use App\Models\Furniture;
@@ -30,69 +30,63 @@ class HomeController extends Controller
     /**
      * Show the application dashboard.
      *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * @return \Illuminate\Contracts\Support\Renderable|\Illuminate\Http\RedirectResponse
      */
 
      public function index(Request $request)
-{
-    $query = Room::query();
-
-    // Fetch available furniture and electronics categories
-    $furnitureCategories = Furniture::getFurnitureCategories();
-    $electronicCategories = Electronic::getElectronicCategories();
-
-    // Handle type_room filter
-    $type_room = $request->get('type_room', 'All');
-    if ($type_room !== 'All') {
-        $query->where('type_room', $type_room);
-    }
-
-    // Handle booking time conflict check
-    $date = $request->get('date');
-    $start_time = $request->get('start_time');
-    $end_time = $request->get('end_time');
-    if ($date && $start_time && $end_time) {
-        $conflictWithUnavailable = DB::table('schedule_booking')
-            ->where('invalid_date', $date)
-            ->where(function ($query) use ($start_time, $end_time) {
-                $query->where('invalid_time_start', '<', $end_time)
-                      ->where('invalid_time_end', '>', $start_time);
-            })
-            ->exists();
-
-        if ($conflictWithUnavailable) {
-            return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to a schedule conflict.']);
-        }
-    }
-
-    // Handle furniture_category filter
-    $furniture_category = json_decode($request->get('furniture_category', '[]'), true);
-    if (!empty($furniture_category)) {
-        $query->whereHas('furnitures', function ($q) use ($furniture_category) {
-            $q->whereIn('category', $furniture_category);
-        });
-    }
-
-    // Handle electronic_category filter
-    $electronic_category = json_decode($request->get('electronic_category', '[]'), true);
-    if (!empty($electronic_category)) {
-        $query->whereHas('electronics', function ($q) use ($electronic_category) {
-            $q->whereIn('category', $electronic_category);
-        });
-    }
-
-    // Fetch rooms based on filters
-    $rooms = $query->get();
-
-    // Pass variables to the view
-    return view('frontend.index', compact(
-        'rooms', 'type_room', 'date', 'start_time', 'end_time',
-        'furniture_category', 'electronic_category', 'furnitureCategories', 'electronicCategories'
-    ));
-}
-
+     {
+         $query = Room::query();
+         $furnitureCategories = Furniture::getFurnitureCategories();
+         $electronicCategories = Electronic::getElectronicCategories();
+         
+         // Handle type_room filter
+         $type_room = $request->get('type_room', 'All');
+         if ($type_room !== 'All') {
+             $query->where('type_room', $type_room);
+         }
      
-    
+         $date = $request->get('date', null);
+         $start_time = $request->get('start_time', null);
+         $end_time = $request->get('end_time', null);
+         if ($date && $start_time && $end_time) {
+             $conflictWithUnavailable = DB::table('schedule_booking')
+                 ->where('invalid_date', $date)
+                 ->where(function ($query) use ($start_time, $end_time) {
+                     $query->where('invalid_time_start', '<', $end_time)
+                           ->where('invalid_time_end', '>', $start_time);
+                 })
+                 ->exists();
+     
+             if ($conflictWithUnavailable) {
+                 return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
+             }
+     
+             // Handle furniture_category filter
+             $furniture_category = $request->get('furniture_category', []);
+             if (!empty($furniture_category)) {
+                 $query->whereHas('furnitures', function ($q) use ($furniture_category) {
+                     $q->whereIn('category', $furniture_category);
+                 });
+             }
+     
+             // Handle electronic_category filter
+             $electronic_category = $request->get('electronic_category', []);
+             if (!empty($electronic_category)) {
+                 $query->whereHas('electronics', function ($q) use ($electronic_category) {
+                     $q->whereIn('category', $electronic_category);
+                 });
+             }
+         }
+     
+         $rooms = $query->get();
+     
+         // Ensure you pass the furniture_category and electronic_category to the view
+         return view('frontend.index', compact(
+             'rooms', 'type_room', 'date', 'start_time', 'end_time',
+             'furniture_category', 'electronic_category', 'furnitureCategories', 'electronicCategories'
+         ));
+     }
+     
     public function profile(){
         $profile=Auth()->user();
         // return $profile;

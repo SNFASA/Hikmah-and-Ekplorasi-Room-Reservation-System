@@ -287,7 +287,7 @@ Route::get('/booking-filter', [BookingController::class, 'showFilterForm'])->nam
 Route::get('/filter-available-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms');
 //checkout room booking home page
 Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])->name('room.reserve');
-Route::post('/room.reserve/{id}', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
+Route::post('/room.reserve/{id} ', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
 // calander booking home page
 Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');  
 Route::get('/calendarAdmin', [BookingController::class, 'calendarAdmin'])->name('show.calendar.admin');

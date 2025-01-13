@@ -122,7 +122,9 @@
                                     <p class="card-text">Electronics: 
                                         {{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}
                                     </p>
-                                    <a href="{{ route('room.reserve', ['id' => $room->no_room , 'type_room' => $room->type_room, 'capacity' => $room->capacity, 'furnitures' => $room->furnitures, 'electronics' => $room->electronics , 'date' => $date, 'start_time'=> $start_time, 'end_time' => $end_time]) }}" class="btn btn-primary">Reserve Now</a>                                 </div>
+                                    <a href="{{ route('room.reserve', ['id' => $room->no_room , 'type_room' => $room->type_room, 'capacity' => $room->capacity, 'furnitures' => $room->furnitures, 'electronics' => $room->electronics , 'date' => $date, 'start_time'=> $start_time, 'end_time' => $end_time]) }}" class="btn btn-primary">Reserve Now</a>
+
+                                </div>
                             </div>
                         </div>
                     @endforeach
@@ -198,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <p class="card-text">Capacity: ${room.capacity}</p>
                         <p class="card-text">Furniture: ${furnitureNames}</p>
                         <p class="card-text">Electronics: ${electronicsNames}</p>
-                            <a href="{{ route('room.reserve', ['id' => $room->no_room , 'type_room' => $room->type_room, 'capacity' => $room->capacity, 'furnitures' => $room->furnitures, 'electronics' => $room->electronics , 'date' => $date, 'start_time'=> $start_time, 'end_time' => $end_time]) }}" class="btn btn-primary">Reserve Now</a>
+                        <a href="{{ route('room.reserve', ['id' => $room->no_room , 'type_room' => $room->type_room, 'capacity' => $room->capacity, 'furnitures' => $room->furnitures, 'electronics' => $room->electronics , 'date' => $date, 'start_time'=> $start_time, 'end_time' => $end_time]) }}" class="btn btn-primary">Reserve Now</a>
                     </div>
                 </div>
             </div>`;

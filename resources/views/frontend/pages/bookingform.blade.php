@@ -52,9 +52,7 @@
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Start Time<span>*</span></label>
-                                            <input type="time" name="booking_time_start" placeholder="" value="{{old('booking_time_start',$start_time)}}" required disabled>
-                                            <input type = "hidden" name="booking_time_start" value="{{$start_time}}" >
-                                           @error('booking_time_start')
+                                            <input type="time" name="booking_time_start" placeholder="" value="{{old('booking_time_start',$start_time)}}" required disabled>                                           @error('booking_time_start')
                                                 <span class='text-danger'>{{$message}}</span>
                                             @enderror
                                         </div>
