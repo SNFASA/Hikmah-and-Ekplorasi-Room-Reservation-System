@@ -32,61 +32,76 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable|\Illuminate\Http\RedirectResponse
      */
+    public function index(Request $request)
+    {
+        $type_room = $request->input('type_room', 'All');
+        $date = $request->input('date');
+        $start_time = $request->input('start_time');
+        $end_time = $request->input('end_time');
+        $furniture_category = $request->input('furniture_category', []);
+        $electronic_category = $request->input('electronic_category', []);
 
-     public function index(Request $request)
-     {
-         $query = Room::query();
-         $furnitureCategories = Furniture::getFurnitureCategories();
-         $electronicCategories = Electronic::getElectronicCategories();
-         
-         // Handle type_room filter
-         $type_room = $request->get('type_room', 'All');
-         if ($type_room !== 'All') {
-             $query->where('type_room', $type_room);
-         }
-     
-         $date = $request->get('date', null);
-         $start_time = $request->get('start_time', null);
-         $end_time = $request->get('end_time', null);
-         if ($date && $start_time && $end_time) {
-             $conflictWithUnavailable = DB::table('schedule_booking')
-                 ->where('invalid_date', $date)
-                 ->where(function ($query) use ($start_time, $end_time) {
-                     $query->where('invalid_time_start', '<', $end_time)
-                           ->where('invalid_time_end', '>', $start_time);
-                 })
-                 ->exists();
-     
-             if ($conflictWithUnavailable) {
-                 return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
-             }
-     
-             // Handle furniture_category filter
-             $furniture_category = $request->get('furniture_category', []);
-             if (!empty($furniture_category)) {
-                 $query->whereHas('furnitures', function ($q) use ($furniture_category) {
-                     $q->whereIn('category', $furniture_category);
-                 });
-             }
-     
-             // Handle electronic_category filter
-             $electronic_category = $request->get('electronic_category', []);
-             if (!empty($electronic_category)) {
-                 $query->whereHas('electronics', function ($q) use ($electronic_category) {
-                     $q->whereIn('category', $electronic_category);
-                 });
-             }
-         }
-     
-         $rooms = $query->get();
-     
-         // Ensure you pass the furniture_category and electronic_category to the view
-         return view('frontend.index', compact(
-             'rooms', 'type_room', 'date', 'start_time', 'end_time',
-             'furniture_category', 'electronic_category', 'furnitureCategories', 'electronicCategories'
-         ));
-     }
-     
+        // Validasi jika start_time dan end_time tidak konsisten
+        if (($start_time && !$end_time) || (!$start_time && $end_time)) {
+            return response()->json(['error' => 'Both start and end time must be provided.']);
+        }
+
+        // Validasi untuk konflik waktu
+        if ($date && $start_time && $end_time) {
+            $conflictWithUnavailable = DB::table('schedule_booking')
+                ->where('invalid_date', $date)
+                ->where(function ($q) use ($start_time, $end_time) {
+                    $q->where('invalid_time_start', '<', $end_time)
+                      ->where('invalid_time_end', '>', $start_time);
+                })
+                ->exists();
+
+            if ($conflictWithUnavailable) {
+                return response()->json(['error' => 'Selected time is unavailable due to schedule conflict.']);
+            }
+
+            $conflictWithBooked = DB::table('bookings')
+                ->where('booking_date', $date)
+                ->where(function ($q) use ($start_time, $end_time) {
+                    $q->where('booking_time_start', '<', $end_time)
+                      ->where('booking_time_end', '>', $start_time);
+                })
+                ->exists();
+
+            if ($conflictWithBooked) {
+                return response()->json(['error' => 'Selected time is already booked for this room.']);
+            }
+        }
+
+        // Query untuk mendapatkan data `rooms`
+        $rooms = Room::query()
+            ->when($type_room !== 'All', function ($query) use ($type_room) {
+                $query->where('type_room', $type_room);
+            })
+            ->when(!empty($furniture_category), function ($query) use ($furniture_category) {
+                $query->whereHas('furnitures', function ($q) use ($furniture_category) {
+                    $q->whereIn('category', $furniture_category);
+                });
+            })
+            ->when(!empty($electronic_category), function ($query) use ($electronic_category) {
+                $query->whereHas('electronics', function ($q) use ($electronic_category) {
+                    $q->whereIn('category', $electronic_category);
+                });
+            })
+            ->get();
+
+        // Data untuk Filters
+        $furnitureCategories = Furniture::getFurnitureCategories();
+        $electronicCategories = Electronic::getElectronicCategories();
+
+        // Return View
+        return view('frontend.index', compact(
+            'rooms', 'furnitureCategories', 'electronicCategories',
+            'type_room', 'date', 'start_time', 'end_time',
+            'furniture_category', 'electronic_category'
+        ));
+    }
+      
     public function profile(){
         $profile=Auth()->user();
         // return $profile;

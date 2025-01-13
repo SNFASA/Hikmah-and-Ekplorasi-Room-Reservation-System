@@ -273,43 +273,48 @@ public function getBookingsByMonth()
         return response()->json($formattedBookings);
 }
 public function showFilterForm()
-        {
-            $furnitureCategories = Furniture::getFurnitureCategories();
-            $electronicCategories = Electronic::getElectronicCategories();
-            $rooms = collect(); // Empty collection for rooms
-            $type_room = 'All'; // Default value
-        
-            $date = null;
-            $start_time = null;
-            $end_time = null;
-            $furniture_category = [];
-            $electronic_category = [];
-        
-            return view('frontend.index', compact(
-                'furnitureCategories', 'electronicCategories', 'rooms', 
-                'type_room', 'date', 'start_time', 'end_time', 
-                'furniture_category', 'electronic_category'
-            ));
-}  
-    // Filter available rooms based on selected criteria
+    {
+        $furnitureCategories = Furniture::getFurnitureCategories();
+        $electronicCategories = Electronic::getElectronicCategories();
+        $rooms = collect(); // Empty collection for rooms
+        $type_room = 'All'; // Default value
+
+        $date = null;
+        $start_time = null;
+        $end_time = null;
+        $furniture_category = [];
+        $electronic_category = [];
+
+        return view('frontend.index', compact(
+            'furnitureCategories', 'electronicCategories', 'rooms',
+            'type_room', 'date', 'start_time', 'end_time',
+            'furniture_category', 'electronic_category'
+        ));
+    }
+
     public function filterAvailableRooms(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
             'type_room' => 'nullable|string',
             'date' => 'nullable|date',
             'start_time' => 'nullable|date_format:H:i',
             'end_time' => 'nullable|date_format:H:i',
             'furniture_category' => 'nullable|array',
+            'furniture_category.*' => 'nullable|String',
             'electronic_category' => 'nullable|array',
+            'electronic_category.*' => 'nullable|String',
         ]);
-        // Redirect back to the home route with the filter parameters
-        return redirect()->route('home', $request->query());
-            
+    
+        // Pass the request data as query parameters when redirecting back to the home route
+        return redirect()->route('home', $request->all());
     }
     
+    
+
+   
 public function showBookingForm($id, Request $request){
             $room = Room::findOrFail($id);
+            $rooms = Room::with(['furnitures', 'electronics'])->get();
             $furnitureCategories = Furniture::getFurnitureCategories();
             $electronicCategories = Electronic::getElectronicCategories();
         

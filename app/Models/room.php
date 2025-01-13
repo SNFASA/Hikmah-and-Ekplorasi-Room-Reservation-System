@@ -19,7 +19,10 @@ class room extends Model
     {
         return $this->belongsToMany(furniture::class, 'furniture_room', 'room_id', 'furniture_id', 'no_room', 'no_furniture');
     }
-    
+    public function bookings()
+    {
+    return $this->hasMany(Bookings::class, 'no_room', 'no_room');
+    }
     public function electronics()
     {
         return $this->belongsToMany(electronic::class, 'electronic_equipment_room', 'room_id', 'electronic_equipment_id', 'no_room', 'no_electronicEquipment');
