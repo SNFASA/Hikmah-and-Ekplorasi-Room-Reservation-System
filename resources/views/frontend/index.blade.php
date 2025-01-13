@@ -10,7 +10,7 @@
     <div class="search-box">
         <!-- Inner Box -->
         <div class="input-box shadow-lg">
-            <form id="filterForm" class="d-flex justify-content-center" method="GET" action="{{ route('home') }}">
+            <form id="filterForm" class="d-flex justify-content-center" method="GET" action="{{ route('booking.filter.form') }}">
                 <div class="input-group rounded-pill">
                     <!-- WHERE (Dropdown) -->
                     <span class="input-group-text border-0 bg-white fw-bold">Type Room</span>
