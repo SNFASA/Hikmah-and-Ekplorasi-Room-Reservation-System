@@ -11,6 +11,15 @@ use Illuminate\Validation\Rule;
 
 class RoomController extends Controller
 {
+    /**
+     * RoomController constructor.
+     *
+     * This constructor applies a middleware to all methods in the RoomController.
+     * The middleware checks if the authenticated user is an admin.
+     * If the user is not authenticated or not an admin, a 403 Unauthorized access error is returned.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -27,6 +36,14 @@ class RoomController extends Controller
         return view('backend.room.index')->with('rooms', $rooms);
     }
 
+    /**
+     * Displays the room creation form.
+     * 
+     * This method retrieves all available furniture and electronics from the database,
+     * and renders the room creation form with the retrieved data.
+     * 
+     * @return \Illuminate\View\View The room creation form view with furniture and electronics data.
+     */
     public function create()
     {
         $type_rooms = ['HIKMAH', 'EKSPLORASI'];
@@ -34,6 +51,19 @@ class RoomController extends Controller
         $electronics = electronic::all();
         return view('backend.room.create', compact('type_rooms', 'furnitures', 'electronics'));
     }
+    /**
+     * Creates a new room.
+     * 
+     * This method validates the incoming request,
+     * creates a new room with the validated data,
+     * and attaches the specified furniture and electronic equipment to the room.
+     * 
+     * @param Request $request The incoming request object.
+     * 
+     * @return \Illuminate\Http\RedirectResponse Redirects to the room index page with a success message.
+     * 
+     * @throws \Exception If the room cannot be saved.
+     */
     public function store(Request $request)
     {
         // Validate the incoming request
@@ -153,6 +183,19 @@ class RoomController extends Controller
 
         return redirect()->route('backend.room.index')->with('success', 'Room updated successfully.');
     }
+
+/**
+ * Deletes the specified room and its associated furniture and electronics.
+ *
+ * This method removes the room with the given ID from the database. 
+ * Before deletion, it detaches any related furniture and electronics to ensure
+ * the integrity of the data. Upon successful deletion, it redirects to the room
+ * index page with a success message.
+ *
+ * @param int $id The ID of the room to be deleted.
+ * @return \Illuminate\Http\RedirectResponse Redirects to the room index page with a success message.
+ * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the room is not found.
+ */
 
     public function destroy($id)
     {

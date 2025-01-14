@@ -43,7 +43,7 @@ class ElectronicController extends Controller
             'status' => 'required|string|max:255',
         ]);
     
-        Electronic::create([  // Correct model name is Electronic
+        Electronic::create([  
             'name' => $request->name,
             'category' => $request->category,
             'status' => $request->status,

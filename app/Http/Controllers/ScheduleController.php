@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Validator;
 
 class ScheduleController extends Controller
 {
+    /**
+     * Check if the user has access to the schedule pages. If not, throw a 403
+     * error. This middleware is applied to all methods in this controller.
+     */
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -26,6 +30,14 @@ class ScheduleController extends Controller
         return view('backend.schedule.index', compact('schedules'));
     }
 
+    /**
+     * Create a new schedule record.
+     * 
+     * This method fetches all valid rooms, unavailable slots from schedule_booking table,
+     * and booked slots from the bookings table, and passes them to the view.
+     * 
+     * @return mixed
+     */
     public function create()
     {
         // Fetch available rooms
@@ -56,6 +68,19 @@ class ScheduleController extends Controller
     }
     
 
+    /**
+     * Store a newly created schedule record in storage.
+     * 
+     * This method validates the input and creates a new schedule record in the
+     * Schedule table. It will also associate the schedule record with the room
+     * specified in the input. If the schedule is successfully created, it will
+     * redirect to the schedules index page with a success message. If the
+     * schedule is not successfully created, it will redirect back to the create
+     * form with the errors.
+     * 
+     * 
+     * 
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -75,6 +100,17 @@ class ScheduleController extends Controller
         return redirect()->route('schedule.index')->with('success', 'Schedule created successfully.');
     }
 
+    /**
+     * Show the form for editing the specified schedule.
+     * 
+     * This method fetches the specified schedule record from the Schedule table,
+     * and also fetches the list of available rooms and unavailable slots from
+     * the Rooms and Schedule tables. It then passes the schedule and other data
+     * to the edit view.
+     * 
+     * param int $id The ID of the schedule to be edited.
+     * return The edit view with the schedule and other data.
+     */
     public function edit($id)
     {
         $schedule = Schedule::findOrFail($id);
@@ -98,6 +134,24 @@ class ScheduleController extends Controller
     
     
     
+    /**
+     * Update the specified schedule in storage.
+     *
+     * Validates the request data and updates the specified schedule record in
+     * the Schedule table. The request data is validated against the following
+     * rules:
+     *  - invalid_date: required, date
+     *  - invalid_time_start: required, date_format:H:i
+     *  - invalid_time_end: required, date_format:H:i, after:invalid_time_start
+     *  - no_room: required, exists:rooms,no_room
+     * 
+     * Redirects to the schedule index with a success message if the update is
+     * successful.
+     * 
+     * @param \Illuminate\Http\Request $request The incoming request instance.
+     * @param int $id The ID of the schedule to be updated.
+     * @return \Illuminate\Http\RedirectResponse The redirect response.
+     */
     public function update(Request $request, $id)
     {
         $schedule = Schedule::findOrFail($id);
@@ -128,6 +182,13 @@ class ScheduleController extends Controller
         return redirect()->route('backend.schedule.index')->with('success', 'Schedule deleted successfully.');
     }
 
+    /**
+     * Bootstrap any application services.
+     *
+     * This method registers a custom validator for time fields to ensure that
+     * the time is in the correct format. The validator checks for a valid time
+     * in the format HH:MM, i.e. 00:00 to 23:59.
+     */
     public function boot()
     {
         // Custom validation for time

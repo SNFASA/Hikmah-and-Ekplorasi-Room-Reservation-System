@@ -26,11 +26,34 @@ class HomeController extends Controller
     {
         $this->middleware('auth');
     }
-
     /**
-     * Show the application dashboard.
+     * Display the home page with room availability and filters.
      *
-     * @return \Illuminate\Contracts\Support\Renderable|\Illuminate\Http\RedirectResponse
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse|\Illuminate\View\View
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     *
+     * This method handles the following:
+     * - Retrieves filter inputs from the request.
+     * - Validates the consistency of start and end times.
+     * - Checks for schedule conflicts with unavailable times and existing bookings.
+     * - Queries the `rooms` table based on the provided filters.
+     * - Retrieves furniture and electronic categories for filters.
+     * - Returns the view with the filtered rooms and categories.
+     *
+     * Request Inputs:
+     * - type_room: string (default: 'All')
+     * - date: string (optional)
+     * - start_time: string (optional)
+     * - end_time: string (optional)
+     * - furniture_category: array (optional)
+     * - electronic_category: array (optional)
+     *
+     * Responses:
+     * - JSON error response if start and end times are inconsistent.
+     * - JSON error response if there is a schedule conflict.
+     * - View with filtered rooms and categories.
      */
     public function index(Request $request)
     {
