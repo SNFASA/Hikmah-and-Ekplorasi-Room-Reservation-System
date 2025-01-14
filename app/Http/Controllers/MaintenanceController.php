@@ -21,21 +21,6 @@ class MaintenanceController extends Controller
     }
 
 
-/**
- * Display a listing of the maintenance records.
- *
- * This method retrieves maintenance records from the database,
- * orders them by ID in ascending order, and paginates the results.
- * For each maintenance record, it assigns an `itemName` based on
- * the `itemType`:
- * - 'furniture': Retrieves the name from the furniture table.
- * - 'electronic_equipment': Retrieves the name from the electronic_equipment table.
- * - 'other': Uses the `item_text` attribute.
- * - Default: Assigns 'Unknown' if no match is found.
- *
- * @return \Illuminate\View\View The view displaying the maintenance records.
- */
-
     public function index()
     {
         $maintenance = maintenance::orderBy('id', 'ASC')->paginate(10);   
@@ -61,31 +46,12 @@ class MaintenanceController extends Controller
     }
     
 
-    /**
-     * Show the form for creating a new maintenance record.
-     *
-     * This method retrieves all rooms from the database and passes them to the
-     * view for selection.
-     *
-     * @return \Illuminate\View\View The view displaying the maintenance create form.
-     */
     public function create()
     {
         $rooms = room::all();
         return view('backend.maintenance.create', compact( 'rooms' ));
     }
    
-    /**
-     * Store a newly created maintenance record in storage.
-     *
-     * Validates the request attributes and ensures that 'itemid' or 'itemid_text' is set correctly
-     * based on the 'itemType' selected. Creates a new maintenance record in the database and
-     * assigns the 'status' as 'pending'. Redirects to the index page after successful creation
-     * with a success message.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -162,12 +128,6 @@ class MaintenanceController extends Controller
 
         return redirect()->route('backend.maintenance.index')->with('success', 'Report deleted successfully.');
     }
-    /**
-     * Returns a list of damaged items of a given type.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function getItems(Request $request)
     {
         $request->validate([

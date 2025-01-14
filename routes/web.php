@@ -178,7 +178,8 @@ Route::prefix('/ppp/maintenances')->middleware(['auth', 'role:ppp'])->group(func
     Route::get('/{id}/edit', [MaintenancePPPController::class, 'edit'])->name('ppp.maintenance.edit');
     Route::put('/{id}', [MaintenancePPPController::class, 'update'])->name('ppp.maintenance.update');
     Route::delete('/{id}', [MaintenancePPPController::class, 'destroy'])->name('ppp.maintenance.destroy');
-    Route::get('/maintenance/items', [MaintenancePPPController::class, 'getItems'])->name('maintenance.items');
+    Route::post('/maintenance/get-items', [MaintenanceController::class, 'getItems'])->name('maintenance.getItems');
+    ;
 });
 
 
