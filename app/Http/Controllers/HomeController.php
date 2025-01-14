@@ -66,7 +66,7 @@ class HomeController extends Controller
 
         // Validasi jika start_time dan end_time tidak konsisten
         if (($start_time && !$end_time) || (!$start_time && $end_time)) {
-            return response()->json(['error' => 'Both start and end time must be provided.']);
+            return response()->json(['error' => 'Both start and end time must be provided.']); // tukar 
         }
 
         // Validasi untuk konflik waktu
@@ -80,7 +80,7 @@ class HomeController extends Controller
                 ->exists();
 
             if ($conflictWithUnavailable) {
-                return response()->json(['error' => 'Selected time is unavailable due to schedule conflict.']);
+                return response()->json(['error' => 'Selected time is unavailable due to schedule conflict.']); // tukar 
             }
 
             $conflictWithBooked = DB::table('bookings')
@@ -92,7 +92,7 @@ class HomeController extends Controller
                 ->exists();
 
             if ($conflictWithBooked) {
-                return response()->json(['error' => 'Selected time is already booked for this room.']);
+                return response()->json(['error' => 'Selected time is already booked for this room.']); // tukar 
             }
         }
 

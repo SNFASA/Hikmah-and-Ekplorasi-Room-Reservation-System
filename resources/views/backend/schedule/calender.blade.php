@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container.style.flexDirection = 'column';
             container.style.alignItems = 'flex-start';
             container.style.padding = '5px';
-            container.style.backgroundColor = info.event.backgroundColor || '#3788d8';
+            container.style.backgroundColor = info.event.backgroundColor || '#3788d8'; // tukar warna 
             container.style.borderRadius = '5px';
             container.style.marginBottom = '5px';
 

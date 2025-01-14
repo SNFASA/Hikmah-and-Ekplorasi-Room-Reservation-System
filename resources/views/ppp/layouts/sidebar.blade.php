@@ -67,7 +67,7 @@
           </div>
         </div>
     </li> -->
-    {{-- Room 
+    
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#roomCollapse" aria-expanded="true" aria-controls="roomCollapse">
           <i class="fas fa-door-closed fa-2x"></i>
@@ -76,11 +76,10 @@
         <div id="roomCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Room Options:</h6>
-            <a class="collapse-item" href="{{route('room.index')}}">Room</a>
-            <a class="collapse-item" href="{{route('room.create')}}">Add Room</a>
+            <a class="collapse-item" href="{{route('ppp.room.index')}}">Room</a>
           </div>
         </div>
-    </li>--}}
+    </li>
 
     {{-- Furniture --}}
     <li class="nav-item">
