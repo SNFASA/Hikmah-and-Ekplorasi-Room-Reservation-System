@@ -7,7 +7,6 @@
     <!-- Search Box -->
     <div class="search-box">
         <div class="input-box shadow-lg">
-<<<<<<< HEAD
             <form action="{{ route('filter.available.rooms') }}" method="POST" id="filterForm">
                 @csrf
                 <div class="container mt-5">
@@ -76,38 +75,6 @@
                                 @endforeach
                             </div>
                         </div>
-=======
-            <form id="filterForm" class="d-flex justify-content-center" method="GET" action="{{ route('booking.filter.form') }}">
-                <div class="input-group rounded-pill">
-                    <!-- WHERE (Dropdown) -->
-                    <span class="input-group-text border-0 bg-white fw-bold">Type Room</span>
-                    <select name="type_room" class="form-control border-0">
-                        <option value="All" {{ $type_room === 'All' ? 'selected' : '' }}>All</option>
-                        <option value="EKSPLORASI" {{ $type_room === 'EKSPLORASI' ? 'selected' : '' }}>Eksplorasi</option>
-                        <option value="HIKMAH" {{ $type_room === 'HIKMAH' ? 'selected' : '' }}>Hikmah</option>
-                        <!-- Add other options as needed -->
-                    </select>
-                    
-
-                    <!-- CHECK IN -->
-                    <span class="input-group-text border-0 bg-white fw-bold">Check in</span>
-                    <input type="date" value="{{ $date }}" class="form-control border-0" name="date" aria-label="Check in">
-
-                    <!-- START TIME -->
-                    <span class="input-group-text border-0 bg-white fw-bold">Start time</span>
-                    <input type="time" id="start_time" name="start_time" class="form-control border-0" value="{{ old('start_time', $start_time) }}">
-
-                    <!-- END TIME -->
-                    <span class="input-group-text border-0 bg-white fw-bold">End time</span>
-                    <input type="time" id="end_time" name="end_time" class="form-control border-0" value="{{ old('end_time', $end_time) }}">
-
-                    <!-- GUEST COUNT -->
-                    <span class="input-group-text border-0 bg-white fw-bold">Guest</span>
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-outline-primary btn-sm" type="button" id="decreaseGuests">-</button>
-                        <input type="text" id="guestCount" class="form-control text-center border-0" value="1" style="width: 50px;" readonly>
-                        <button class="btn btn-outline-primary btn-sm"  type="button" id="increaseGuests">+</button>
->>>>>>> 11e28702c811f4d4f34b99a89cd4d00fc1dfe8e9
                     </div>
                 </div>
             </form>

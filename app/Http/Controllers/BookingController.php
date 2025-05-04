@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Notifications\StatusNotification;
 
 
+
 class BookingController extends Controller
 {
     /**
@@ -219,7 +220,54 @@ class BookingController extends Controller
             sleep(2);
         }
         return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
-    }
+    // Pass the original student array directly
+        $this->attachStudentsToBooking($booking, $students);
+             // Collect data for email
+             $bookingUsers = DB::table('booking_user')
+             ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+             ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
+             ->where('booking_user.booking_id', $booking->id)
+             ->select('users.name', 'users.email', 'users.no_matriks')
+             ->get();
+     
+     
+             $furnitures = DB::table('furniture_room') 
+             ->join('furniture', 'furniture_room.furniture_id', '=', 'furniture.no_furniture')
+             ->where('furniture_room.room_id', $booking->no_room) 
+             ->pluck('furniture.name')
+             ->toArray();
+     
+             $electronics = DB::table('electronic_equipment_room')
+             ->join('electronic_equipment', 'electronic_equipment_room.electronic_equipment_id', '=', 'electronic_equipment.no_electronicEquipment')
+             ->where('electronic_equipment_room.room_id', $booking->no_room)
+             ->pluck('electronic_equipment.name')
+             ->toArray();
+         
+             $durationHours = $duration; // already calculated above/
+             foreach ($bookingUsers as $user) {
+                 if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                     Mail::to($user->email)->send(
+                         new BookingReminderMail(
+                             (object)[
+                                 'name' => $user->name,
+                                 'email' => $user->email,
+                             ],
+                             $booking,
+                             $bookingUsers,
+                             $furnitures,
+                             $electronics,
+                             $durationHours
+                         )
+                     );
+                     \Log::info("Sent to: " . $user->email);
+                 } else {
+                     \Log::warning("Invalid or missing email for user: " . json_encode($user));
+                 }
+                 sleep(1); // Sleep for 1 second to avoid rate limiting
+             }
+
+    return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
+}
     /**
      * Show the form for editing the specified booking.
      *
@@ -367,7 +415,7 @@ public function destroy($id)
          * @param  array  $students
          * @return void
          */
-public function attachStudentsToBooking($booking, $students)
+private function attachStudentsToBooking($booking, $students)
     {
         // Detach any existing students from the booking
         $booking->listStudentBookings()->detach();
@@ -640,6 +688,49 @@ public function storeBookingForm( $id,Request $request){
                 \Log::warning("Invalid or missing email for user: " . json_encode($user));
             }
             sleep(2);
+        }
+         // Collect data for email
+        $bookingUsers = DB::table('booking_user')
+        ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+        ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
+        ->where('booking_user.booking_id', $booking->id)
+        ->select('users.name', 'users.email', 'users.no_matriks')
+        ->get();
+
+
+        $furnitures = DB::table('furniture_room') 
+        ->join('furniture', 'furniture_room.furniture_id', '=', 'furniture.no_furniture')
+        ->where('furniture_room.room_id', $booking->no_room) 
+        ->pluck('furniture.name')
+        ->toArray();
+
+        $electronics = DB::table('electronic_equipment_room')
+        ->join('electronic_equipment', 'electronic_equipment_room.electronic_equipment_id', '=', 'electronic_equipment.no_electronicEquipment')
+        ->where('electronic_equipment_room.room_id', $booking->no_room)
+        ->pluck('electronic_equipment.name')
+        ->toArray();
+    
+        $durationHours = $duration; // already calculated above/
+        foreach ($bookingUsers as $user) {
+            if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                Mail::to($user->email)->send(
+                    new BookingReminderMail(
+                        (object)[
+                            'name' => $user->name,
+                            'email' => $user->email,
+                        ],
+                        $booking,
+                        $bookingUsers,
+                        $furnitures,
+                        $electronics,
+                        $durationHours
+                    )
+                );
+                \Log::info("Sent to: " . $user->email);
+            } else {
+                \Log::warning("Invalid or missing email for user: " . json_encode($user));
+            }
+            sleep(1); // Sleep for 1 second to avoid rate limiting
         }
          return redirect()->route('home')->with('success', 'Booking created successfully.');
 }
