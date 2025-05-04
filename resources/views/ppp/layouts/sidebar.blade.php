@@ -67,7 +67,7 @@
           </div>
         </div>
     </li> -->
-    {{-- Room 
+    
     <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#roomCollapse" aria-expanded="true" aria-controls="roomCollapse">
           <i class="fas fa-door-closed fa-2x"></i>
@@ -76,38 +76,38 @@
         <div id="roomCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Room Options:</h6>
-            <a class="collapse-item" href="{{route('room.index')}}">Room</a>
-            <a class="collapse-item" href="{{route('room.create')}}">Add Room</a>
-          </div>
-        </div>
-    </li>--}}
-
-    {{-- Furniture --}}
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#furnitureCollapse" aria-expanded="true" aria-controls="furnitureCollapse">
-          <i class="fas fa-chair"></i>
-          <span>Furniture</span>
-        </a>
-        <div id="furnitureCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-          <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Furniture Options:</h6>
-            <a class="collapse-item" href="{{route('ppp.furniture.index')}}">Furniture</a>
-            <a class="collapse-item" href="{{route('ppp.furniture.create')}}">Add Furniture</a>
+            <a class="collapse-item" href="{{route('ppp.room.index')}}">Room</a>
           </div>
         </div>
     </li>
-    {{-- Electronic --}}
+
+    {{-- Furniture --}}
     <li class="nav-item">
-      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#electronicCollapse" aria-expanded="true" aria-controls="electronicCollapse">
-        <i class="fas fa-desktop"></i>
-        <span>Electronic</span>
+      <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#equipmentCollapse" aria-expanded="true" aria-controls="equipmentCollapse">
+          <i class="fas fa-tools"></i>
+          <span>Equipment</span>
       </a>
-      <div id="electronicCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-        <div class="bg-white py-2 collapse-inner rounded">
-          <h6 class="collapse-header">Electronic Options:</h6>
-          <a class="collapse-item" href="{{route('ppp.electronic.index')}}">Electronic</a>
-          <a class="collapse-item" href="{{route('ppp.electronic.create')}}">Add Electronic</a>
-        </div>
+      <div id="equipmentCollapse" class="collapse" aria-labelledby="headingEquipment" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+              <a class="collapse-item collapsed" href="#" data-toggle="collapse" data-target="#furnitureCollapse" aria-expanded="false" aria-controls="furnitureCollapse">
+                  Furniture
+              </a>
+              <div id="furnitureCollapse" class="collapse" aria-labelledby="headingFurniture" data-parent="#equipmentCollapse">
+                  <div class="bg-white py-2 collapse-inner rounded">
+                      <a class="collapse-item" href="{{ route('furniture.index') }}">View Furniture</a>
+                      <a class="collapse-item" href="{{ route('furniture.create') }}">Add Furniture</a>
+                  </div>
+              </div>
+              <a class="collapse-item collapsed" href="#" data-toggle="collapse" data-target="#electronicCollapse" aria-expanded="false" aria-controls="electronicCollapse">
+                  Electronic
+              </a>
+              <div id="electronicCollapse" class="collapse" aria-labelledby="headingElectronic" data-parent="#equipmentCollapse">
+                  <div class="bg-white py-2 collapse-inner rounded">
+                      <a class="collapse-item" href="{{ route('electronic.index') }}">View Electronic</a>
+                      <a class="collapse-item" href="{{ route('electronic.create') }}">Add Electronic</a>
+                  </div>
+              </div>
+          </div>
       </div>
   </li>
   <li class="nav-item">

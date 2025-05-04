@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-class RoomController extends Controller
+class RoomPPPController extends Controller
 {
     /**
      * RoomController constructor.
@@ -23,8 +23,8 @@ class RoomController extends Controller
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!auth()->user() || !auth()->user()->isAdmin()) {
-                abort(403, 'Unauthorized access. Admins only.');
+            if (!auth()->user() || !auth()->user()->isPpp()) {
+                abort(403, 'Unauthorized access. PPP Staff only.');
             }
             return $next($request);
         });
@@ -33,7 +33,7 @@ class RoomController extends Controller
     public function index()
     {
         $rooms = Room::orderBy('no_room', 'ASC')->paginate(10);
-        return view('backend.room.index')->with('rooms', $rooms);
+        return view('ppp.room.index')->with('rooms', $rooms);
     }
 
     /**
@@ -49,7 +49,7 @@ class RoomController extends Controller
         $type_rooms = ['HIKMAH', 'EKSPLORASI'];
         $furnitures = furniture::all();
         $electronics = electronic::all();
-        return view('backend.room.create', compact('type_rooms', 'furnitures', 'electronics'));
+        return view('ppp.room.create', compact('type_rooms', 'furnitures', 'electronics'));
     }
     /**
      * Creates a new room.
@@ -123,7 +123,7 @@ class RoomController extends Controller
         $selectedFurnitures = $room->furnitures;
         $selectedElectronics = $room->electronics;
     
-        return view('backend.room.edit', compact('room', 'furnitures', 'electronics', 'selectedFurnitures', 'selectedElectronics'));
+        return view('ppp.room.edit', compact('room', 'furnitures', 'electronics', 'selectedFurnitures', 'selectedElectronics'));
     }
     
 
@@ -181,7 +181,7 @@ class RoomController extends Controller
         });
         
 
-        return redirect()->route('backend.room.index')->with('success', 'Room updated successfully.');
+        return redirect()->route('ppp.room.index')->with('success', 'Room updated successfully.');
     }
 
 /**
@@ -207,7 +207,7 @@ class RoomController extends Controller
 
         $room->delete();
 
-        return redirect()->route('backend.room.index')->with('success', 'Room deleted successfully.');
+        return redirect()->route('ppp.room.index')->with('success', 'Room deleted successfully.');
     }
     
 }

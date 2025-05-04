@@ -18,6 +18,16 @@ use App\Models\schedule;
 
 class BookingController extends Controller
 {
+    /**
+     * Construct method for BookingController.
+     * 
+     * This method is automatically called when an instance of the controller is created.
+     * It adds a middleware to check if the user is authorized to access the controller.
+     * The middleware checks if the user is an admin, a user, or a PPP.
+     * If the user is not authenticated or does not have the right role, it will abort with a 403 error.
+     * 
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -31,6 +41,16 @@ class BookingController extends Controller
     }
     
 
+    /**
+     * Show the list of bookings.
+     * 
+     * This method is accessible via a GET request to /bookings.
+     * It will return a view with a list of bookings.
+     * The bookings are ordered by date and start time.
+     * The list is paginated, with 10 bookings per page.
+     * 
+     * 
+     */
     public function index()
     {
         $bookings = Bookings::with('room', 'listStudentBookings')
@@ -42,6 +62,20 @@ class BookingController extends Controller
         return view('backend.booking.index', compact('bookings'));
     }
 
+    /**
+     * Show the form for creating a new booking.
+     * 
+     * This method is accessible via a GET request to /bookings/create.
+     * It will return a view with a form to create a new booking.
+     * The form will include a list of students who can be added to the booking.
+     * The list of students is limited to only users with the 'user' role.
+     * The form will also include a list of unavailable dates and times, 
+     * which are fetched from the schedule_booking table.
+     * The form will also include a list of already booked dates and times, 
+     * which are fetched from the Bookings table.
+     * 
+     * 
+     */
     public function create()
     {
         // Fetch all unavailable dates and times from schedule_booking
@@ -56,6 +90,21 @@ class BookingController extends Controller
     
         return view('backend.booking.create', compact('students', 'unavailableSlots', 'bookedSlots'));
     }
+    /**
+     * Store a newly created booking in storage.
+     * 
+     * This method is accessible via a POST request to /bookings.
+     * It will validate the input and create a new booking in the Bookings table.
+     * The booking will be created with the status 'approved'.
+     * The booking will also be associated with the room and students specified in the input.
+     * The students will be created if they do not already exist in the Users table.
+     * The students will be associated with the booking in the list_student_bookings pivot table.
+     * If the booking is successfully created, it will redirect to the bookings index page with a success message.
+     * If the booking is not successfully created, it will redirect back to the create form with the errors.
+     * 
+     * 
+     * 
+     */
     public function store(Request $request)
 {
     $request->validate([
@@ -128,6 +177,16 @@ class BookingController extends Controller
 
     return redirect()->route('bookings.index')->with('success', 'Booking created successfully.');
 }
+    /**
+     * Show the form for editing the specified booking.
+     *
+     * This method retrieves the booking, available rooms, and students associated with the booking.
+     * It displays a form pre-filled with the booking details for editing.
+     *
+     * @param int $id The ID of the booking to edit.
+     * @return \Illuminate\View\View The view with the booking edit form.
+     */
+
 public function edit($id)
 {
     $booking = Bookings::findOrFail($id);
@@ -146,6 +205,28 @@ public function edit($id)
     return view('backend.booking.edit', compact('booking', 'rooms', 'students', 'selectedStudents'));
 }
 
+
+    /**
+     * Update the specified booking in storage.
+     *
+     * Validates the request data and then creates a new booking record. 
+     * Also validates the booking time to ensure there are no scheduling conflicts.
+     * 
+     * The request data is validated against the following rules:
+     *  - booking_date: required, date
+     *  - booking_time_start: required, date_format:H:i, after:booking_time_end
+     *  - booking_time_end: required, date_format:H:i, after:booking_time_start
+     *  - purpose: required, string, max:255
+     *  - no_room: required, exists:rooms,no_room
+     *  - phone_number: required, string, max:15
+     *  - students: required, array, min:4
+     *  - students.*.no_matriks: required, max:255
+     *  - students.*.name: required, max:255
+     *
+     * 
+     *
+     * 
+     */
 public function update(Request $request, $id)
     {
         $booking = Bookings::findOrFail($id);
@@ -222,6 +303,12 @@ public function update(Request $request, $id)
         return redirect()->route('bookings.index')->with('success', 'Booking updated successfully.');
 }
 
+        /**
+         * Remove the specified booking from storage.
+         *
+         * 
+         * 
+         */
 public function destroy($id)
     {
         $booking = Bookings::findOrFail($id);
@@ -230,6 +317,13 @@ public function destroy($id)
         return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully.');
 }
 
+        /**
+         * Attach students to a booking.
+         *
+         * @param  \App\Models\Bookings  $booking
+         * @param  array  $students
+         * @return void
+         */
 private function attachStudentsToBooking($booking, $students)
     {
         // Detach any existing students from the booking
@@ -249,6 +343,13 @@ private function attachStudentsToBooking($booking, $students)
         }
 }
     
+        /**
+         * Calculate the duration in minutes between two dates.
+         *
+         * @param string $start
+         * @param string $end
+         * @return int
+         */
 private function calculateDuration($start, $end)
     {
         return Carbon::parse($start)->diffInMinutes(Carbon::parse($end));
@@ -272,106 +373,96 @@ public function getBookingsByMonth()
 
         return response()->json($formattedBookings);
 }
+/**
+ * Display the filter form for rooms.
+ *
+ * This method prepares data for the frontend filter form view,
+ * including categories for furniture and electronics, an empty
+ * collection of rooms, and default values for various filter
+ * parameters such as room type, date, start time, end time,
+ * and selected categories.
+ *
+ * @return \Illuminate\View\View The view for the room filter form.
+ */
+
 public function showFilterForm()
     {
         $furnitureCategories = Furniture::getFurnitureCategories();
         $electronicCategories = Electronic::getElectronicCategories();
         $rooms = collect(); // Empty collection for rooms
         $type_room = 'All'; // Default value
-    
+
         $date = null;
         $start_time = null;
         $end_time = null;
         $furniture_category = [];
         $electronic_category = [];
-    
+
         return view('frontend.index', compact(
-            'furnitureCategories', 'electronicCategories', 'rooms', 
-            'type_room', 'date', 'start_time', 'end_time', 
+            'furnitureCategories', 'electronicCategories', 'rooms',
+            'type_room', 'date', 'start_time', 'end_time',
             'furniture_category', 'electronic_category'
         ));
-}  
-    // Filter available rooms based on selected criteria
+    }
+
+/**
+ * Filter available rooms based on provided criteria.
+ *
+ * This method validates the incoming request data for room filtering,
+ * including room type, date, time, furniture categories, and electronic
+ * categories. It then redirects the user to the home route with the
+ * validated query parameters to display the filtered results.
+ *
+ * @param \Illuminate\Http\Request $request The incoming request containing filter criteria.
+ * @return \Illuminate\Http\RedirectResponse Redirects to the home route with query parameters.
+ */
+
     public function filterAvailableRooms(Request $request)
     {
-        try {
-            // Log incoming request data for debugging
-            \Log::info('Request Data:', $request->all());
+        $validated = $request->validate([
+            'type_room' => 'nullable|string',
+            'date' => 'nullable|date',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
+            'furniture_category' => 'nullable|array',
+            'furniture_category.*' => 'nullable|String',
+            'electronic_category' => 'nullable|array',
+            'electronic_category.*' => 'nullable|String',
+        ]);
     
-            // Validate input
-            $validated = $request->validate([
-                'type_room' => 'nullable|string',
-                'date' => 'nullable|date',
-                'start_time' => 'nullable|date_format:H:i',
-                'end_time' => 'nullable|date_format:H:i',
-                'furniture_category' => 'nullable|array',
-                'furniture_category.*' => 'string',
-                'electronic_category' => 'nullable|array',
-                'electronic_category.*' => 'string',
-            ]);
-    
-            $query = Room::query();
-    
-            // Filter by type_room
-            $type_room = $request->get('type_room', 'All');
-            if ($type_room !== 'All') {
-                $query->where('type_room', $type_room);
-            }
-    
-            // Booking time conflict filter
-            $date = $request->get('date');
-            $start_time = $request->get('start_time');
-            $end_time = $request->get('end_time');
-            if ($date && $start_time && $end_time) {
-                $conflictWithUnavailable = DB::table('schedule_booking')
-                    ->where('invalid_date', $date)
-                    ->where(function ($subQuery) use ($start_time, $end_time) {
-                        $subQuery->where('invalid_time_start', '<', $end_time)
-                            ->where('invalid_time_end', '>', $start_time);
-                    })
-                    ->exists();
-    
-                if ($conflictWithUnavailable) {
-                    return response()->json(['error' => 'Selected time is unavailable due to a schedule conflict.'], 400);
-                }
-            }
-    
-            // Filter by furniture_category
-            $furniture_category = $request->get('furniture_category', []);
-            if (!empty($furniture_category)) {
-                $query->whereHas('furnitures', function ($q) use ($furniture_category) {
-                    $q->whereIn('category', $furniture_category);
-                });
-            }
-    
-            // Filter by electronic_category
-            $electronic_category = $request->get('electronic_category', []);
-            if (!empty($electronic_category)) {
-                $query->whereHas('electronics', function ($q) use ($electronic_category) {
-                    $q->whereIn('category', $electronic_category);
-                });
-            }
-    
-            // Get filtered rooms
-            $rooms = $query->with(['furnitures', 'electronics'])->get();
-    
-            return response()->json(['success' => true, 'rooms' => $rooms]);
-        } catch (\Exception $e) {
-            \Log::error('Error in filterAvailableRooms:', ['error' => $e->getMessage()]);
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        // Pass the request data as query parameters when redirecting back to the home route
+        return redirect()->route('home', $request->all());
     }
     
-public function showBookingForm($id, Request $request)
-        {
+    
+
+   
+/**
+ * Display the booking form for a specific room.
+ *
+ * @param int $id The ID of the room to be booked.
+ * @param \Illuminate\Http\Request $request The current request instance.
+ * 
+ * @return \Illuminate\View\View The view for the booking form.
+ * 
+ * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the room with the given ID is not found.
+ * 
+ * This method retrieves the room details, available furniture and electronic categories,
+ * and any date and time parameters from the query string. It then logs these parameters
+ * for debugging purposes and returns the booking form view with the relevant data.
+ */
+public function showBookingForm($id, Request $request){
             $room = Room::findOrFail($id);
+            $rooms = Room::with(['furnitures', 'electronics'])->get();
             $furnitureCategories = Furniture::getFurnitureCategories();
             $electronicCategories = Electronic::getElectronicCategories();
-    
-            $date = $request->query('date');
+        
+            $date = $request->query('date'); // Retrieves date from query string
             $start_time = $request->query('start_time');
             $end_time = $request->query('end_time');
-    
+        
+            \Log::info("Booking Form Params:", compact('date', 'start_time', 'end_time')); // Debugging
+        
             return view('frontend.pages.bookingform', [
                 'room' => $room,
                 'date' => $date,
@@ -381,8 +472,20 @@ public function showBookingForm($id, Request $request)
                 'electronicCategories' => $electronicCategories,
             ]);
 }
-public function storeBookingForm( $id,Request $request)
-     {
+    
+/**
+ * Store a new booking form.
+ *
+ * This method validates the booking form data, checks for schedule conflicts,
+ * creates new users if necessary, and stores the booking information in the database.
+ *
+ * @param int $id The ID of the booking.
+ * @param \Illuminate\Http\Request $request The HTTP request object containing the booking form data.
+ * @return \Illuminate\Http\RedirectResponse Redirects to the home route with a success message or back with errors.
+ *
+ * @throws \Illuminate\Validation\ValidationException If the validation fails.
+ */
+public function storeBookingForm( $id,Request $request){
          $request->validate([
              'booking_date' => 'required|date',
              'booking_time_start' => 'required|date_format:H:i',
@@ -448,9 +551,23 @@ public function storeBookingForm( $id,Request $request)
          ]);
  
          $this->attachStudentsToBooking($booking, $students);
- 
+         \Log::info("Request Data:", $request->all());
          return redirect()->route('home')->with('success', 'Booking created successfully.');
 }
+/**
+ * Display the calendar view with events.
+ *
+ * This method retrieves booking and invalid schedule data from the database,
+ * formats them as events with start and end times, titles, and colors,
+ * and merges them into a single collection. The events are then passed to
+ * the calendarBooking view to be displayed on the frontend.
+ *
+ * Booked events are marked with a 'primary' color, and invalid schedules
+ * are marked with a 'danger' color.
+ *
+ * @return \Illuminate\View\View The view for the calendar with events.
+ */
+
 public function calendar()
      {
         $bookings = DB::table('bookings')
@@ -458,28 +575,42 @@ public function calendar()
         ->select(
             'booking_date as start',
             DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
-            DB::raw("CONCAT('Booked: ', rooms.name) as title"), // Add room name to the title
-            DB::raw("'primary' as color")
+            DB::raw("CONCAT('Booked: ', rooms.name) as title"),
+            DB::raw("'#28a745' as color") // Green for booked events
         )
         ->get();
 
-        $invalidSchedules = DB::table('schedule_booking')
+    $invalidSchedules = DB::table('schedule_booking')
         ->join('rooms', 'schedule_booking.roomid', '=', 'rooms.no_room')
         ->select(
             'invalid_date as start',
             DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
-            DB::raw("CONCAT('Invalid: ', rooms.name) as title"), // Add room name to the title
-            DB::raw("'danger' as color")
+            DB::raw("CONCAT('Invalid: ', rooms.name) as title"),
+            DB::raw("'#dc3545' as color") // Red for invalid events
         )
         ->get();
-     
-         // Merge events
-         $events = $bookings->merge($invalidSchedules);
+
+    // Merge events
+    $events = $bookings->merge($invalidSchedules);
      
          return view('frontend.pages.calendarBooking', ['events' => $events]);
 }
 
      //My. booking 
+/**
+ * Display the authenticated user's bookings.
+ *
+ * This method retrieves all bookings associated with the currently authenticated user.
+ * It joins the bookings with rooms, booking_user, list_student_booking, and users tables
+ * to fetch detailed information about each booking, including the room name, booking date,
+ * booking time, and the names of all students associated with each booking.
+ *
+ * The bookings are then grouped by booking ID, and the student names are collected and
+ * made unique for each booking.
+ *
+ * @param \Illuminate\Http\Request $request The incoming request instance.
+ * @return \Illuminate\View\View The view displaying the user's bookings.
+ */
 public function myBookings(Request $request)
      {
          // Get the current user's no_matriks
@@ -527,31 +658,42 @@ public function cancelBooking($id){
 }
 public function calendarAdmin()
 {
-       $bookings = DB::table('bookings')
-       ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
-       ->select(
-           'booking_date as start',
-           DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
-           DB::raw("CONCAT('Booked: ', rooms.name) as title"), // Add room name to the title
-           DB::raw("'primary' as color")
-       )
-       ->get();
+    $bookings = DB::table('bookings')
+        ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
+        ->select(
+            'booking_date as start',
+            DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
+            DB::raw("CONCAT('Booked: ', rooms.name) as title"),
+            DB::raw("'#28a745' as color") // Green for booked events
+        )
+        ->get();
 
-       $invalidSchedules = DB::table('schedule_booking')
-       ->join('rooms', 'schedule_booking.roomid', '=', 'rooms.no_room')
-       ->select(
-           'invalid_date as start',
-           DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
-           DB::raw("CONCAT('Invalid: ', rooms.name) as title"), // Add room name to the title
-           DB::raw("'danger' as color")
-       )
-       ->get();
-    
-        // Merge events
-        $events = $bookings->merge($invalidSchedules);
-    
-        return view('backend.schedule.calender', ['events' => $events]);
+    $invalidSchedules = DB::table('schedule_booking')
+        ->join('rooms', 'schedule_booking.roomid', '=', 'rooms.no_room')
+        ->select(
+            'invalid_date as start',
+            DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
+            DB::raw("CONCAT('Invalid: ', rooms.name) as title"),
+            DB::raw("'#dc3545' as color") // Red for invalid events
+        )
+        ->get();
+
+    // Merge events
+    $events = $bookings->merge($invalidSchedules);
+
+    return view('backend.schedule.calender', ['events' => $events]);
 }
+
+/**
+ * Display the specified booking for editing.
+ *
+ * This method fetches the booking details, all students with role 'student',
+ * and the selected students for the booking. It then passes these data to the
+ * bookingedit view to be displayed as a form for editing.
+ *
+ * @param int $id The ID of the booking to be edited.
+ * @return \Illuminate\View\View The view for editing the booking.
+ */
 public function Formedit($id)
 {
     $booking = Bookings::findOrFail($id);
@@ -572,6 +714,18 @@ public function Formedit($id)
     return view('frontend.pages.bookingedit', compact('booking', 'room', 'students', 'selectedStudents', 'furnitureCategories', 'electronicCategories'));
 }
 
+    /**
+     * Update the specified booking.
+     *
+     * This method validates the input data and ensures that the booking time
+     * does not conflict with any existing bookings or unavailable schedules.
+     * It then updates the booking data and attaches the selected students to
+     * the booking.
+     *
+     * @param \Illuminate\Http\Request $request The incoming request instance.
+     * @param int $id The ID of the booking to be updated.
+     * @return \Illuminate\Http\RedirectResponse The redirect response.
+     */
 public function Formupdate(Request $request, $id)
 {
     // Retrieve the booking by ID

@@ -19,6 +19,13 @@ class FurnitureController extends Controller
     }
 
 
+
+/**
+ * Display a paginated list of furniture items ordered by furniture number.
+ *
+ * @return \Illuminate\View\View The view displaying the list of furniture items.
+ */
+
     public function index()
     {
         $furniture = furniture::orderBy('no_furniture', 'ASC')->paginate(10);
@@ -26,6 +33,11 @@ class FurnitureController extends Controller
     }
     
 
+    /**
+     * Show the form for creating a new furniture item.
+     * 
+     * @return \Illuminate\View\View The view displaying the form for creating a new furniture item.
+     */
     public function create()
     {
         $categories = [
@@ -38,6 +50,13 @@ class FurnitureController extends Controller
     }
 
 
+    /**
+     * Store a newly created furniture item in storage.
+     * 
+     * @param \Illuminate\Http\Request $request The request instance containing the data for the new furniture item.
+     * 
+     * @return \Illuminate\Http\RedirectResponse A redirect response to the list of furniture items with a success message.
+     */
     public function store(Request $request)
     {
         $request->validate([

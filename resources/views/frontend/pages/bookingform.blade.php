@@ -54,8 +54,8 @@
                                             <label>Start Time<span>*</span></label>
                                             <input type="time" name="booking_time_start" placeholder="" value="{{old('booking_time_start',$start_time)}}" required disabled>
                                             <input type = "hidden" name="booking_time_start" value="{{$start_time}}" >
-                                           @error('booking_time_start')
-                                                <span class='text-danger'>{{$message}}</span>
+                                            @error('booking_time_start')
+                                            <span class='text-danger'>{{$message}}</span>
                                             @enderror
                                         </div>
                                     </div>

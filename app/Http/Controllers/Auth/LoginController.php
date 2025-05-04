@@ -6,13 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-use Laravel\Socialite\Facades\Socialite; // Import Socialite here
-use App\Models\User; // Adjust namespace if needed
-use App\Models\Student; // Import the Student model
+use Laravel\Socialite\Facades\Socialite; 
+use App\Models\User; 
+use App\Models\Student; 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str; // Import Str for random string generation
-use Illuminate\Support\Facades\Hash; // Import Hash for password hashing
-
+use Illuminate\Support\Str; 
+use Illuminate\Support\Facades\Hash;
 class LoginController extends Controller
 {
     use AuthenticatesUsers;

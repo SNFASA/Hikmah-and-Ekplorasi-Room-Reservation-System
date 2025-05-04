@@ -48,7 +48,7 @@
             <!-- Item -->
             <div class="form-group" id="itemid-wrapper">
                 <label for="itemid" class="col-form-label">Item</label>
-                <input id="itemid" type="text" name="itemid" value="{{ $itemName }}" class="form-control" disabled>
+                <input id="itemid" type="text" name="itemid" value="{{ $itemName  }}" class="form-control" disabled>
                 @error('itemid')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror

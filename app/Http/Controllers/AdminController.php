@@ -18,6 +18,11 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+    /**
+     * Show the admin dashboard.
+     *
+     * 
+     */
     public function index() {
         // Data for pie chart
         $data = User::select(
@@ -60,6 +65,14 @@ class AdminController extends Controller
     
 
     // Profile Page
+    /**
+     * Display the profile of the authenticated user along with faculty offices and courses.
+     *
+     * This method fetches the authenticated user's profile, retrieves all faculty offices
+     * and courses from the database, and returns the profile view with the retrieved data.
+     *
+     * @return \Illuminate\View\View The profile view with user profile, courses, and faculty offices data.
+     */
     public function profile() {
         $profile = auth()->user(); // Fetch the authenticated user
         $facultyOffices = DB::table('faculty_Offices')->get(); // Get all faculty offices
@@ -67,6 +80,16 @@ class AdminController extends Controller
         return view('backend.users.profile', compact('profile', 'courses', 'facultyOffices')); // Return the profile view
     }
     
+    /**
+     * Update the profile of the specified user.
+     *
+     * @param \Illuminate\Http\Request $request The request object containing the profile data.
+     * @param int $id The ID of the user to update.
+     * @return \Illuminate\Http\RedirectResponse Redirects to the admin profile route with a success message.
+     *
+     * @throws \Illuminate\Database\Eloquent\ModelNotFoundException If the user is not found.
+     * @throws \Illuminate\Validation\ValidationException If the validation fails.
+     */
     public function profileUpdate(Request $request, $id) {
         $user = User::findOrFail($id);
     
@@ -184,6 +207,13 @@ class AdminController extends Controller
             }
         }
     }
+    /**
+     * Displays a pie chart on the admin dashboard with the number of users registered
+     * in the last 6 days, grouped by day of the week.
+     * 
+     * @param \Illuminate\Http\Request $request The request object containing the optional date range.
+     * @return \Illuminate\Http\Response Returns the view for the admin dashboard with the chart data.
+     */
     public function userPieChart(Request $request){
         // dd($request->all());
         $data = User::select(\DB::raw("COUNT(*) as count"), \DB::raw("DAYNAME(created_at) as day_name"), \DB::raw("DAY(created_at) as day"))

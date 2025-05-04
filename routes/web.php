@@ -147,6 +147,16 @@ Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(functio
     Route::put('/{id}', [RoomController::class, 'update'])->name('backend.room.update');
     Route::delete('/{id}', [RoomController::class, 'destroy'])->name('backend.room.destroy');
 });
+//room PPP
+Route::prefix('/ppp/rooms')->middleware(['auth', 'role:ppp'])->group(function () {
+    Route::get('/', [RoomPPPController::class, 'index'])->name('ppp.room.index');
+    Route::get('/create', [RoomPPPController::class, 'create'])->name('ppp.room.create');
+    Route::post('/', [RoomPPPController::class, 'store'])->name('ppp.room.store');
+    Route::get('/{id}', [RoomPPPController::class, 'show'])->name('ppp.room.show');
+    Route::get('/{id}/edit', [RoomPPPController::class, 'edit'])->name('ppp.room.edit');
+    Route::put('/{id}', [RoomPPPController::class, 'update'])->name('ppp.room.update');
+    Route::delete('/{id}', [RoomPPPController::class, 'destroy'])->name('ppp.room.destroy');
+});
 
 //maintenance
 Route::prefix('/admin/maintenances')->middleware(['auth', 'role:admin'])->group(function () {
@@ -168,7 +178,8 @@ Route::prefix('/ppp/maintenances')->middleware(['auth', 'role:ppp'])->group(func
     Route::get('/{id}/edit', [MaintenancePPPController::class, 'edit'])->name('ppp.maintenance.edit');
     Route::put('/{id}', [MaintenancePPPController::class, 'update'])->name('ppp.maintenance.update');
     Route::delete('/{id}', [MaintenancePPPController::class, 'destroy'])->name('ppp.maintenance.destroy');
-    Route::get('/maintenance/items', [MaintenancePPPController::class, 'getItems'])->name('maintenance.items');
+    Route::post('/maintenance/get-items', [MaintenanceController::class, 'getItems'])->name('maintenance.getItems');
+    ;
 });
 
 
@@ -205,7 +216,7 @@ Route::middleware(['auth', 'role:ppp'])->group(function () {
     // Furniture Routes
     Route::resource('/ppp/furniture', FurniturePPPController::class); 
     // Room Routes
-    //Route::resource('/ppp/room', RoomPPPController::class);
+    Route::resource('/ppp/room', RoomPPPController::class);
     //maintenance
     Route::resource('/ppp/maintenance', MaintenancePPPController::class);
 });
@@ -284,10 +295,12 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 
 // Booking form and filters home page 
 Route::get('/booking-filter', [BookingController::class, 'showFilterForm'])->name('booking.filter.form');
-Route::get('/filter-available-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms');
+Route::post('/filter-available-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms')->middleware('auth');
+
+
 //checkout room booking home page
 Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])->name('room.reserve');
-Route::post('/room.reserve/{id}', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
+Route::post('/room.reserve/{id} ', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
 // calander booking home page
 Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');  
 Route::get('/calendarAdmin', [BookingController::class, 'calendarAdmin'])->name('show.calendar.admin');

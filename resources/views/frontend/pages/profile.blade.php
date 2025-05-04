@@ -51,7 +51,7 @@
                                 <select name="facultyOffice" id="" class="form-control">
                                     <option value="">-----Select Role-----</option>
                                     @foreach($facultyOffices as $office)
-                                        <option value="{{ $office->no_facultyOffice }}">{{ $office->name }}</option>
+                                        <option value="{{ $office->no_facultyOffice }}" {{ $office->no_facultyOffice == $profile->facultyOffice ? 'selected' : '' }} data-name="{{$office->name}}">{{ $office->name }}</option>
                                     @endforeach
                                 </select>
                         </div>
@@ -60,7 +60,7 @@
                                 <select name="course" id="" class="form-control">
                                     <option value="">-----Select course-----</option>
                                         @foreach($courses as $course)
-                                            <option value="{{ $course->no_course }}">{{ $course->name }}</option>
+                                            <option value="{{ $course->no_course }} " {{ $course->no_course == $profile->course ? 'selected' : '' }} data-name="{{$course->name}}">{{ $course->name }}</option>
                                         @endforeach
                                 </select>
                         </div>

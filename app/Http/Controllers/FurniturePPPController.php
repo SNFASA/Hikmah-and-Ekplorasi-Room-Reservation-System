@@ -104,26 +104,27 @@ class FurniturePPPController extends Controller
     {
         // Fetch bookings
         $bookings = DB::table('bookings')
-            ->select(
-                'booking_date as start',
-                DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
-                DB::raw("'Booked' as title"),
-                DB::raw("'primary' as color")
-            )
-            ->get();
-    
-        // Fetch invalid schedule bookings
-        $invalidSchedules = DB::table('schedule_booking')
-            ->select(
-                'invalid_date as start',
-                DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
-                DB::raw("'Invalid' as title"),
-                DB::raw("'danger' as color")
-            )
-            ->get();
-    
-        // Merge events
-        $events = $bookings->merge($invalidSchedules);
+        ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
+        ->select(
+            'booking_date as start',
+            DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
+            DB::raw("CONCAT('Booked: ', rooms.name) as title"),
+            DB::raw("'#28a745' as color") // Green for booked events
+        )
+        ->get();
+
+    $invalidSchedules = DB::table('schedule_booking')
+        ->join('rooms', 'schedule_booking.roomid', '=', 'rooms.no_room')
+        ->select(
+            'invalid_date as start',
+            DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
+            DB::raw("CONCAT('Invalid: ', rooms.name) as title"),
+            DB::raw("'#dc3545' as color") // Red for invalid events
+        )
+        ->get();
+
+    // Merge events
+    $events = $bookings->merge($invalidSchedules);
     
         return view('frontend.pages.calendarBooking', ['events' => $events]);
     }

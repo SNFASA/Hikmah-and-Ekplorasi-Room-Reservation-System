@@ -19,6 +19,10 @@ use Illuminate\Validation\Rule;
 
 class FrontendController extends Controller
 {
+    /**
+     * Check if the user has access to the frontend pages. If not, throw a 403
+     * error. This middleware is applied to all methods in this controller.
+     */
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
@@ -35,6 +39,17 @@ class FrontendController extends Controller
         return redirect()->route($request->user()->role);
     }
     // Home method
+    /**
+     * Display the home page with initial data.
+     *
+     * This method initializes the data required for the home page view.
+     * It sets up empty collections and default values for various parameters
+     * such as room type, date, start time, end time, and categories for furniture
+     * and electronics. It then retrieves the categories for furniture and electronics
+     * from their respective models and passes all the data to the frontend index view.
+     *
+     * @return \Illuminate\View\View The view for the home page with the initialized data.
+     */
     public function home()
     {
     
