@@ -63,44 +63,16 @@ class HomeController extends Controller
         $end_time = $request->input('end_time');
         $furniture_category = $request->input('furniture_category', []);
         $electronic_category = $request->input('electronic_category', []);
-
+    
         // Validasi jika start_time dan end_time tidak konsisten
         if (($start_time && !$end_time) || (!$start_time && $end_time)) {
             request()->session()->flash('error', 'Both start and end time must be provided.');
             return redirect()->back();
         }
-
-        // Validasi untuk konflik waktu
-        if ($date && $start_time && $end_time) {
-            $conflictWithUnavailable = DB::table('schedule_booking')
-                ->where('invalid_date', $date)
-                ->where(function ($q) use ($start_time, $end_time) {
-                    $q->where('invalid_time_start', '<', $end_time)
-                      ->where('invalid_time_end', '>', $start_time);
-                })
-                ->exists();
-
-            if ($conflictWithUnavailable) {
-                request()->session()->flash('error', 'Selected time is unavailable due to schedule conflict.');
-                return redirect()->back(); // tukar 
-            }
-
-            $conflictWithBooked = DB::table('bookings')
-                ->where('booking_date', $date)
-                ->where(function ($q) use ($start_time, $end_time) {
-                    $q->where('booking_time_start', '<', $end_time)
-                      ->where('booking_time_end', '>', $start_time);
-                })
-                ->exists();
-
-            if ($conflictWithBooked) {
-                request()->session()->flash('error', 'Selected time is already booked for this room.');
-                return redirect()->back(); // tukar 
-            }
-        }
-
-        // Query untuk mendapatkan data `rooms`
+    
+        // Query asas bilik yang aktif & tapis ikut input
         $rooms = Room::query()
+            ->where('status', 'valid')
             ->when($type_room !== 'All', function ($query) use ($type_room) {
                 $query->where('type_room', $type_room);
             })
@@ -115,18 +87,56 @@ class HomeController extends Controller
                 });
             })
             ->get();
-
-        // Data untuk Filters
+    
+        // Validasi konflik masa berdasarkan setiap bilik
+        if ($date && $start_time && $end_time) {
+            foreach ($rooms as $room) {
+                $roomId = $room->no_room;
+    
+                // Semak konflik dengan jadual tidak tersedia
+                $conflictWithUnavailable = DB::table('schedule_booking')
+                    ->where('roomid', $roomId)
+                    ->where('invalid_date', $date)
+                    ->where(function ($q) use ($start_time, $end_time) {
+                        $q->where('invalid_time_start', '<', $end_time)
+                          ->where('invalid_time_end', '>', $start_time);
+                    })
+                    ->exists();
+    
+                if ($conflictWithUnavailable) {
+                    request()->session()->flash('error', "Room $roomId is unavailable at the selected time.");
+                    return redirect()->back();
+                }
+    
+                // Semak konflik dengan tempahan lain
+                $conflictWithBooked = DB::table('bookings')
+                    ->where('no_room', $roomId)
+                    ->where('booking_date', $date)
+                    ->where(function ($q) use ($start_time, $end_time) {
+                        $q->where('booking_time_start', '<', $end_time)
+                          ->where('booking_time_end', '>', $start_time);
+                    })
+                    ->exists();
+    
+                if ($conflictWithBooked) {
+                    request()->session()->flash('error', "Room $roomId is already booked at the selected time.");
+                    return redirect()->back();
+                }
+            }
+        }
+    
+        // Data untuk paparan filter
         $furnitureCategories = Furniture::getFurnitureCategories();
         $electronicCategories = Electronic::getElectronicCategories();
-
-        // Return View
+    
+        // Return view
         return view('frontend.index', compact(
             'rooms', 'furnitureCategories', 'electronicCategories',
             'type_room', 'date', 'start_time', 'end_time',
             'furniture_category', 'electronic_category'
         ));
     }
+    
       
     public function profile(){
         $profile=Auth()->user();

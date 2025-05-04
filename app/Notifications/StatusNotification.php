@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\BroadcastMessage;
-class StatusNotification extends Notification
+class StatusNotification extends Notification //implements ShouldQueue
 {
     use Queueable;
     private $details;
@@ -16,9 +16,20 @@ class StatusNotification extends Notification
      *
      * @return void
      */
-    public function __construct($details)
+
+     public $booking;
+     public $users;
+     public $furnitures;
+     public $electronics;
+     public $duration;
+    public function __construct($details ,$booking, $users, $furnitures, $electronics, $duration)
     {
         $this->details=$details;
+        $this->booking = $booking;
+        $this->users = $users;
+        $this->furnitures = $furnitures;
+        $this->electronics = $electronics;
+        $this->duration = $duration;
     }
 
     /**
@@ -29,8 +40,10 @@ class StatusNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['database','broadcast'];
+        \Log::info('via() called for: ' . $notifiable->email);
+        return ['mail'];
     }
+    
 
     /**
      * Get the mail representation of the notification.
@@ -38,15 +51,22 @@ class StatusNotification extends Notification
      * @param  mixed  $notifiable
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
-    // public function toMail($notifiable)
-    // {
-    //     return (new MailMessage)
-    //                 ->subject('Status Notification')
-    //                 ->from(env('MAIL_USERNAME','test@gmail.com'),'E-shop')
-    //                 ->line($this->details['title'])
-    //                 ->action('View Order', $this->details['actionURL'])
-    //                 ->line('Thank you!');
-    // }
+    public function toMail($notifiable)
+    {
+        \Log::info('Sending mail to: ' . $notifiable->email);
+        return (new MailMessage)
+            ->subject('📢 Booking Reminder: ' . $this->booking->room->name)
+            ->greeting('Hi ' . $notifiable->name . ',')
+            ->line('You have an upcoming room booking:')
+            ->line('📅 Date: ' . $this->booking->booking_date)
+            ->line('🕐 Time: ' . $this->booking->booking_time_start . ' - ' . $this->booking->booking_time_end)
+            ->line('⏱ Duration: ' . $this->duration . ' hour(s)')
+            ->line('👥 Students Involved:')
+            ->line(implode(', ', collect($this->users)->pluck('name')->toArray()))
+            ->line('🪑 Furnitures: ' . (count($this->furnitures) ? implode(', ', $this->furnitures) : 'None'))
+            ->line('⚡ Electronics: ' . (count($this->electronics) ? implode(', ', $this->electronics) : 'None'))
+            ->line('Thank you for using ' . config('app.name') . '!');
+    }
 
     /**
      * Get the array representation of the notification.

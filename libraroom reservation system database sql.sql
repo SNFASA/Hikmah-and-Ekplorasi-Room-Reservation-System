@@ -35,12 +35,17 @@ CREATE TABLE IF NOT EXISTS `bookings` (
   PRIMARY KEY (`id`),
   KEY `FK_bookings_rooms` (`no_room`),
   CONSTRAINT `FK_bookings_rooms` FOREIGN KEY (`no_room`) REFERENCES `rooms` (`no_room`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.bookings: ~2 rows (approximately)
+-- Dumping data for table libraroom reservation system.bookings: ~6 rows (approximately)
 INSERT INTO `bookings` (`id`, `booking_date`, `purpose`, `booking_time_start`, `booking_time_end`, `duration`, `no_room`, `phone_number`, `status`, `created_at`, `updated_at`) VALUES
 	(12, '2024-12-27', 'test1', '13:31:00', '16:31:00', 180, 34, '0102907671', 'approved', '2024-12-19 20:05:58', '2024-12-19 20:05:58'),
-	(13, '2024-12-31', 'test2', '16:06:00', '18:06:00', 120, 20, '0102907671', 'approved', '2024-12-19 20:07:20', '2024-12-19 20:07:20');
+	(13, '2024-12-31', 'test2', '16:06:00', '18:06:00', 120, 20, '0102907671', 'approved', '2024-12-19 20:07:20', '2024-12-19 20:07:20'),
+	(15, '2025-01-22', 'test booking (account user)', '15:35:00', '17:35:00', 120, 15, '0102907671', 'approved', '2025-01-01 07:36:16', '2025-01-02 07:32:39'),
+	(16, '2025-02-28', 'test1', '15:31:00', '18:31:00', 180, 34, '0102907671', 'approved', '2025-01-02 07:20:25', '2025-01-02 07:20:25'),
+	(17, '2025-01-16', 'test booking (account user)', '12:35:00', '13:35:00', 60, 34, '0102907671', 'approved', '2025-01-02 07:31:26', '2025-01-02 07:31:26'),
+	(18, '2025-01-22', 'last of the last . please GOd', '11:20:00', '14:20:00', 180, 37, '01151255671', 'approved', '2025-01-13 07:21:20', '2025-01-13 07:21:20'),
+	(20, '2025-01-16', 'Meeting', '14:45:00', '18:45:00', 240, 14, '01151255671', 'approved', '2025-01-14 10:49:55', '2025-01-14 10:49:55');
 
 -- Dumping structure for table libraroom reservation system.booking_user
 CREATE TABLE IF NOT EXISTS `booking_user` (
@@ -54,9 +59,9 @@ CREATE TABLE IF NOT EXISTS `booking_user` (
   KEY `FK_booking_user_list_student_booking` (`list_student_booking_id`),
   CONSTRAINT `FK_booking_user_bookings` FOREIGN KEY (`booking_id`) REFERENCES `bookings` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_booking_user_list_student_booking` FOREIGN KEY (`list_student_booking_id`) REFERENCES `list_student_booking` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.booking_user: ~8 rows (approximately)
+-- Dumping data for table libraroom reservation system.booking_user: ~26 rows (approximately)
 INSERT INTO `booking_user` (`id`, `booking_id`, `list_student_booking_id`, `created_at`, `updated_at`) VALUES
 	(24, 12, 2, NULL, NULL),
 	(25, 12, 3, NULL, NULL),
@@ -65,7 +70,30 @@ INSERT INTO `booking_user` (`id`, `booking_id`, `list_student_booking_id`, `crea
 	(28, 13, 2, NULL, NULL),
 	(29, 13, 3, NULL, NULL),
 	(30, 13, 4, NULL, NULL),
-	(31, 13, 5, NULL, NULL);
+	(31, 13, 5, NULL, NULL),
+	(42, 16, 5, NULL, NULL),
+	(43, 16, 2, NULL, NULL),
+	(44, 16, 3, NULL, NULL),
+	(45, 16, 4, NULL, NULL),
+	(46, 17, 5, NULL, NULL),
+	(47, 17, 9, NULL, NULL),
+	(48, 17, 2, NULL, NULL),
+	(49, 17, 3, NULL, NULL),
+	(50, 17, 4, NULL, NULL),
+	(51, 15, 5, NULL, NULL),
+	(52, 15, 9, NULL, NULL),
+	(53, 15, 2, NULL, NULL),
+	(54, 15, 3, NULL, NULL),
+	(55, 15, 4, NULL, NULL),
+	(56, 18, 2, NULL, NULL),
+	(57, 18, 3, NULL, NULL),
+	(58, 18, 4, NULL, NULL),
+	(59, 18, 5, NULL, NULL),
+	(65, 20, 2, NULL, NULL),
+	(66, 20, 3, NULL, NULL),
+	(67, 20, 4, NULL, NULL),
+	(68, 20, 5, NULL, NULL),
+	(69, 20, 10, NULL, NULL);
 
 -- Dumping structure for table libraroom reservation system.courses
 CREATE TABLE IF NOT EXISTS `courses` (
@@ -105,12 +133,15 @@ CREATE TABLE IF NOT EXISTS `electronic_equipment` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`no_electronicEquipment`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table libraroom reservation system.electronic_equipment: ~2 rows (approximately)
 INSERT INTO `electronic_equipment` (`no_electronicEquipment`, `name`, `category`, `status`, `created_at`, `updated_at`) VALUES
 	(8, 'ComputerHP', 'computer', 'Active', '2024-12-18 03:04:44', '2024-12-18 03:04:44'),
-	(9, 'LCD Projector Sony1', 'LCD Projector', 'Active', '2024-12-18 03:05:12', '2024-12-18 03:05:12');
+	(9, 'LCD Projector Sony1', 'LCD Projector', 'Active', '2024-12-18 03:05:12', '2024-12-18 03:05:12'),
+	(10, 'Computer1ACER', 'computer', 'Damage', '2025-01-02 08:31:44', '2025-01-02 08:31:44'),
+	(11, 'Computer12', 'computer', 'Damage', '2025-01-14 10:24:07', '2025-01-14 10:24:07'),
+	(12, 'Computer13', 'computer', 'Damage', '2025-01-14 10:24:20', '2025-01-14 10:24:20');
 
 -- Dumping structure for table libraroom reservation system.electronic_equipment_room
 CREATE TABLE IF NOT EXISTS `electronic_equipment_room` (
@@ -124,9 +155,9 @@ CREATE TABLE IF NOT EXISTS `electronic_equipment_room` (
   KEY `FK_electronic_equipment_room_electronic_equipment` (`electronic_equipment_id`),
   CONSTRAINT `FK_electronic_equipment_room_electronic_equipment` FOREIGN KEY (`electronic_equipment_id`) REFERENCES `electronic_equipment` (`no_electronicEquipment`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_electronic_equipment_room_rooms` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`no_room`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.electronic_equipment_room: ~24 rows (approximately)
+-- Dumping data for table libraroom reservation system.electronic_equipment_room: ~27 rows (approximately)
 INSERT INTO `electronic_equipment_room` (`id`, `room_id`, `electronic_equipment_id`, `created_at`, `updated_at`) VALUES
 	(7, 16, 8, NULL, NULL),
 	(8, 17, 8, NULL, NULL),
@@ -151,7 +182,10 @@ INSERT INTO `electronic_equipment_room` (`id`, `room_id`, `electronic_equipment_
 	(27, 37, 8, NULL, NULL),
 	(28, 37, 9, NULL, NULL),
 	(29, 38, 9, NULL, NULL),
-	(30, 39, 9, NULL, NULL);
+	(30, 39, 9, NULL, NULL),
+	(31, 47, 8, NULL, NULL),
+	(32, 47, 9, NULL, NULL),
+	(33, 47, 10, NULL, NULL);
 
 -- Dumping structure for table libraroom reservation system.faculty_offices
 CREATE TABLE IF NOT EXISTS `faculty_offices` (
@@ -193,9 +227,9 @@ CREATE TABLE IF NOT EXISTS `furniture` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`no_furniture`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.furniture: ~11 rows (approximately)
+-- Dumping data for table libraroom reservation system.furniture: ~12 rows (approximately)
 INSERT INTO `furniture` (`no_furniture`, `name`, `category`, `status`, `created_at`, `updated_at`) VALUES
 	(10, 'Chair1', 'Chair', 'Active', '2024-12-18 03:05:30', '2024-12-18 03:05:30'),
 	(11, 'Japanese desk1', 'Japaness Table', 'Active', '2024-12-18 03:05:53', '2024-12-18 03:06:17'),
@@ -207,7 +241,11 @@ INSERT INTO `furniture` (`no_furniture`, `name`, `category`, `status`, `created_
 	(17, 'Chair3', 'Chair', 'Active', '2024-12-18 03:07:39', '2024-12-18 03:07:39'),
 	(18, 'Japanese desk3', 'Japaness Table', 'Active', '2024-12-18 03:11:06', '2024-12-18 03:11:06'),
 	(19, 'Japanese desk4', 'Japaness Table', 'Active', '2024-12-18 03:11:16', '2024-12-18 03:11:16'),
-	(20, 'Whiteboard', 'Whiteboard', 'Active', '2024-12-18 03:21:07', '2024-12-18 03:21:07');
+	(20, 'Whiteboard', 'Whiteboard', 'Active', '2024-12-18 03:21:07', '2024-12-18 03:21:07'),
+	(21, 'desk12', 'Desk', 'Damage', '2025-01-14 06:15:52', '2025-01-14 06:15:52'),
+	(22, 'desk13', 'Desk', 'Damage', '2025-01-14 10:23:02', '2025-01-14 10:23:02'),
+	(23, 'chair 45', 'Chair', 'Damage', '2025-01-14 10:23:29', '2025-01-14 10:23:29'),
+	(24, 'chair 46', 'Chair', 'Damage', '2025-01-14 10:23:47', '2025-01-14 10:23:47');
 
 -- Dumping structure for table libraroom reservation system.furniture_room
 CREATE TABLE IF NOT EXISTS `furniture_room` (
@@ -221,9 +259,9 @@ CREATE TABLE IF NOT EXISTS `furniture_room` (
   KEY `FK_furniture_room_furniture` (`furniture_id`),
   CONSTRAINT `FK_furniture_room_furniture` FOREIGN KEY (`furniture_id`) REFERENCES `furniture` (`no_furniture`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_furniture_room_rooms` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`no_room`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=78 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.furniture_room: ~65 rows (approximately)
+-- Dumping data for table libraroom reservation system.furniture_room: ~68 rows (approximately)
 INSERT INTO `furniture_room` (`id`, `room_id`, `furniture_id`, `created_at`, `updated_at`) VALUES
 	(7, 14, 11, NULL, NULL),
 	(8, 15, 18, NULL, NULL),
@@ -289,7 +327,10 @@ INSERT INTO `furniture_room` (`id`, `room_id`, `furniture_id`, `created_at`, `up
 	(68, 44, 13, NULL, NULL),
 	(69, 45, 20, NULL, NULL),
 	(70, 45, 16, NULL, NULL),
-	(71, 45, 15, NULL, NULL);
+	(71, 45, 15, NULL, NULL),
+	(75, 47, 10, NULL, NULL),
+	(76, 47, 14, NULL, NULL),
+	(77, 47, 12, NULL, NULL);
 
 -- Dumping structure for table libraroom reservation system.list_student_booking
 CREATE TABLE IF NOT EXISTS `list_student_booking` (
@@ -300,9 +341,9 @@ CREATE TABLE IF NOT EXISTS `list_student_booking` (
   PRIMARY KEY (`id`),
   KEY `FK_list_student_booking_users` (`no_matriks`),
   CONSTRAINT `FK_list_student_booking_users` FOREIGN KEY (`no_matriks`) REFERENCES `users` (`no_matriks`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.list_student_booking: ~8 rows (approximately)
+-- Dumping data for table libraroom reservation system.list_student_booking: ~9 rows (approximately)
 INSERT INTO `list_student_booking` (`id`, `no_matriks`, `created_at`, `updated_at`) VALUES
 	(1, 'AI230077', '2024-12-13 00:17:39', '2024-12-13 00:17:39'),
 	(2, 'AI230046', '2024-12-13 00:17:39', '2024-12-13 00:17:39'),
@@ -311,7 +352,9 @@ INSERT INTO `list_student_booking` (`id`, `no_matriks`, `created_at`, `updated_a
 	(5, 'AB230016', '2024-12-13 00:17:39', '2024-12-13 00:17:39'),
 	(6, 'AI230008', '2024-12-15 07:41:10', '2024-12-15 07:41:10'),
 	(7, 'AI230009', '2024-12-15 07:41:10', '2024-12-15 07:41:10'),
-	(8, 'AI230010', '2024-12-15 07:41:10', '2024-12-15 07:41:10');
+	(8, 'AI230010', '2024-12-15 07:41:10', '2024-12-15 07:41:10'),
+	(9, 'Ad230001', '2025-01-01 07:36:16', '2025-01-01 07:36:16'),
+	(10, 'CI230133', '2025-01-14 06:03:17', '2025-01-14 06:03:17');
 
 -- Dumping structure for table libraroom reservation system.maintenance
 CREATE TABLE IF NOT EXISTS `maintenance` (
@@ -329,11 +372,12 @@ CREATE TABLE IF NOT EXISTS `maintenance` (
   PRIMARY KEY (`id`),
   KEY `FK_maintenance_rooms` (`room_id`),
   CONSTRAINT `FK_maintenance_rooms` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`no_room`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.maintenance: ~3 rows (approximately)
+-- Dumping data for table libraroom reservation system.maintenance: ~2 rows (approximately)
 INSERT INTO `maintenance` (`id`, `title`, `description`, `itemType`, `item_id`, `item_text`, `room_id`, `date_maintenance`, `status`, `created_at`, `updated_at`) VALUES
-	(2, 'test 2', 'test 2', 'electronic_equipment', 2, NULL, NULL, '2024-12-16', 'pending', '2024-12-13 10:19:09', '2024-12-13 11:18:28');
+	(7, 'Computer damage', 'test', 'electronic_equipment', 10, NULL, 28, '2025-01-23', 'in_progress', '2025-01-02 11:59:40', '2025-01-14 06:19:12'),
+	(8, 'desk 12 rosak', 'rosak', 'furniture', 21, NULL, 33, '2025-01-15', 'pending', '2025-01-14 06:19:57', '2025-01-14 06:19:57');
 
 -- Dumping structure for table libraroom reservation system.migrations
 CREATE TABLE IF NOT EXISTS `migrations` (
@@ -408,7 +452,9 @@ CREATE TABLE IF NOT EXISTS `password_reset_tokens` (
   PRIMARY KEY (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.password_reset_tokens: ~0 rows (approximately)
+-- Dumping data for table libraroom reservation system.password_reset_tokens: ~1 rows (approximately)
+INSERT INTO `password_reset_tokens` (`email`, `token`, `created_at`) VALUES
+	('syednabil.0413@gmail.com', '$2y$12$PQAIrDR9.n1PiyavgRJF0.tEz0Rw8CuGI5e.lyEYKBW/GdcYkkYsS', '2025-01-14 06:32:03');
 
 -- Dumping structure for table libraroom reservation system.personal_access_tokens
 CREATE TABLE IF NOT EXISTS `personal_access_tokens` (
@@ -439,9 +485,9 @@ CREATE TABLE IF NOT EXISTS `rooms` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `type_room` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`no_room`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.rooms: ~31 rows (approximately)
+-- Dumping data for table libraroom reservation system.rooms: ~32 rows (approximately)
 INSERT INTO `rooms` (`no_room`, `name`, `capacity`, `status`, `created_at`, `updated_at`, `type_room`) VALUES
 	(14, 'HIKMAH2', 10, 'valid', '2024-12-18 03:10:07', '2024-12-18 03:10:07', 'HIKMAH'),
 	(15, 'HIKMAH6', 10, 'valid', '2024-12-18 03:11:34', '2024-12-18 03:11:34', 'HIKMAH'),
@@ -474,7 +520,8 @@ INSERT INTO `rooms` (`no_room`, `name`, `capacity`, `status`, `created_at`, `upd
 	(42, 'EKSPLORASI10', 10, 'valid', '2024-12-18 03:25:26', '2024-12-18 03:25:26', 'EKSPLORASI'),
 	(43, 'EKSPLORASI12', 10, 'valid', '2024-12-18 03:26:11', '2024-12-18 03:26:11', 'EKSPLORASI'),
 	(44, 'EKSPLORASI14', 10, 'valid', '2024-12-18 03:26:36', '2024-12-18 03:26:36', 'EKSPLORASI'),
-	(45, 'EKSPLORASI16', 10, 'valid', '2024-12-18 03:26:58', '2024-12-18 03:26:58', 'EKSPLORASI');
+	(45, 'EKSPLORASI16', 10, 'valid', '2024-12-18 03:26:58', '2024-12-18 03:26:58', 'EKSPLORASI'),
+	(47, 'Bilik Nabila', 1, 'valid', '2025-01-14 06:44:45', '2025-01-14 06:45:56', 'HIKMAH');
 
 -- Dumping structure for table libraroom reservation system.schedule_booking
 CREATE TABLE IF NOT EXISTS `schedule_booking` (
@@ -488,9 +535,12 @@ CREATE TABLE IF NOT EXISTS `schedule_booking` (
   PRIMARY KEY (`id`),
   KEY `FK_schedule_booking_rooms` (`roomid`),
   CONSTRAINT `FK_schedule_booking_rooms` FOREIGN KEY (`roomid`) REFERENCES `rooms` (`no_room`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.schedule_booking: ~1 rows (approximately)
+-- Dumping data for table libraroom reservation system.schedule_booking: ~2 rows (approximately)
+INSERT INTO `schedule_booking` (`id`, `invalid_date`, `invalid_time_start`, `invalid_time_end`, `roomid`, `created_at`, `updated_at`) VALUES
+	(3, '2025-01-03', '00:00:00', '23:59:00', 14, '2025-01-02 07:42:28', '2025-01-14 06:22:03'),
+	(4, '2025-01-17', '00:00:00', '23:59:00', 20, '2025-01-14 06:24:14', '2025-01-14 06:24:14');
 
 -- Dumping structure for table libraroom reservation system.settings
 CREATE TABLE IF NOT EXISTS `settings` (
@@ -522,6 +572,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `facultyOffice` bigint unsigned DEFAULT NULL,
   `course` bigint unsigned DEFAULT NULL,
   `no_matriks` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -532,40 +583,42 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `users_course_index` (`course`),
   CONSTRAINT `FK_users_courses` FOREIGN KEY (`course`) REFERENCES `courses` (`no_course`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `FK_users_faculty_offices` FOREIGN KEY (`facultyOffice`) REFERENCES `faculty_offices` (`no_facultyOffice`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table libraroom reservation system.users: ~29 rows (approximately)
-INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role`, `facultyOffice`, `course`, `no_matriks`, `created_at`, `updated_at`) VALUES
-	(3, 'NABIL', 'nabil@gmail.com', NULL, '$2y$12$7YC9y36czWNax1tAr4/3nOn/pt.rytYg74BFkMuU4HmQ06GXOP3QK', 'admin', 1, 1, 'MATR0001', '2024-12-06 00:32:15', '2024-12-14 02:49:08'),
-	(4, 'SYED NABIL', 'syed0413@gmail.com', NULL, '$2y$12$e.zD.sB3TRFvjWvqJybyueNoS7TjQd4nrOmAfc.Oqpu8JYokbqlay', 'user', 1, 1, 'AI230046', '2024-12-06 03:25:46', '2024-12-22 02:12:58'),
-	(5, 'NurAin Zaf', 'ZafZul@gmail.com', NULL, '$2y$12$ue2oErGNMn1LMqO2hx37aeJYBUFCnGQAItlSOGkDV2rJOHvTK7062', 'user', 1, 1, 'Ai230065', '2024-12-07 01:59:46', '2024-12-07 01:59:46'),
-	(7, 'Nik faiz', 'Nikfazi@gmail.com', NULL, '$2y$12$BwKOv.rrg4DUo1ySGMYlfu3qu2ihOLBWeHKg72.Kx4EYoKct3VE4W', 'user', 1, 1, 'AI230087', '2024-12-10 21:51:30', '2024-12-10 21:51:30'),
-	(8, 'Fazly', 'Faz@gmail.com', NULL, '$2y$12$7fhAiO/CHYoRZm4BhIEfrekatbNs1eturFNliB42syHr.6Q7/OUCK', 'user', 1, 1, 'AB230016', '2024-12-10 21:52:27', '2024-12-10 21:52:27'),
-	(9, 'IRFAN', 'Ipanalpha@gmail.com', NULL, '$2y$12$XwyG2hvYT2/DuRuGQPbxB.xQzF9L7AMLAbnNf0WJy5ZhpnMPGM0nW', 'user', 1, 1, 'AI230077', '2024-12-10 21:53:52', '2024-12-10 21:53:52'),
-	(10, 'PPP', 'ppp12@gmail.com', NULL, '$2y$12$Q4QIQnEkjj46PGDADkK7mujFsJ0H/Gjk9w0HLVTl0owqh0wn95gs2', 'ppp', NULL, NULL, 'P00012', '2024-12-13 01:06:13', '2024-12-13 01:06:13'),
-	(11, 'SHAM', 'CI230043@student.uthm.edu.my', NULL, '$2y$12$CjH/Glz3iO8X8QirkHKhduy2UjB3WhOHxmgJ6GWCF6X35uyy3fqcy', 'user', NULL, NULL, 'CI230043', '2024-12-15 05:06:13', '2024-12-15 05:06:13'),
-	(12, 'SHAM', 'CB00043@student.uthm.edu.my', NULL, '$2y$12$nf1MjfpZpngHlt6E73eD.OvP0urXCUk7foz37SVnuWVErkK40FTki', 'user', NULL, NULL, 'CB00043', '2024-12-15 05:24:24', '2024-12-15 05:24:24'),
-	(13, 'AKHAI', 'CS0323@student.uthm.edu.my', NULL, '$2y$12$X938j8XvKy/BW235RdUiwud.kY6H8zGQfnjp9VaO0o34MYokRa4FK', 'user', NULL, NULL, 'CS0323', '2024-12-15 05:24:25', '2024-12-15 05:24:25'),
-	(14, 'neil', 'AI23434@student.uthm.edu.my', NULL, '$2y$12$bki6f09gATs4ljSvrYxbHeCuYe.R1UZoMdnbVNYPIccQ.rR6Qy/.u', 'user', NULL, NULL, 'AI23434', '2024-12-15 06:53:00', '2024-12-15 06:53:00'),
-	(15, 'aiman', 'CM0134@student.uthm.edu.my', NULL, '$2y$12$Ivl.81y8LIkhOUZSgasFL.67huuTyi66Hg8rfsVAa7zpDCjio641G', 'user', NULL, NULL, 'CM0134', '2024-12-15 06:53:00', '2024-12-15 06:53:00'),
-	(16, 'nazmi', 'CD231177@student.uthm.edu.my', NULL, '$2y$12$R8DsO7UD8FDAkOcdsQUEPuA6kUVQOY9C.DC282kSToFp38JpfAyCu', 'user', NULL, NULL, 'CD231177', '2024-12-15 06:53:01', '2024-12-15 06:53:01'),
-	(17, 'SYED', 'CA232045@student.uthm.edu.my', NULL, '$2y$12$UZ5agc5s43VDmjk2fhjG1.QZdV0Orvjtr2RuTGokhAx48k346RGfm', 'user', NULL, NULL, 'CA232045', '2024-12-15 06:53:01', '2024-12-15 06:53:01'),
-	(18, 'Naffisa', 'CI230076@student.uthm.edu.my', NULL, '$2y$12$zl3ugeLjPY5WB5NukarayuL94JjoHJv5hkpwRskZBGkL0GHdBl.Vq', 'user', NULL, NULL, 'CI230076', '2024-12-15 07:02:27', '2024-12-15 07:02:27'),
-	(19, 'Aimi', 'AI233452@student.uthm.edu.my', NULL, '$2y$12$0GhNXm/TuAfJMkdTRMJ.HOqrMMHFYXvrRAblZ9.od7vxLGZhj6t0S', 'user', NULL, NULL, 'AI233452', '2024-12-15 07:02:27', '2024-12-15 07:02:27'),
-	(20, 'NAJIHA', 'AI23012@student.uthm.edu.my', NULL, '$2y$12$J5doTen4czOj3LKtBzbh2eUwin3FSPtO.QAsQfOY4w.Hh4LC7QLZu', 'user', NULL, NULL, 'AI23012', '2024-12-15 07:02:28', '2024-12-15 07:02:28'),
-	(21, 'AIMI', 'CI230231@student.uthm.edu.my', NULL, '$2y$12$Sez2ZGkRk0iP1RI/ey2O/.2D8kVyGipvc6SDomHH4Zx3siUlfXWh2', 'user', NULL, NULL, 'CI230231', '2024-12-15 07:06:02', '2024-12-15 07:06:02'),
-	(22, 'NAJIHA', 'CI230052@student.uthm.edu.my', NULL, '$2y$12$5LW5FviPtqYyy9/nv0j.EOb./1atPRvyzSf/.rpeprXnxo429ZJoC', 'user', NULL, NULL, 'CI230052', '2024-12-15 07:06:03', '2024-12-15 07:06:03'),
-	(23, 'naffisa', 'CI232323@student.uthm.edu.my', NULL, '$2y$12$OLaGr99MExPXgyNk1EFZdOXBbOKMg5XADAwNglsvg3ixHYROy2kDK', 'user', NULL, NULL, 'CI232323', '2024-12-15 07:06:03', '2024-12-15 07:06:03'),
-	(24, 'mail', 'Ai230001@student.uthm.edu.my', NULL, '$2y$12$uDST55qJkPVQXO2suSNad.UBtvXXxr1TuS.yMOjeoZH1ITwD9mDYi', 'user', NULL, NULL, 'Ai230001', '2024-12-15 07:30:47', '2024-12-15 07:30:47'),
-	(25, 'Abu', 'Ai230002@student.uthm.edu.my', NULL, '$2y$12$9IA/Um9c5/dklsSBzMYKLOUkrgsyqHlJPe74P2dK9LE1sAAvh/05m', 'user', NULL, NULL, 'Ai230002', '2024-12-15 07:30:48', '2024-12-15 07:30:48'),
-	(26, 'Sofia', 'AI230003@student.uthm.edu.my', NULL, '$2y$12$tf2uZCaZftb9y74SmD.cMOHSPC0g7aEbufxENeCFuFZGkV4bEUKwm', 'user', NULL, NULL, 'AI230003', '2024-12-15 07:30:48', '2024-12-15 07:30:48'),
-	(27, 'Aisyah', 'AI230004@student.uthm.edu.my', NULL, '$2y$12$FYEc1fGwYlKTPc40cyiUDulSIWprBpseSM5iNyN3X71yTpFBTWVj6', 'user', NULL, NULL, 'AI230004', '2024-12-15 07:30:49', '2024-12-15 07:30:49'),
-	(28, 'Nafiz', 'Ai230005@student.uthm.edu.my', NULL, '$2y$12$z6OKewtDjMVNs1pY6NrEF.C6s4aucB5iSDD2aO/lw9QBXTY9gWAzy', 'user', NULL, NULL, 'Ai230005', '2024-12-15 07:35:23', '2024-12-15 07:35:23'),
-	(29, 'Farhan', 'Ai230006@student.uthm.edu.my', NULL, '$2y$12$KfRALkYeZyf83AulJs7Vue/hlORSbOJaN.xxpEVkmCCeTgnKT.DtO', 'user', NULL, NULL, 'Ai230006', '2024-12-15 07:35:23', '2024-12-15 07:35:23'),
-	(30, 'NAZIM FARHAN', 'AI230007@student.uthm.edu.my', NULL, '$2y$12$86mnXfcbMUxokISLAjgWeOmpCAG6.KcTxMfMbr7wBSQOTFMT3zN2O', 'user', NULL, NULL, 'AI230007', '2024-12-15 07:35:24', '2024-12-15 07:35:24'),
-	(31, 'SYARIFAH', 'AI230008@student.uthm.edu.my', NULL, '$2y$12$WPW7rATV9W1sA4goqRxpXOPiDZkjmdcMVrUJ/XZ11AF4AIutrwICW', 'user', NULL, NULL, 'AI230008', '2024-12-15 07:41:09', '2024-12-15 07:41:09'),
-	(32, 'FAIZ', 'AI230009@student.uthm.edu.my', NULL, '$2y$12$Vo.S4R/paWJZOKiIcMgCK./eFVgo/Vzf1N9yt/h/X0os5UpWISTMK', 'user', NULL, NULL, 'AI230009', '2024-12-15 07:41:09', '2024-12-15 07:41:09'),
-	(33, 'WAN ZAHARAH', 'AI230010@student.uthm.edu.my', NULL, '$2y$12$dzGLIaiwujvNT98KnfAtguny/6HjXnFru3osnx2M4AmjmsSyjImvu', 'user', NULL, NULL, 'AI230010', '2024-12-15 07:41:10', '2024-12-15 07:41:10');
+-- Dumping data for table libraroom reservation system.users: ~32 rows (approximately)
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role`, `facultyOffice`, `course`, `no_matriks`, `remember_token`, `created_at`, `updated_at`) VALUES
+	(3, 'NABIL', 'nabil@gmail.com', NULL, '$2y$12$7YC9y36czWNax1tAr4/3nOn/pt.rytYg74BFkMuU4HmQ06GXOP3QK', 'admin', 1, 1, 'MATR0001', NULL, '2024-12-06 00:32:15', '2024-12-14 02:49:08'),
+	(4, 'SYED NABIL', 'syed0413@gmail.com', NULL, '$2y$12$e.zD.sB3TRFvjWvqJybyueNoS7TjQd4nrOmAfc.Oqpu8JYokbqlay', 'user', 1, 1, 'AI230046', 'I55HCJgZNzf1HzSCmPluwoIIz97dx3QPKsTXf0qa64SmCqhsEia7jWDaKTZG', '2024-12-06 03:25:46', '2024-12-22 02:12:58'),
+	(5, 'NurAin Zaf', 'ZafZul@gmail.com', NULL, '$2y$12$ue2oErGNMn1LMqO2hx37aeJYBUFCnGQAItlSOGkDV2rJOHvTK7062', 'user', 1, 1, 'Ai230065', NULL, '2024-12-07 01:59:46', '2024-12-07 01:59:46'),
+	(7, 'Nik faiz', 'Nikfazi@gmail.com', NULL, '$2y$12$BwKOv.rrg4DUo1ySGMYlfu3qu2ihOLBWeHKg72.Kx4EYoKct3VE4W', 'user', 1, 1, 'AI230087', NULL, '2024-12-10 21:51:30', '2024-12-10 21:51:30'),
+	(8, 'Fazly', 'Faz@gmail.com', NULL, '$2y$12$7fhAiO/CHYoRZm4BhIEfrekatbNs1eturFNliB42syHr.6Q7/OUCK', 'user', 1, 1, 'AB230016', NULL, '2024-12-10 21:52:27', '2024-12-10 21:52:27'),
+	(9, 'IRFAN', 'Ipanalpha@gmail.com', NULL, '$2y$12$XwyG2hvYT2/DuRuGQPbxB.xQzF9L7AMLAbnNf0WJy5ZhpnMPGM0nW', 'user', 1, 1, 'AI230077', NULL, '2024-12-10 21:53:52', '2024-12-10 21:53:52'),
+	(10, 'PPP', 'ppp12@gmail.com', NULL, '$2y$12$Q4QIQnEkjj46PGDADkK7mujFsJ0H/Gjk9w0HLVTl0owqh0wn95gs2', 'ppp', NULL, NULL, 'P00012', NULL, '2024-12-13 01:06:13', '2024-12-13 01:06:13'),
+	(12, 'SHAM', 'CB00043@student.uthm.edu.my', NULL, '$2y$12$nf1MjfpZpngHlt6E73eD.OvP0urXCUk7foz37SVnuWVErkK40FTki', 'user', NULL, NULL, 'CB00043', NULL, '2024-12-15 05:24:24', '2024-12-15 05:24:24'),
+	(13, 'AKHAI', 'CS0323@student.uthm.edu.my', NULL, '$2y$12$X938j8XvKy/BW235RdUiwud.kY6H8zGQfnjp9VaO0o34MYokRa4FK', 'user', NULL, NULL, 'CS0323', NULL, '2024-12-15 05:24:25', '2024-12-15 05:24:25'),
+	(14, 'neil', 'AI23434@student.uthm.edu.my', NULL, '$2y$12$bki6f09gATs4ljSvrYxbHeCuYe.R1UZoMdnbVNYPIccQ.rR6Qy/.u', 'user', NULL, NULL, 'AI23434', NULL, '2024-12-15 06:53:00', '2024-12-15 06:53:00'),
+	(15, 'aiman', 'CM0134@student.uthm.edu.my', NULL, '$2y$12$Ivl.81y8LIkhOUZSgasFL.67huuTyi66Hg8rfsVAa7zpDCjio641G', 'user', NULL, NULL, 'CM0134', NULL, '2024-12-15 06:53:00', '2024-12-15 06:53:00'),
+	(16, 'nazmi', 'CD231177@student.uthm.edu.my', NULL, '$2y$12$R8DsO7UD8FDAkOcdsQUEPuA6kUVQOY9C.DC282kSToFp38JpfAyCu', 'user', NULL, NULL, 'CD231177', NULL, '2024-12-15 06:53:01', '2024-12-15 06:53:01'),
+	(17, 'SYED', 'CA232045@student.uthm.edu.my', NULL, '$2y$12$UZ5agc5s43VDmjk2fhjG1.QZdV0Orvjtr2RuTGokhAx48k346RGfm', 'user', NULL, NULL, 'CA232045', NULL, '2024-12-15 06:53:01', '2024-12-15 06:53:01'),
+	(18, 'Naffisa', 'CI230076@student.uthm.edu.my', NULL, '$2y$12$zl3ugeLjPY5WB5NukarayuL94JjoHJv5hkpwRskZBGkL0GHdBl.Vq', 'user', NULL, NULL, 'CI230076', NULL, '2024-12-15 07:02:27', '2024-12-15 07:02:27'),
+	(19, 'Aimi', 'AI233452@student.uthm.edu.my', NULL, '$2y$12$0GhNXm/TuAfJMkdTRMJ.HOqrMMHFYXvrRAblZ9.od7vxLGZhj6t0S', 'user', NULL, NULL, 'AI233452', NULL, '2024-12-15 07:02:27', '2024-12-15 07:02:27'),
+	(20, 'NAJIHA', 'AI23012@student.uthm.edu.my', NULL, '$2y$12$J5doTen4czOj3LKtBzbh2eUwin3FSPtO.QAsQfOY4w.Hh4LC7QLZu', 'user', NULL, NULL, 'AI23012', NULL, '2024-12-15 07:02:28', '2024-12-15 07:02:28'),
+	(21, 'AIMI', 'CI230231@student.uthm.edu.my', NULL, '$2y$12$Sez2ZGkRk0iP1RI/ey2O/.2D8kVyGipvc6SDomHH4Zx3siUlfXWh2', 'user', NULL, NULL, 'CI230231', NULL, '2024-12-15 07:06:02', '2024-12-15 07:06:02'),
+	(22, 'NAJIHA', 'CI230052@student.uthm.edu.my', NULL, '$2y$12$5LW5FviPtqYyy9/nv0j.EOb./1atPRvyzSf/.rpeprXnxo429ZJoC', 'user', NULL, NULL, 'CI230052', NULL, '2024-12-15 07:06:03', '2024-12-15 07:06:03'),
+	(23, 'naffisa', 'CI232323@student.uthm.edu.my', NULL, '$2y$12$OLaGr99MExPXgyNk1EFZdOXBbOKMg5XADAwNglsvg3ixHYROy2kDK', 'user', NULL, NULL, 'CI232323', NULL, '2024-12-15 07:06:03', '2024-12-15 07:06:03'),
+	(24, 'mail', 'Ai230001@student.uthm.edu.my', NULL, '$2y$12$uDST55qJkPVQXO2suSNad.UBtvXXxr1TuS.yMOjeoZH1ITwD9mDYi', 'user', NULL, NULL, 'Ai230001', NULL, '2024-12-15 07:30:47', '2024-12-15 07:30:47'),
+	(25, 'Abu', 'Ai230002@student.uthm.edu.my', NULL, '$2y$12$9IA/Um9c5/dklsSBzMYKLOUkrgsyqHlJPe74P2dK9LE1sAAvh/05m', 'user', NULL, NULL, 'Ai230002', NULL, '2024-12-15 07:30:48', '2024-12-15 07:30:48'),
+	(26, 'Sofia', 'AI230003@student.uthm.edu.my', NULL, '$2y$12$tf2uZCaZftb9y74SmD.cMOHSPC0g7aEbufxENeCFuFZGkV4bEUKwm', 'user', NULL, NULL, 'AI230003', NULL, '2024-12-15 07:30:48', '2024-12-15 07:30:48'),
+	(27, 'Aisyah', 'AI230004@student.uthm.edu.my', NULL, '$2y$12$FYEc1fGwYlKTPc40cyiUDulSIWprBpseSM5iNyN3X71yTpFBTWVj6', 'user', NULL, NULL, 'AI230004', NULL, '2024-12-15 07:30:49', '2024-12-15 07:30:49'),
+	(28, 'Nafiz', 'Ai230005@student.uthm.edu.my', NULL, '$2y$12$z6OKewtDjMVNs1pY6NrEF.C6s4aucB5iSDD2aO/lw9QBXTY9gWAzy', 'user', NULL, NULL, 'Ai230005', NULL, '2024-12-15 07:35:23', '2024-12-15 07:35:23'),
+	(29, 'Farhan', 'Ai230006@student.uthm.edu.my', NULL, '$2y$12$KfRALkYeZyf83AulJs7Vue/hlORSbOJaN.xxpEVkmCCeTgnKT.DtO', 'user', NULL, NULL, 'Ai230006', NULL, '2024-12-15 07:35:23', '2024-12-15 07:35:23'),
+	(30, 'NAZIM FARHAN', 'AI230007@student.uthm.edu.my', NULL, '$2y$12$86mnXfcbMUxokISLAjgWeOmpCAG6.KcTxMfMbr7wBSQOTFMT3zN2O', 'user', NULL, NULL, 'AI230007', NULL, '2024-12-15 07:35:24', '2024-12-15 07:35:24'),
+	(31, 'SYARIFAH', 'AI230008@student.uthm.edu.my', NULL, '$2y$12$WPW7rATV9W1sA4goqRxpXOPiDZkjmdcMVrUJ/XZ11AF4AIutrwICW', 'user', NULL, NULL, 'AI230008', NULL, '2024-12-15 07:41:09', '2024-12-15 07:41:09'),
+	(32, 'FAIZ', 'AI230009@student.uthm.edu.my', NULL, '$2y$12$Vo.S4R/paWJZOKiIcMgCK./eFVgo/Vzf1N9yt/h/X0os5UpWISTMK', 'user', NULL, NULL, 'AI230009', NULL, '2024-12-15 07:41:09', '2024-12-15 07:41:09'),
+	(33, 'WAN ZAHARAH', 'AI230010@student.uthm.edu.my', NULL, '$2y$12$dzGLIaiwujvNT98KnfAtguny/6HjXnFru3osnx2M4AmjmsSyjImvu', 'user', NULL, NULL, 'AI230010', NULL, '2024-12-15 07:41:10', '2024-12-15 07:41:10'),
+	(34, 'Ahmad', 'Ad230001@student.uthm.edu.my', NULL, '$2y$12$W.pIS4mvRn628DctUFMLzOF4YLE89fx85Tnx730VeJKSmSreE6X9a', 'user', NULL, NULL, 'Ad230001', NULL, '2025-01-01 07:36:16', '2025-01-01 07:36:16'),
+	(37, 'SYED NABIL AFIFI BIN SYED AZIMAN', 'syednabil.0413@gmail.com', NULL, '$2y$12$Ny93WAqHMJHsMP.TnlHziOqNAkN89wq2jiSc1cS6ZEl8StckWF1n2', 'user', 1, 1, 'AI230446', 'CIgagLxM1SY62ICy81NonJp5tS6tZ2Yr7PAoNIqEoEHigoqsaDkvhJmmMspK', '2025-01-02 23:29:15', '2025-01-02 23:29:15'),
+	(38, 'ANIS', 'CI230133@student.uthm.edu.my', NULL, '$2y$12$2kdd8yhiMzEDluvIb9JE8Ox5ziz.K9F27dHp72qXn7kLcRNw/MltC', 'user', 1, 1, 'CI230133', NULL, '2025-01-14 06:03:17', '2025-01-14 06:30:21');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

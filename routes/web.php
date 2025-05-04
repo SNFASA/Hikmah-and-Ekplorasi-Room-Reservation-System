@@ -20,6 +20,8 @@ use App\Http\Controllers\ElectronicPPPController;
 use App\Http\Controllers\FurniturePPPController;
 use App\Http\Controllers\RoomPPPController;
 use App\Http\Controllers\MaintenancePPPController;
+use App\Http\Controllers\EmailController;
+use Illuminate\Support\Facades\Auth;
 
 
 // Authentication Routes
@@ -311,3 +313,6 @@ Route::delete('/cancel-booking/{id}', [BookingController::class, 'cancelBooking'
 //edit 
 Route::get('booking/{id}/edit', [BookingController::class, 'Formedit'])->name('booking.edit');
 Route::put('booking/{id}', [BookingController::class, 'Formupdate'])->name('booking.update');
+
+// email ( not uses)
+Route::get('/emails/send/{booking}', [EmailController::class, 'sendBookingEmail'])->name('emails.send');

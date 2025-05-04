@@ -119,7 +119,8 @@
 @endsection
 
 @push('scripts')
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="http://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 {{-- pie chart --}}
 <script type="text/javascript">
