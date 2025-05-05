@@ -6,6 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script type="module" src="{{ mix('/js/app.js') }}"></script>
     <title>LibraRoom Reservation System|| DASHBOARD</title>
   
     <!-- Custom fonts for this template-->
@@ -16,5 +17,7 @@
     <!-- Custom styles for this template-->
     <link href="{{asset('backend/css/sb-admin-2.min.css')}}" rel="stylesheet">
     @stack('styles')
-  
+    <script>
+        window.userId = "{{ Auth::id() }}";
+    </script>
 </head>

@@ -30,3 +30,44 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 const app = new Vue({
     el: '#app',
 });
+window.Echo.channel('admin-bookings') 
+    .listen('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', (e) => {
+        console.log("Notification Received:", e);
+
+        let notiCount = $('.badge-counter .count');
+        let current = parseInt(notiCount.text()) || 0;
+        notiCount.text(current + 1);
+
+        let html = `
+            <a class="dropdown-item d-flex align-items-center" href="${e.actionURL}">
+                <div class="mr-3">
+                    <div class="icon-circle bg-primary">
+                        <i class="fas ${e.fas} text-white"></i>
+                    </div>
+                </div>
+                <div>
+                    <div class="small text-gray-500">${e.created_at}</div>
+                    <span class="font-weight-bold">${e.title}</span>
+                </div>
+            </a>`;
+        $('.dropdown-list').prepend(html);
+    });
+
+    
+    import Echo from 'laravel-echo';
+    import Pusher from 'pusher-js';
+    
+    window.Pusher = Pusher;
+    
+    window.Echo = new Echo({
+      broadcaster: 'pusher',
+      key: '126345336d8adfa7da65',
+      cluster: 'ap1',
+      forceTLS: true
+    });
+    
+    var channel = window.Echo.channel('my-channel');
+    channel.listen('.my-event', function(data) {
+      alert(JSON.stringify(data));
+    });
+    

@@ -15,7 +15,7 @@
           Notifications Center
         </h6>
         @foreach(Auth::user()->unreadNotifications as $notification)
-    <a class="dropdown-item d-flex align-items-center" target="_blank" href="{{route('admin.notification',$notification->id)}}">
+    <a class="dropdown-item d-flex align-items-center"  href="{{route('notification.detail',$notification->id)}}">
                 <div class="mr-3">
                     <div class="icon-circle bg-primary">
                     <i class="fas {{$notification->data['fas']}} text-white"></i>

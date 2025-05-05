@@ -70,6 +70,7 @@
                                 @endif
                             </td>
                             <td>
+                                <a href="{{route('bookings.show', $booking->id) }}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="view" data-placement="bottom"><i class="fas fa-eye"></i></a>
                                 <a href="{{ route('bookings.edit', $booking->id) }}" class="btn btn-primary btn-sm float-left mr-1" style="height:30px; width:30px;border-radius:50%" data-toggle="tooltip" title="Edit" data-placement="bottom">
                                     <i class="fas fa-edit"></i>
                                 </a>

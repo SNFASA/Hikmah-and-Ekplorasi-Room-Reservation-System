@@ -45,7 +45,7 @@
 
       <!-- Nav Item - Alerts -->
       <li class="nav-item dropdown no-arrow mx-1">
-      
+        @include('backend.notification.show')
       </li>
 
       <div class="topbar-divider d-none d-sm-block"></div>

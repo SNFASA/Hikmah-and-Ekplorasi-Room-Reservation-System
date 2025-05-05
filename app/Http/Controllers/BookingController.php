@@ -17,6 +17,8 @@ use App\Models\schedule;
 use App\Mail\BookingReminderMail;
 use Illuminate\Support\Facades\Mail;
 use App\Notifications\StatusNotification;
+use App\Notifications\NewBookingNotification;
+use Illuminate\Support\Facades\Notification;
 
 
 
@@ -646,7 +648,7 @@ public function storeBookingForm( $id,Request $request){
  
          $this->attachStudentsToBooking($booking, $students);
          \Log::info("Request Data:", $request->all());
-                 // Collect data for email
+        // Collect data for email
         $bookingUsers = DB::table('booking_user')
         ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
         ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
@@ -669,7 +671,7 @@ public function storeBookingForm( $id,Request $request){
         ->toArray();
     
         $durationHours = $duration; // already calculated above/
-        foreach ($bookingUsers as $user) {
+        /**foreach ($bookingUsers as $user) {
             if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($user->email)->queue(new BookingReminderMail(
                         (object)[
@@ -688,51 +690,12 @@ public function storeBookingForm( $id,Request $request){
                 \Log::warning("Invalid or missing email for user: " . json_encode($user));
             }
             sleep(2);
-        }
-         // Collect data for email
-        $bookingUsers = DB::table('booking_user')
-        ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
-        ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
-        ->where('booking_user.booking_id', $booking->id)
-        ->select('users.name', 'users.email', 'users.no_matriks')
-        ->get();
-
-
-        $furnitures = DB::table('furniture_room') 
-        ->join('furniture', 'furniture_room.furniture_id', '=', 'furniture.no_furniture')
-        ->where('furniture_room.room_id', $booking->no_room) 
-        ->pluck('furniture.name')
-        ->toArray();
-
-        $electronics = DB::table('electronic_equipment_room')
-        ->join('electronic_equipment', 'electronic_equipment_room.electronic_equipment_id', '=', 'electronic_equipment.no_electronicEquipment')
-        ->where('electronic_equipment_room.room_id', $booking->no_room)
-        ->pluck('electronic_equipment.name')
-        ->toArray();
-    
-        $durationHours = $duration; // already calculated above/
-        foreach ($bookingUsers as $user) {
-            if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                Mail::to($user->email)->send(
-                    new BookingReminderMail(
-                        (object)[
-                            'name' => $user->name,
-                            'email' => $user->email,
-                        ],
-                        $booking,
-                        $bookingUsers,
-                        $furnitures,
-                        $electronics,
-                        $durationHours
-                    )
-                );
-                \Log::info("Sent to: " . $user->email);
-            } else {
-                \Log::warning("Invalid or missing email for user: " . json_encode($user));
-            }
-            sleep(1); // Sleep for 1 second to avoid rate limiting
-        }
-         return redirect()->route('home')->with('success', 'Booking created successfully.');
+        }**/
+        // Send notification to admins
+        $admins = User::where('role', 'admin')->get();
+        Notification::send($admins, new NewBookingNotification($booking));
+        
+        return redirect()->route('home')->with('success', 'Booking created successfully.');
 }
 /**
  * Display the calendar view with events.
@@ -975,9 +938,17 @@ public function Formupdate(Request $request, $id)
 
     return redirect()->route('home')->with('success', 'Booking updated successfully.');
 }
+public function show($id)
+{
+    // Get the booking with related room and students
+    $booking = bookings::with([
+        'room.electronics',     // Get room + electronics
+        'room.furnitures',      // Get room + furnitures
+        'listStudentBookings',  // Get student list
+    ])->findOrFail($id);
 
-
-
-
+    // Return the view with the booking details
+    return view('backend.booking.show', compact('booking'));
+}
 }
 

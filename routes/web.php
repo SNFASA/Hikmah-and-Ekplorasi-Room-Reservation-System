@@ -256,7 +256,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('setting/update', [AdminController::class, 'settingsUpdate'])->name('settings.update');
     
     // Notification Routes
-    Route::get('/notification/{id}', [NotificationController::class, 'show'])->name('admin.notification');
+    Route::get('/notification/{id}', [NotificationController::class, 'show'])->name('notification.detail');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('all.notification');
     Route::delete('/notification/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
 
