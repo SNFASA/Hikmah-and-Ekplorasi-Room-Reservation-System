@@ -49,7 +49,8 @@ class MaintenanceController extends Controller
     public function create()
     {
         $rooms = room::all();
-        return view('backend.maintenance.create', compact( 'rooms' ));
+        $reported_by = auth()->user()->name;
+        return view('backend.maintenance.create', compact( 'rooms','reported_by' ));
     }
    
     public function store(Request $request)
@@ -78,6 +79,7 @@ class MaintenanceController extends Controller
             'room_id' => $request->room_id,
             'date_maintenance' => $request->date_maintenance,
             'status' => 'pending',
+            'reported_by' => auth()->id(),
         ]);
     
         return redirect()->route('backend.maintenance.index')->with('success', 'Maintenance report created successfully.');
@@ -116,6 +118,7 @@ class MaintenanceController extends Controller
             'room_id' => $request->room_id,
             'date_maintenance' => $request->date_maintenance,
             'status' => $request->status,
+            'reported_by' => auth()->id(),
         ]);
     
         return redirect()->route('backend.maintenance.index')->with('success', 'Report updated successfully.');

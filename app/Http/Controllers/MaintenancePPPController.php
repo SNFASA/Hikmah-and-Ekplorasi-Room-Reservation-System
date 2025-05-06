@@ -7,6 +7,7 @@ use App\Models\electronic;
 use App\Models\maintenance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class MaintenancePPPController extends Controller
 {
@@ -48,7 +49,8 @@ class MaintenancePPPController extends Controller
     public function create()
     {
         $rooms = room::all();
-        return view('ppp.maintenance.create', compact( 'rooms' ));
+        $reported_by = auth()->user()->name;
+        return view('backend.maintenance.create', compact( 'rooms','reported_by' ));
     }
 
 
@@ -78,6 +80,7 @@ class MaintenancePPPController extends Controller
             'room_id' => $request->room_id,
             'date_maintenance' => $request->date_maintenance,
             'status' => 'pending',
+            'reported_by' => auth()->id(),
         ]);
     
         return redirect()->route('ppp.maintenance.index')->with('success', 'Maintenance report created successfully.');
@@ -87,6 +90,7 @@ class MaintenancePPPController extends Controller
     public function edit($id)
     {   
         $maintenances = maintenance::findOrFail($id);
+        $reported_by = User::find($maintenances->reported_by)->name;    
         $rooms = DB::table('rooms')->where('no_room', $maintenances->room_id)->select('name')->first(); // Use first() to get a single record
     
         // Retrieve the item name based on the item type
@@ -101,7 +105,7 @@ class MaintenancePPPController extends Controller
        // dd($maintenances->item_id, $maintenances->itemType); // Check the values
 
 
-        return view('ppp.maintenance.edit', compact('rooms', 'maintenances', 'itemName'));
+        return view('ppp.maintenance.edit', compact('rooms', 'maintenances', 'itemName', 'reported_by'));
     }
     
 

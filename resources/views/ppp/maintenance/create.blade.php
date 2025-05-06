@@ -7,6 +7,13 @@
     <div class="card-body">
         <form method="post" action="{{ route('ppp.maintenance.store') }}">
             @csrf
+            <div class="form-group">
+                <label for="reported_by" class="col-form-label">Reported By<span class="text-danger">*</span></label>
+                <input id="reported_by" type="text" name="reported_by" placeholder="" value="{{ $reported_by }}" class="form-control" disabled>
+                @error('reported_by')
+                <span class="text-danger">{{ $message }}</span>
+                @enderror
+            </div>
             <!-- Title -->
             <div class="form-group">
                 <label for="inputTitle" class="col-form-label">Title <span class="text-danger">*</span></label>

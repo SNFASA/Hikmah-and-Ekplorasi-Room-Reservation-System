@@ -9,7 +9,8 @@ class maintenance extends Model
 {
   use HasFactory;
     protected $table = 'maintenance';
-    protected $fillable = ['title', 'description', 'itemType', 'item_id', 'item_text', 'room_id', 'date_maintenance', 'status'];
+    protected $fillable = ['title', 'description', 'itemType', 'item_id', 'item_text', 'room_id', 'date_maintenance', 'status','reported_by'];
+    protected $primaryKey = 'id';
     protected $casts = [
       'item_id' => 'integer',
       'room_id' => 'integer',
@@ -19,6 +20,11 @@ class maintenance extends Model
     {
         return ucfirst($value);
     }
+    public function reporter()
+    {
+        return $this->belongsTo(User::class, 'reported_by');
+    }
+
     public static function countActiveMaintenance(){
       $data=maintenance::where('status','pending')->count();
       if($data){
