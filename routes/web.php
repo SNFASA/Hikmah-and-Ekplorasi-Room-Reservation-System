@@ -169,7 +169,7 @@ Route::prefix('/admin/maintenances')->middleware(['auth', 'role:admin'])->group(
     Route::get('/{id}/edit', [MaintenanceController::class, 'edit'])->name('backend.maintenance.edit');
     Route::put('/{id}', [MaintenanceController::class, 'update'])->name('backend.maintenance.update');
     Route::delete('/{id}', [MaintenanceController::class, 'destroy'])->name('backend.maintenance.destroy');
-    Route::get('/maintenance/items', [MaintenanceController::class, 'getItems'])->name('maintenance.items');
+    //Route::get('/maintenance/items', [MaintenanceController::class, 'getItems'])->name('maintenance.items');
 });
 //maintenance PPP
 Route::prefix('/ppp/maintenances')->middleware(['auth', 'role:ppp'])->group(function () {
@@ -180,9 +180,9 @@ Route::prefix('/ppp/maintenances')->middleware(['auth', 'role:ppp'])->group(func
     Route::get('/{id}/edit', [MaintenancePPPController::class, 'edit'])->name('ppp.maintenance.edit');
     Route::put('/{id}', [MaintenancePPPController::class, 'update'])->name('ppp.maintenance.update');
     Route::delete('/{id}', [MaintenancePPPController::class, 'destroy'])->name('ppp.maintenance.destroy');
-    Route::post('/maintenance/get-items', [MaintenanceController::class, 'getItems'])->name('maintenance.getItems');
-    ;
+    //Route::post('/maintenance/get-items', [MaintenanceController::class, 'getItems'])->name('maintenance.getItems');
 });
+Route::get('/ajax/maintenance/items', [MaintenanceController::class, 'getItems'])->middleware('auth')->name('maintenance.items');
 
 
 // PPP Section

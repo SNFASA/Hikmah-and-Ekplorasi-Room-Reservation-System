@@ -94,8 +94,8 @@
               </a>
               <div id="furnitureCollapse" class="collapse" aria-labelledby="headingFurniture" data-parent="#equipmentCollapse">
                   <div class="bg-white py-2 collapse-inner rounded">
-                      <a class="collapse-item" href="{{ route('furniture.index') }}">View Furniture</a>
-                      <a class="collapse-item" href="{{ route('furniture.create') }}">Add Furniture</a>
+                      <a class="collapse-item" href="{{ route('ppp.furniture.index') }}">View Furniture</a>
+                      <a class="collapse-item" href="{{ route('ppp.furniture.create') }}">Add Furniture</a>
                   </div>
               </div>
               <a class="collapse-item collapsed" href="#" data-toggle="collapse" data-target="#electronicCollapse" aria-expanded="false" aria-controls="electronicCollapse">
@@ -103,8 +103,8 @@
               </a>
               <div id="electronicCollapse" class="collapse" aria-labelledby="headingElectronic" data-parent="#equipmentCollapse">
                   <div class="bg-white py-2 collapse-inner rounded">
-                      <a class="collapse-item" href="{{ route('electronic.index') }}">View Electronic</a>
-                      <a class="collapse-item" href="{{ route('electronic.create') }}">Add Electronic</a>
+                      <a class="collapse-item" href="{{ route('ppp.electronic.index') }}">View Electronic</a>
+                      <a class="collapse-item" href="{{ route('ppp.electronic.create') }}">Add Electronic</a>
                   </div>
               </div>
           </div>

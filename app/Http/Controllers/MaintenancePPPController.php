@@ -50,7 +50,7 @@ class MaintenancePPPController extends Controller
     {
         $rooms = room::all();
         $reported_by = auth()->user()->name;
-        return view('backend.maintenance.create', compact( 'rooms','reported_by' ));
+        return view('ppp.maintenance.create', compact( 'rooms','reported_by' ));
     }
 
 

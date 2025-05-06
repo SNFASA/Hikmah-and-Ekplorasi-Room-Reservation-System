@@ -65,8 +65,6 @@
                 <span class="text-danger">{{ $message }}</span>
                 @enderror
             </div>
-            
-            
             <!-- Room -->
             <div class="form-group">
                 <label for="room_id" class="col-form-label">Room</label>
@@ -95,13 +93,14 @@
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="{{asset('backend/summernote/summernote.min.css')}}">
+<link rel="stylesheet" href="{{ asset('backend/summernote/summernote.min.css') }}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.css" />
 @endpush
+
 @push('scripts')
 <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
-<script src="path/to/bootstrap.min.js"></script>
-<script src="path/to/bootstrap-select.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.9/flatpickr.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script>
     // Initialize Flatpickr for Date
@@ -110,45 +109,42 @@
         altFormat: "F j, Y", // Example: November 26, 2024
         dateFormat: "Y-m-d", // Format for form submission
     });
+
     $('#itemType').change(function () {
-    const type = $(this).val();
-    const url = "{{ route('maintenance.items') }}?type=" + type;
+        const type = $(this).val();
+        const url = "{{ route('maintenance.items') }}?type=" + type;
 
-    if (!type) {
-        $('#itemid-wrapper').html(`
-            <label for="itemid" class="col-form-label">Item</label>
-            <select id="itemid" name="itemid" class="form-control">
-                <option value="">----- Select Item -----</option>
-            </select>
-        `);
-        return;
-    }
-
-    if (type === 'other') {
-        $('#itemid-wrapper').html(`
-            <label for="item_text" class="col-form-label">Item</label>
-            <input type="text" id="item_text" name="item_text" class="form-control" placeholder="Enter item name">
-        `);
-    } else {
-        $.get(url, function (data) {
-            const select = $('<select id="itemid" name="itemid" class="form-control"></select>');
-            select.append('<option value="">----- Select Item -----</option>');
-
-            if (data.length > 0) {
-                data.forEach(item => {
-                    // Ensure 'item.id' corresponds to the primary key (e.g., 'no_furniture' or 'no_electronicEquipment')
-                    select.append(`<option value="${item.id}">${item.name}</option>`);
-                });
-            }
-
+        if (!type) {
             $('#itemid-wrapper').html(`
                 <label for="itemid" class="col-form-label">Item</label>
-            `).append(select);
-        });
-    }
-});
+                <select id="itemid" name="itemid" class="form-control">
+                    <option value="">----- Select Item -----</option>
+                </select>
+            `);
+            return;
+        }
 
+        if (type === 'other') {
+            $('#itemid-wrapper').html(`
+                <label for="item_text" class="col-form-label">Item</label>
+                <input type="text" id="item_text" name="item_text" class="form-control" placeholder="Enter item name">
+            `);
+        } else {
+            $.get(url, function (data) {
+                const select = $('<select id="itemid" name="itemid" class="form-control"></select>');
+                select.append('<option value="">----- Select Item -----</option>');
 
-    // $('select').selectpicker();
+                if (data.length > 0) {
+                    data.forEach(item => {
+                        select.append(`<option value="${item.id}">${item.name}</option>`);
+                    });
+                }
+
+                $('#itemid-wrapper').html(`
+                    <label for="itemid" class="col-form-label">Item</label>
+                `).append(select);
+            });
+        }
+    });
 </script>
 @endpush
