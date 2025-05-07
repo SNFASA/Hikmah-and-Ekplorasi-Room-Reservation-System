@@ -1,158 +1,92 @@
+<!-- Header -->
 <header class="header shop">
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
     <!-- Topbar -->
-    <div class="topbar">
-        <div  iv class="container">
-            <div class="row">
-                <div class="logoCus">
-                    <a href="{{ route('home') }}"><img src="{{ asset('images/uthm.png') }}" alt="logo"></a>
-                </div>
-                <div class="cols-lg-4 col-md-3 col-3">
-                    <div class="top-left">
-                        <ul class="list-main">
-                            @php
-                                $settings = DB::table('settings')->get();
-                            @endphp
-                            <li>
-                                <i class="ti-headphone-alt"></i> 
-                                @foreach($settings as $data) {{ $data->phone }} @endforeach
-                            </li>
-                            <li>
-                                <i class="ti-email"></i> 
-                                @foreach($settings as $data) {{ $data->email }} @endforeach
-                            </li>
-                        </ul>
+    <div class="topbar bg-light py-2 border-bottom">
+        <div class="container">
+            <div class="row align-items-center justify-content-between">
+
+                <!-- Logo & Contact -->
+                <div class="col-md-3 col-12 d-flex flex-column align-items-start">
+                    <a href="{{ route('home') }}">
+                        <img src="{{ asset('images/uthm.png') }}" alt="logo" style="max-height: 60px;">
+                    </a>
+                    @php
+                        $settings = DB::table('settings')->get();
+                    @endphp
+                    <div class="mt-2 d-flex align-items-center flex-wrap text-dark small">
+                        <i class="fas fa-phone-alt me-2"></i>
+                        <span class="me-3">
+                            @foreach($settings as $data)
+                                {{ $data->phone }}
+                            @endforeach
+                        </span>
+                        <i class="fas fa-envelope me-2"></i>
+                        <span>
+                            @foreach($settings as $data)
+                                {{ $data->email }}
+                            @endforeach
+                        </span>
                     </div>
                 </div>
-                <div class="col-lg-9 col-md-9 col-9">
-                    <div class="right-content">
-                        <ul class="list-main">
-                            <li>
-                                <i class="ti-power-off"></i>
-                                <a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-                                    {{ __('Logout') }}
-                                </a>
-                                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                                    @csrf
-                                </form>
-                            </li>
-                              
-                        </ul>
-                    </div>
-                    @if(Auth::user()->role == 'user')
-                        <div class="right-content">
-                            <ul class="list-main">
-                                <li><i class="ti-key"><a href="{{ route('user.change.password.form') }}">Change Password</a></i></li>      
-                            </ul>
-                        </div>
-                        <div class="right-content">
-                            <ul class="list-main">
-                                <li><i class="ti-user"><a href="{{route('user-profile')}}">Profile</a></i></li>
-                            </ul>
-                        </div>
-                    @endif
-                    <div class="right-content">
-                        <ul class="list-main">
-                            <li><i class="ti-calendar"><a href="{{route('show.calendar')}}">Schedule Booking</a></i></li>
-                        </ul>
-                    </div>
-                    <div class="right-content">
-                        <ul class="list-main">
-                            <li><i class="ti-bookmark"><a href="{{route('my.bookings')}}">My Booking</a></i></li>
-                        </ul>
-                    </div>
-                    <div class="right-content">
-                        <ul class="list-main">
-                            @auth 
-                                @if(Auth::user()->role == 'admin')
-                                    <li><i class="ti-user"></i> <a href="{{ route('admin') }}">Dashboard</a></li>
-                                @elseif(Auth::user()->role == 'ppp') 
-                                   <li><i class="ti-user"></i> <a href="{{ route('ppp.dashboard') }}">Dashboard</a></li>
-                                @endif
-                            @else
-                                <li><i class="ti-power-off"></i>
-                                    <a href="{{ route('login.form') }}">Login</a> ||
-                                    <a href="{{ route('register.form') }}">Register</a>
-                                </li>
-                            @endauth
-                        </ul>
-                    </div>
-                    <div class="right-content">
-                        <ul class="list-main">
-                            <li><i class="ti-home"><a href="{{ route('home') }}">Home</a></i></li>
-                        </ul>
-                    </div>
+
+                <!-- Navigation Menu + Right Content -->
+                <div class="col-md-9 col-12 d-flex flex-wrap justify-content-end align-items-center gap-3 mt-3 mt-md-0">
+                    <!-- Navigation Menu -->
+                    <a href="{{ route('home') }}" class="text-decoration-none text-dark">
+                        <i class="fas fa-home me-1"></i> Home
+                    </a>
+
+                    @auth
+                        <a href="{{ route('my.bookings') }}" class="text-decoration-none text-dark">
+                            <i class="fas fa-bookmark me-1"></i> My Booking
+                        </a>
+                        <a href="{{ route('show.calendar') }}" class="text-decoration-none text-dark">
+                            <i class="fas fa-calendar-alt me-1"></i> Schedule Booking
+                        </a>
+
+                        @if(Auth::user()->role == 'user')
+                            <a href="{{ route('user.change.password.form') }}" class="text-decoration-none text-dark">
+                                <i class="fas fa-key me-1"></i> Change Password
+                            </a>
+                            <a href="{{ route('user-profile') }}" class="text-decoration-none text-dark">
+                                <i class="fas fa-user me-1"></i> Profile
+                            </a>
+                        @endif
+
+                        <a href="{{ route('logout') }}"
+                           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                           class="text-decoration-none text-dark">
+                            <i class="fas fa-sign-out-alt me-1"></i> Logout
+                        </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+
+                        <!-- Right Content (Dashboard Links) -->
+                        @if(Auth::user()->role == 'admin')
+                            <a href="{{ route('admin') }}" class="text-decoration-none text-dark">
+                                <i class="ti-user me-1"></i> Dashboard
+                            </a>
+                        @elseif(Auth::user()->role == 'ppp')
+                            <a href="{{ route('ppp.dashboard') }}" class="text-decoration-none text-dark">
+                                <i class="ti-user me-1"></i> Dashboard
+                            </a>
+                        @endif
+                    @else
+                        <!-- Guest: Login / Register -->
+                        <a href="{{ route('login.form') }}" class="text-decoration-none text-dark">
+                            <i class="ti-power-off me-1"></i> Login
+                        </a>
+                        <span class="text-muted">||</span>
+                        <a href="{{ route('register.form') }}" class="text-decoration-none text-dark">
+                            Register
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
     </div>
-    <!-- Middle Inner -->
-
 </header>
-
-<!-- Custom CSS -->
-<style>        /* Custom styling for box radius */
-    .search-box {
-        border-radius: 20px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background-color: #whitesmoke;
-        padding: 10px;
-    }
-    .input-box {
-        border-radius: 20px;
-        
-    }
-        /* Custom styles for form elements */
-        .form-label {
-            font-weight: bold;
-        }
-
-        .multiselect-container {
-            max-height: 200px; /* Limit dropdown height */
-            overflow-y: auto; /* Scrollbar for overflow */
-        }
-
-        .custom-multiselect {
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            padding: 5px;
-        }
-    .logoCus{
-       size: 50px
-        margin: 20px 10px 20px 10px;
-    }
-        
-</style>
-
-<!-- JavaScript for Guest Count -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const decreaseBtn = document.getElementById('decreaseGuests');
-        const increaseBtn = document.getElementById('increaseGuests');
-        const guestCount = document.getElementById('guestCount');
-
-        decreaseBtn.addEventListener('click', function () {
-            let count = parseInt(guestCount.value);
-            if (count > 1) {
-                guestCount.value = count - 1;
-            }
-        });
-
-        increaseBtn.addEventListener('click', function () {
-            let count = parseInt(guestCount.value);
-            guestCount.value = count + 1;
-        });
-    });  
-</script>
-    <!-- Bootstrap Icons -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-      rel="stylesheet"
-    /> 
-    <!-- Bootstrap CSS -->
-
-    
-    <!-- Bootstrap Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
