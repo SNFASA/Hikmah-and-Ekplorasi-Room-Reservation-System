@@ -21,4 +21,8 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+    protected $policies = [
+        \App\Models\Feedback::class => \App\Policies\FeedbackPolicy::class,
+    ];
+    
 }

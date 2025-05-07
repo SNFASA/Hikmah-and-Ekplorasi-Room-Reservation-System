@@ -45,4 +45,10 @@ class bookings extends Model
         }
         return null;
     }
+    public function feedback()
+    {
+        return $this->hasOne(Feedback::class , 'booking_id', 'id');
+    }
+  
+
 }

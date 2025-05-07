@@ -31,4 +31,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function listStudent()
+    {
+        return $this->hasOne(list_student_booking::class, 'no_matriks', 'no_matriks');
+    }
+
 }

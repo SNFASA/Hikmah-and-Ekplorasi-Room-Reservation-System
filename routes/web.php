@@ -22,6 +22,7 @@ use App\Http\Controllers\RoomPPPController;
 use App\Http\Controllers\MaintenancePPPController;
 use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\FeedbackController;
 
 
 // Authentication Routes
@@ -316,3 +317,19 @@ Route::put('booking/{id}', [BookingController::class, 'Formupdate'])->name('book
 
 // email ( not uses)
 Route::get('/emails/send/{booking}', [EmailController::class, 'sendBookingEmail'])->name('emails.send');
+
+
+//Feedback Routes
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/feedback', [FeedbackController::class, 'index'])->name('backend.feedback.index');
+    Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('frontend.pages.feedbackcreate');
+    Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+    Route::get('/feedback/{feedback}/edit', [FeedbackController::class, 'edit'])->name('frontend.pages.feedbackedit');
+    Route::put('/feedback/{feedback}', [FeedbackController::class, 'update'])->name('feedback.update');
+    Route::delete('/feedback/{feedback}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
+    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('backend.feedback.show');
+
+
+});
