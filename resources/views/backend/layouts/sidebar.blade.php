@@ -112,6 +112,7 @@
           </div>
       </div>
   </li>
+  <!--Maintenance-->
   <li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#maintenanceCollapse" aria-expanded="true" aria-controls="maintenanceCollapse">
       <i class="fas fa-wrench"></i>
@@ -124,7 +125,22 @@
         <a class="collapse-item" href="{{route('maintenance.create')}}">Add Maintenance</a>
       </div>
     </div>
-</li>
+  </li>
+  <!--Feedback-->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#fdkCollapse" aria-expanded="true" aria-controls="fdkCollapse">
+      <i class="fas fa-comment-dots"></i>
+      <span>Feedback</span>
+    </a>
+    <div id="fdkCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">Feedback Options:</h6>
+        <a class="collapse-item" href="{{route('backend.feedback.index')}}">Feedback</a>
+        <a class="collapse-item" href="{{route('backend.feedback.statistic')}}">Statistic</a>
+      </div>
+    </div>
+  </li>
+
     <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
      <!-- Heading -->

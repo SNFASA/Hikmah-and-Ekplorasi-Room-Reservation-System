@@ -671,7 +671,7 @@ public function storeBookingForm( $id,Request $request){
         ->toArray();
     
         $durationHours = $duration; // already calculated above/
-        /**foreach ($bookingUsers as $user) {
+        foreach ($bookingUsers as $user) {
             if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
                 Mail::to($user->email)->queue(new BookingReminderMail(
                         (object)[
@@ -690,7 +690,7 @@ public function storeBookingForm( $id,Request $request){
                 \Log::warning("Invalid or missing email for user: " . json_encode($user));
             }
             sleep(2);
-        }**/
+        }
         // Send notification to admins
         $admins = User::where('role', 'admin')->get();
         Notification::send($admins, new NewBookingNotification($booking));

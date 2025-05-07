@@ -24,6 +24,7 @@ class maintenance extends Model
     {
         return $this->belongsTo(User::class, 'reported_by');
     }
+    
 
     public static function countActiveMaintenance(){
       $data=maintenance::where('status','pending')->count();

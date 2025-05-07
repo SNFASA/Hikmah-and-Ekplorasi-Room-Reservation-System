@@ -38,6 +38,7 @@
 
         @endforeach
       </tbody>
+      <span style="float:right">{{$notifications->links()}}</span>
     </table>
     @else
       <h2>Notifications Empty!</h2>

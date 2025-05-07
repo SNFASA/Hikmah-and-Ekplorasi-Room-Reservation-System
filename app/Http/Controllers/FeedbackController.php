@@ -6,6 +6,7 @@ use App\Models\Feedback;
 use App\Models\bookings;
 use App\Models\Maintenance;
 use Illuminate\Http\Request;
+use App\Models\room;
 use Illuminate\Support\Facades\Auth;
 
 class FeedbackController extends Controller
@@ -237,4 +238,34 @@ class FeedbackController extends Controller
         $feedback->delete();
         return redirect()->route('my.bookings')->with('success', 'Feedback deleted successfully.');
     }
+    public function statistic()
+    {
+        // Get all rooms with related feedback via bookings
+        $roomStats = room::with(['bookings.feedback'])->get()->map(function ($room) {
+            $allFeedbacks = $room->bookings->pluck('feedback')->filter();
+    
+            $ratings = $allFeedbacks->pluck('rating');
+            $comments = $allFeedbacks->pluck('comment')->filter()->count();
+            $categories = $allFeedbacks->pluck('category')->filter();
+    
+            $ratingBreakdown = $ratings->countBy(); // e.g. [5 => 10, 4 => 3, ...]
+            $averageRating = $ratings->avg();
+            $mostCommonCategory = $categories->countBy()->sortDesc()->keys()->first();
+    
+            return [
+                'room_no' => $room->no_room,
+                'room_name' => $room->name,
+                'total_feedbacks' => $ratings->count(),
+                'average_rating' => round($averageRating, 2),
+                'rating_breakdown' => $ratingBreakdown,
+                'comment_count' => $comments,
+                'top_category' => $mostCommonCategory ?? 'N/A',
+            ];
+        });
+    
+        return view('backend.feedback.statistic', compact('roomStats'));
+    }
+    
+    
+
 }

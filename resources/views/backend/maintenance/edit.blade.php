@@ -10,7 +10,7 @@
             @method('PATCH')
             <div class="form-group">
                 <label for="reported_by" class="col-form-label">Reported By<span class="text-danger">*</span></label>
-                <input id="reported_by" type="text" name="reported_by" placeholder="" value="{{ $reported_by }}" class="form-control" disabled>
+                <input id="reported_by" type="text" name="reported_by"value="{{ $maintenances->reporter->no_matriks ?? 'N/A' }}"class="form-control" disabled> 
                 @error('reported_by')
                 <span class="text-danger">{{ $message }}</span>
                 @enderror

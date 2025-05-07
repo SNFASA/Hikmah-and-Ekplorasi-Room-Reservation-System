@@ -7,8 +7,10 @@ use App\Models\Notification;
 class NotificationController extends Controller
 {
     public function index(){
-        return view('backend.notification.index');
+        $notifications = auth()->user()->notifications()->orderBy('created_at', 'desc')->paginate(10); // Adjust the number as needed
+        return view('backend.notification.index', compact('notifications'));
     }
+    
     public function show(Request $request)
     {
         $notification = auth()->user()->notifications()->where('id', $request->id)->first();

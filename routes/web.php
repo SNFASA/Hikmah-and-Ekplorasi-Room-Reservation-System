@@ -329,7 +329,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/feedback/{feedback}/edit', [FeedbackController::class, 'edit'])->name('frontend.pages.feedbackedit');
     Route::put('/feedback/{feedback}', [FeedbackController::class, 'update'])->name('feedback.update');
     Route::delete('/feedback/{feedback}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
-    Route::get('/feedback/{feedback}', [FeedbackController::class, 'show'])->name('backend.feedback.show');
-
-
+    Route::get('/feedback/show', [FeedbackController::class, 'statistic'])->name('backend.feedback.statistic');
+    Route::get('/feedback/{feedback}/show', [FeedbackController::class, 'show'])->name('frontend.pages.feedbackshow');
 });

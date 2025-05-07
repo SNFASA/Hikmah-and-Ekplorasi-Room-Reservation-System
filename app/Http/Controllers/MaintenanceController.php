@@ -86,11 +86,13 @@ class MaintenanceController extends Controller
     }
     // Show the form for editing the specified 
     public function edit($id)
-    {   
-        $maintenances = maintenance::findOrFail($id);
+    {
+        $maintenances = maintenance::with('reporter')->findOrFail($id);  
         $rooms = room::all();
-        return view('backend.maintenance.edit', compact( 'rooms', 'maintenances' ));
+        return view('backend.maintenance.edit', compact('rooms', 'maintenances'));
     }
+    
+    
 
     // Update the specified electronics in storage
     public function update(Request $request, $id)
