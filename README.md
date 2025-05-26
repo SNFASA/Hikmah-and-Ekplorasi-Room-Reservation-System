@@ -21,6 +21,8 @@ The Booking Management System allows users to manage room and equipment bookings
 - Attach users to bookings.
 - View bookings by month and purpose.
 - Cancel bookings.
+- Email sender for booking remainders
+- Notification new email for admin
 
 ### Room Management
 
@@ -38,6 +40,11 @@ The Booking Management System allows users to manage room and equipment bookings
 - Schedule maintenance for rooms and equipment.
 - Record maintenance details and track status.
 
+ ### Feedback
+ - Only the User who booked the room can create, update and delete feedback.
+ - Admin can review feedback.
+ - A report about the damage will be sent directly to maintenance. 
+
  ### ADMIN DASHBOARD
   ![ADMIN](./public/images/1.png)
 
@@ -51,7 +58,7 @@ The Booking Management System allows users to manage room and equipment bookings
 ![HOME 2](./public/images/4.png)
 
 ### MY BOOKING LIST
-![MY BOOKING](./public/images/5.png)
+![MY BOOKING](./public/images/13.png)
 
 ### BOOKING FORM CHECK OUT
 ![BOOKING CHECK OUT](./public/images/7.png)
@@ -59,6 +66,8 @@ The Booking Management System allows users to manage room and equipment bookings
 ### PROFILE USER
 ![PROFILE](./public/images/6.png)
 
+### Feedback USER
+![PROFILE](./public/images/9.png)
 ---
 
 ## Database Design
