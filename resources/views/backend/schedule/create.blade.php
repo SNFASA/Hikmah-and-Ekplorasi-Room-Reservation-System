@@ -10,48 +10,54 @@
 
             <!-- Date -->
             <div class="form-group">
-                <label for="flatpickrDate" class="col-form-label">Unavailable Date <span class="text-danger">*</span></label>
+                <label for="flatpickrDate">Unavailable Date <span class="text-danger">*</span></label>
                 <input id="flatpickrDate" type="text" name="invalid_date" value="{{ old('invalid_date') }}" class="form-control">
-                @error('invalid_date')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('invalid_date') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
-            <!-- Start Time -->
+            <!-- Time Start -->
             <div class="form-group">
-                <label for="flatpickrTimeStart" class="col-form-label">Time Start <span class="text-danger">*</span></label>
+                <label for="flatpickrTimeStart">Start Time (Optional)</label>
                 <input id="flatpickrTimeStart" type="text" name="invalid_time_start" value="{{ old('invalid_time_start') }}" class="form-control">
-                @error('invalid_time_start')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('invalid_time_start') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
 
-            <!-- End Time -->
+            <!-- Time End -->
             <div class="form-group">
-                <label for="flatpickrTimeEnd" class="col-form-label">Time End <span class="text-danger">*</span></label>
+                <label for="flatpickrTimeEnd">End Time (Optional)</label>
                 <input id="flatpickrTimeEnd" type="text" name="invalid_time_end" value="{{ old('invalid_time_end') }}" class="form-control">
-                @error('invalid_time_end')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('invalid_time_end') <span class="text-danger">{{ $message }}</span> @enderror
+            </div>
+
+            <!-- Apply to All -->
+            <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" name="apply_to_all" id="applyToAll" value="1" {{ old('apply_to_all') ? 'checked' : '' }}>
+                <label class="form-check-label" for="applyToAll">Apply to All Rooms</label>
             </div>
 
             <!-- Room Selection -->
-            <div class="form-group">
-                <label for="no_room" class="col-form-label">Room <span class="text-danger">*</span></label>
-                <select name="no_room" class="form-control">
-                    <option value="">-----Select Room-----</option>
+            <div class="form-group" id="roomSelector">
+                <label>Select Room(s)</label>
+                <div class="d-flex flex-wrap">
                     @foreach($rooms as $room)
-                    <option value="{{ $room->no_room }}" {{ old('no_room') == $room->no_room ? 'selected' : '' }}>
-                        {{ $room->name }}
-                    </option>
+                    <div class="form-check mr-3 mb-2" style="min-width: 150px;">
+                        <input 
+                            class="form-check-input" 
+                            type="checkbox" 
+                            name="no_room[]" 
+                            id="room_{{ $room->no_room }}" 
+                            value="{{ $room->no_room }}"
+                            {{ in_array($room->no_room, old('no_room', [])) ? 'checked' : '' }}
+                            {{ old('apply_to_all') ? 'disabled' : '' }}
+                        >
+                        <label class="form-check-label" for="room_{{ $room->no_room }}">
+                            {{ $room->name }}
+                        </label>
+                    </div>
                     @endforeach
-                </select>
-                @error('no_room')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                </div>
+                @error('no_room') <span class="text-danger">{{ $message }}</span> @enderror
             </div>
-
-            <!-- Buttons -->
             <div class="form-group mb-3">
                 <button type="reset" class="btn btn-warning">Reset</button>
                 <button class="btn btn-success" type="submit">Submit</button>
@@ -63,55 +69,44 @@
 @endsection
 
 @push('scripts')
-<script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
-<script src="{{ asset('backend/summernote/summernote.min.js') }}"></script>
 <script>
-    // Initialize Flatpickr for Date
     flatpickr("#flatpickrDate", {
         altInput: true,
-        altFormat: "F j, Y", // Example: November 26, 2024
+        altFormat: "F j, Y",
         dateFormat: "Y-m-d",
-        disable: [
-            // Disable unavailable dates (schedule_booking table)
-            @foreach ($unavailableSlots as $slot)
-                "{{ $slot->invalid_date }}", // Disable unavailable date
-            @endforeach
-            // Disable already booked dates (bookings table)
-            @foreach ($bookedSlots as $slot)
-                "{{ $slot->booking_date }}", // Disable already booked date
-            @endforeach
-        ]
     });
 
-    // Initialize Flatpickr for Time Start
     flatpickr("#flatpickrTimeStart", {
-    enableTime: true,
-    noCalendar: true,
-    dateFormat: "H:i",
-    time_24hr: true,
-    disable: [
-        @foreach ($unavailableSlots as $slot)
-            {
-                from: "{{ $slot->invalid_date }} {{ $slot->invalid_time_start }}",
-                to: "{{ $slot->invalid_date }} {{ $slot->invalid_time_end }}",
-            },
-        @endforeach
-        @foreach ($bookedSlots as $slot)
-            {
-                from: "{{ $slot->booking_date }} {{ $slot->booking_time_start }}",
-                to: "{{ $slot->booking_date }} {{ $slot->booking_time_end }}",
-            },
-        @endforeach
-    ]
-});
+        enableTime: true,
+        noCalendar: true,
+        dateFormat: "H:i",
+        time_24hr: true,
+    });
 
-
-    // Initialize Flatpickr for Time End
     flatpickr("#flatpickrTimeEnd", {
         enableTime: true,
         noCalendar: true,
         dateFormat: "H:i",
         time_24hr: true,
     });
+
+    // Disable room selector if apply to all is checked
+    const checkbox = document.getElementById('applyToAll');
+    const roomSelector = document.getElementById('roomSelector');
+    
+    function toggleRoomSelector() {
+        const isChecked = checkbox.checked;
+        roomSelector.style.display = isChecked ? 'none' : 'block';
+
+        // Disable/enable all room checkboxes accordingly
+        const roomCheckboxes = roomSelector.querySelectorAll('input[type="checkbox"]');
+        roomCheckboxes.forEach(chk => {
+            chk.disabled = isChecked;
+        });
+    }
+
+    checkbox.addEventListener('change', toggleRoomSelector);
+    toggleRoomSelector(); // initial check
 </script>
+
 @endpush
