@@ -43,7 +43,7 @@
     <li class="nav-item">
       <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#scheduleCollapse" aria-expanded="true" aria-controls="scheduleCollapse">
         <i class="fas fa-calendar"></i>
-        <span>Schedul</span>
+        <span>Schedule</span>
       </a>
       <div id="scheduleCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">

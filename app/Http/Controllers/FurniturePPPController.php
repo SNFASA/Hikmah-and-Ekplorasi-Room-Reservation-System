@@ -32,7 +32,7 @@ class FurniturePPPController extends Controller
         $categories = [
             'Desk',
             'Chair',
-            'Japaness Table',
+            'Japanese desk',
             'Whiteboard'
         ];
         return view('ppp.furniture.create', compact('categories'));
@@ -43,7 +43,7 @@ class FurniturePPPController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|in:Desk,Chair,Japaness Table,Whiteboard',
+            'category' => 'required|string|in:Desk,Chair,Japanese desk,Whiteboard',
             'status' => 'required|string|max:255',
         ]);
         
@@ -63,7 +63,7 @@ class FurniturePPPController extends Controller
         $categories = [
             'Desk',
             'Chair',
-            'Japaness Table',
+            'Japanese desk',
             'Whiteboard'
         ];
         $furniture = furniture::findOrFail($id);
@@ -77,7 +77,7 @@ class FurniturePPPController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|in:Desk,Chair,Japaness Table,Whiteboard', // Adjust according to your categories
+            'category' => 'required|string|in:Desk,Chair,Japanese desk,Whiteboard', // Adjust according to your categories
             'status' => 'required|string|max:255',
         ]);
         

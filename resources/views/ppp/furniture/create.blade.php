@@ -20,7 +20,7 @@
             <option value="">-----Select Category-----</option>
             <option value="Desk">Desk</option>
             <option value="Chair">Chair</option>
-            <option value="Japaness Table">Japaness Table</option>
+            <option value="Japanese desk">Japanese desk</option>
             <option value="Whiteboard">Whiteboard</option>
           </select>
         </div>
