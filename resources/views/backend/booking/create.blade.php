@@ -2,162 +2,139 @@
 @section('title','Booking Create')
 @section('main-content')
 
-<div class="card">
-    <h5 class="card-header">Add Booking</h5>
+<div class="card shadow-sm border-0">
+    <h5 class="card-header bg-light font-weight-bold text-primary">Add Booking</h5>
     <div class="card-body">
-      <form method="post" action="{{ route('bookings.store') }}">
-        {{ csrf_field() }}
-        
-        <!-- Purpose -->
-        <div class="form-group">
-          <label for="inputpurpose" class="col-form-label">Purpose<span class="text-danger">*</span></label>
-          <input id="inputpurpose" type="text" name="purpose" placeholder="Enter purpose" value="{{ old('purpose') }}" class="form-control">
-          @error('purpose')
-            <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
+        <form method="POST" action="{{ route('bookings.store') }}" id="booking-form">
+            @csrf
 
-        <!-- Date -->
-        <div class="form-group">
-          <label for="flatpickrDate" class="col-form-label">Date<span class="text-danger">*</span></label>
-          <input id="flatpickrDate" type="text" name="booking_date" value="{{ old('booking_date') }}" class="form-control">
-          @error('booking_date')
-            <span class="text-danger">{{ $message }}</span>
-          @enderror
-        </div>
-
-        <!-- Start Time -->
-        <div class="form-group">
-          <label for="flatpickrTime" class="col-form-label">Time Start<span class="text-danger">*</span></label>
-          <input id="flatpickrTimeStart" type="text" name="booking_time_start" value="{{ old('booking_time_start') }}" class="form-control">
-          @error('booking_time_start')
-            <span class="text-danger">{{ $message }}</span>
-          @enderror
-        </div>
-
-        <!-- End Time -->
-        <div class="form-group">
-          <label for="flatpickrTime" class="col-form-label">Time End<span class="text-danger">*</span></label>
-          <input id="flatpickrTimeEnd" type="text" name="booking_time_end" value="{{ old('booking_time_end') }}" class="form-control">
-          @error('booking_time_end')
-            <span class="text-danger">{{ $message }}</span>
-          @enderror
-        </div>
-
-        <!-- Phone Number -->
-        <div class="form-group">
-          <label for="inputPhoneNumber" class="col-form-label">Phone number<span class="text-danger">*</span></label>
-          <input id="inputPhoneNumber" type="text" name="phone_number" placeholder="Enter Phone number" value="{{ old('phone_number') }}" class="form-control">
-          @error('phone_number')
-            <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-
-        <!-- Room Selection -->
-        @php
-          $rooms = DB::table('rooms')->select('no_room', 'name')->get();
-        @endphp
-        <div class="form-group">
-          <label for="no_room" class="col-form-label">Room</label>
-          <select name="no_room" class="form-control">
-            <option value="">-----Select Room-----</option>
-            @foreach($rooms as $room)
-              <option value="{{ $room->no_room }}">{{ $room->name }}</option>
-            @endforeach
-          </select>
-          @error('no_room')
-            <span class="text-danger">{{ $message }}</span>
-          @enderror
-        </div>
-
-          <!-- Input for No Matriks -->
-          <div id="students-list" class="form-group">
+            {{-- Purpose --}}
             <div class="form-group">
-                <label class="col-form-label">No Matriks:</label>
-                <input type="text" name="students[0][no_matriks]" required class="form-control">
-
-                <label for="name[]" class="col-form-label"> Name:</label>
-                <input type="text" name="students[0][name]" required class="form-control">
+                <label for="inputpurpose" class="font-weight-semibold">Purpose <span class="text-danger">*</span></label>
+                <input type="text" name="purpose" id="inputpurpose" value="{{ old('purpose') }}" class="form-control" placeholder="Enter purpose">
+                @error('purpose') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-          </div>
-          <button type="button" id="add-student"class="btn btn-primary" style="margin:10px 0 10px 0">Add Student</button>
-          <!-- Hidden Inputs for Form Submission -->
-          <div id="students-hidden-inputs"></div>
 
-        
-        <div class="form-group mb-3">
-          <button type="reset" class="btn btn-warning">Reset</button>
-          <button class="btn btn-success" type="submit">Submit</button>
-        </div>
-      </form>
+            {{-- Booking Date --}}
+            <div class="form-group">
+                <label for="flatpickrDate" class="font-weight-semibold">Date <span class="text-danger">*</span></label>
+                <input type="text" name="booking_date" id="flatpickrDate" value="{{ old('booking_date') }}" class="form-control">
+                @error('booking_date') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            {{-- Start Time --}}
+            <div class="form-group">
+                <label for="flatpickrTimeStart" class="font-weight-semibold">Start Time <span class="text-danger">*</span></label>
+                <input type="text" name="booking_time_start" id="flatpickrTimeStart" value="{{ old('booking_time_start') }}" class="form-control">
+                @error('booking_time_start') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            {{-- End Time --}}
+            <div class="form-group">
+                <label for="flatpickrTimeEnd" class="font-weight-semibold">End Time <span class="text-danger">*</span></label>
+                <input type="text" name="booking_time_end" id="flatpickrTimeEnd" value="{{ old('booking_time_end') }}" class="form-control">
+                @error('booking_time_end') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            {{-- Phone Number --}}
+            <div class="form-group">
+                <label for="inputPhoneNumber" class="font-weight-semibold">Phone Number <span class="text-danger">*</span></label>
+                <input type="text" name="phone_number" id="inputPhoneNumber" value="{{ old('phone_number') }}" class="form-control" placeholder="Enter phone number">
+                @error('phone_number') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            {{-- Room Selection --}}
+            @php
+                $rooms = DB::table('rooms')->select('no_room', 'name')->get();
+            @endphp
+            <div class="form-group">
+                <label for="no_room" class="font-weight-semibold">Room</label>
+                <select name="no_room" id="no_room" class="form-control">
+                    <option value="">----- Select Room -----</option>
+                    @foreach($rooms as $room)
+                        <option value="{{ $room->no_room }}">{{ $room->name }}</option>
+                    @endforeach
+                </select>
+                @error('no_room') <small class="text-danger">{{ $message }}</small> @enderror
+            </div>
+
+            {{-- Student List --}}
+            <label class="font-weight-semibold d-block mb-2">Students</label>
+            <div id="students-list" class="mb-3">
+                <div class="form-group">
+                    <input type="text" name="students[0][no_matriks]" class="form-control mb-2" placeholder="No Matriks" required>
+                    <input type="text" name="students[0][name]" class="form-control" placeholder="Name" required>
+                </div>
+            </div>
+            <button type="button" id="add-student" class="btn btn-primary mb-3 shadow-sm transition w-100 w-sm-auto">
+                <i class="fas fa-user-plus mr-1"></i> Add Student
+            </button>
+
+            {{-- Action Buttons --}}
+            <div class="form-group d-flex flex-column flex-sm-row justify-content-end gap-2 mt-4">
+                <a href="{{ route('bookings.index') }}" class="btn btn-warning text-white shadow-sm w-100 w-sm-auto">
+                    <i class="fas fa-arrow-left mr-1"></i> Back
+                </a>
+                <button type="submit" class="btn btn-success text-white w-100 w-sm-auto shadow-sm transition">
+                    <i class="fas fa-check mr-1"></i> Submit
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
 @endsection
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('backend/summernote/summernote.min.css') }}">
-@endpush
-
 @push('scripts')
-<script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
-<script src="{{ asset('backend/summernote/summernote.min.js') }}"></script>
 <script>
-    // Initialize Flatpickr for Date
+    // Date picker
     flatpickr("#flatpickrDate", {
         altInput: true,
-        altFormat: "F j, Y", // Example: November 26, 2024
-        dateFormat: "Y-m-d", // Format for form submission
+        altFormat: "F j, Y",
+        dateFormat: "Y-m-d"
     });
 
-    // Initialize Flatpickr for Time Start
+    // Time pickers
     flatpickr("#flatpickrTimeStart", {
         enableTime: true,
         noCalendar: true,
-        dateFormat: "H:i", // 24-hour format
-        time_24hr: true,
+        dateFormat: "H:i",
+        time_24hr: true
     });
 
-    // Initialize Flatpickr for Time End
     flatpickr("#flatpickrTimeEnd", {
         enableTime: true,
         noCalendar: true,
         dateFormat: "H:i",
-        time_24hr: true,
+        time_24hr: true
     });
 
-    document.getElementById('add-student').addEventListener('click', function() {
-    const studentsList = document.getElementById('students-list');
-    const count = studentsList.children.length;
+    // Add student functionality
+    document.getElementById('add-student').addEventListener('click', function () {
+        const studentsList = document.getElementById('students-list');
+        const count = studentsList.querySelectorAll('.form-group').length;
 
-    // Check if the number of students is within the allowed range
-    if (count >= 10) {
-        alert('You can only add a maximum of 10 students.');
-        return;
-    }
+        if (count >= 10) {
+            alert('You can only add a maximum of 10 students.');
+            return;
+        }
 
-    const studentEntry = document.createElement('div');
-    studentEntry.classList.add('student-entry');
-    studentEntry.innerHTML = `
-      <label class="col-form-label" for="students{${count}][no_matriks]">No Matriks:</label>
-      <input type="text" name="students[${count}][no_matriks]" required class="form-control">
+        const div = document.createElement('div');
+        div.className = 'form-group mt-2';
+        div.innerHTML = `
+            <input type="text" name="students[${count}][no_matriks]" class="form-control mb-2" placeholder="No Matriks" required>
+            <input type="text" name="students[${count}][name]" class="form-control" placeholder="Name" required>
+        `;
+        studentsList.appendChild(div);
+    });
 
-      <label for="students[${count}[name]" class="col-form-label"> Name:</label>
-      <input type="text" name="students[${count}][name]" required class="form-control">
-    `;
-    studentsList.appendChild(studentEntry);
-});
-
-// Ensure at least 4 students are present before form submission
-document.getElementById('your-form-id').addEventListener('submit', function(event) {
-    const studentsList = document.getElementById('students-list');
-    const count = studentsList.children.length;
-
-    if (count < 4) {
-        alert('You must add at least 4 students before submitting the form.');
-        event.preventDefault(); // Stop form submission
-    }
-});
-
+    // Ensure at least 4 students
+    document.getElementById('booking-form').addEventListener('submit', function (e) {
+        const count = document.querySelectorAll('#students-list .form-group').length;
+        if (count < 4) {
+            alert('You must add at least 4 students before submitting the form.');
+            e.preventDefault();
+        }
+    });
 </script>
 @endpush
