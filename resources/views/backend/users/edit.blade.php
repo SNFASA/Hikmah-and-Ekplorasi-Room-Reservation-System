@@ -1,97 +1,91 @@
 @extends('backend.layouts.master')
-@section('title','LibraRoom Reservation system ')
+@section('title','LibraRoom Reservation System')
 @section('main-content')
 
-<div class="card">
-    <h5 class="card-header">Edit User</h5>
-    <div class="card-body">
-      <form method="post" action="{{route('users.update',$users->id)}}">
-        @csrf 
-        @method('PATCH')
-        <div class="form-group">
-            <label for="inputTitle" class="col-form-label">No matriks</label>
-          <input id="inputTitle" type="text" name="no_matriks" placeholder="Enter no matriks"  value="{{$users->no_matriks}}" class="form-control">
-          @error('no_matriks')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-          </div>
-
-        <div class="form-group">
-          <label for="inputTitle" class="col-form-label">Name</label>
-        <input id="inputTitle" type="text" name="name" placeholder="Enter name"  value="{{$users->name}}" class="form-control">
-        @error('name')
-        <span class="text-danger">{{$message}}</span>
-        @enderror
-        </div>
-
-        <div class="form-group">
-            <label for="inputEmail" class="col-form-label">Email</label>
-          <input id="inputEmail" type="email" name="email" placeholder="Enter email"  value="{{$users->email}}" class="form-control">
-          @error('email')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div>
-
-        {{--<div class="form-group">
-            <label for="inputPassword" class="col-form-label">Password</label>
-          <input id="inputPassword" type="password" name="password" placeholder="Enter password"  value="{{$users->password}}" class="form-control">
-          @error('password')
-          <span class="text-danger">{{$message}}</span>
-          @enderror
-        </div> --}}
-        @php
-          // Fetching roles, faculty offices, and courses data from the database
-          $roles = DB::table('users')->select('role')->where('id', $users->id)->get();
-          $facultyOffices = DB::table('faculty_Offices')->select('no_facultyOffice', 'name')->get();
-          $courses = DB::table('courses')->select('no_course', 'name')->get();
-        @endphp
-    
-    <div class="form-group">
-        <label for="role" class="col-form-label">Role</label>
-        <select name="role" class="form-control">
-            <option value="">-----Select Role-----</option>
-            @foreach($roles as $role)
-                <option value="{{ $role->role }}" {{ $role->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="{{ $role->role }}" {{ $role->role == 'user' ? 'selected' : '' }}>User</option>
-                <option value="{{ $role->role }}" {{ $role->role == 'ppp' ? 'selected' : '' }}>PPP</option>
-
-            @endforeach
-        </select>
-        @error('role')
-        <span class="text-danger">{{ $message }}</span>
-        @enderror
+<div class="card shadow-sm rounded-3">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Edit User</h5>
     </div>
-    
-    <div class="form-group">
-        <label for="facultyOffice" class="col-form-label">Faculty Office</label>
-        <select name="facultyOffice" class="form-control">
-            <option value="">-----Select Faculty Office-----</option>
-            @foreach($facultyOffices as $office)
-                <option value="{{ $office->no_facultyOffice }}">{{ $office->name }}</option>
-            @endforeach
-        </select>
-        @error('facultyOffice')
-        <span class="text-danger">{{ $message }}</span>
-        @enderror
-    </div>
-    
-    <div class="form-group">
-        <label for="course" class="col-form-label">Course</label>
-        <select name="course" class="form-control">
-            <option value="">-----Select Course-----</option>
-            @foreach($courses as $course)
-                <option value="{{ $course->no_course }}">{{ $course->name }}</option>
-            @endforeach
-        </select>
-        @error('course')
-        <span class="text-danger">{{ $message }}</span>
-        @enderror
-    </div>
-    
-        <div class="form-group mb-3">
-           <button class="btn btn-success" type="submit">Update</button>
-        </div>
-      </form>
+
+    <div class="card-body px-4 py-3">
+        <form method="POST" action="{{ route('users.update', $users->id) }}">
+            @csrf 
+            @method('PATCH')
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="form-group">
+                    <label for="inputNoMatriks">No Matriks</label>
+                    <input id="inputNoMatriks" type="text" name="no_matriks" value="{{ $users->no_matriks }}" class="form-control" placeholder="Enter No Matriks">
+                    @error('no_matriks')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="inputName">Name</label>
+                    <input id="inputName" type="text" name="name" value="{{ $users->name }}" class="form-control" placeholder="Enter Name">
+                    @error('name')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail">Email</label>
+                    <input id="inputEmail" type="email" name="email" value="{{ $users->email }}" class="form-control" placeholder="Enter Email">
+                    @error('email')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select name="role" class="form-control">
+                        <option value="">-- Select Role --</option>
+                        <option value="admin" {{ $users->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="user" {{ $users->role == 'user' ? 'selected' : '' }}>User</option>
+                        <option value="ppp" {{ $users->role == 'ppp' ? 'selected' : '' }}>PPP</option>
+                    </select>
+                    @error('role')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="facultyOffice">Faculty Office</label>
+                    <select name="facultyOffice" class="form-control">
+                        <option value="">-- Select Faculty Office --</option>
+                        @foreach($facultyOffices as $office)
+                            <option value="{{ $office->no_facultyOffice }}" {{ $users->facultyOffice == $office->no_facultyOffice ? 'selected' : '' }}>
+                                {{ $office->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('facultyOffice')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="course">Course</label>
+                    <select name="course" class="form-control">
+                        <option value="">-- Select Course --</option>
+                        @foreach($courses as $course)
+                            <option value="{{ $course->no_course }}" {{ $users->course == $course->no_course ? 'selected' : '' }}>
+                                {{ $course->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('course')
+                        <small class="text-danger">{{ $message }}</small>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-end gap-2">
+                <a href="{{ route('users.index') }}" class="btn btn-secondary"><i class="fas fa-arrow-left mr-1"></i> Cancel</a>
+                <button type="submit" class="btn btn-success"><i class="fas fa-save mr-1"></i> Update</button>
+            </div>
+        </form>
     </div>
 </div>
 
