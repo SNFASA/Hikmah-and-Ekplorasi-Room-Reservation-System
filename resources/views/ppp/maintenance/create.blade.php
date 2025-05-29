@@ -2,89 +2,90 @@
 @section('title', 'Maintenance Create')
 @section('main-content')
 
-<div class="card">
-    <h5 class="card-header">Add Maintenance Report</h5>
+<style>
+    .card.shadow:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 123, 255, 0.25);
+        transition: box-shadow 0.3s ease-in-out;
+    }
+</style>
+
+<div class="card shadow-sm border-0 mt-4">
+    <h5 class="card-header bg-light font-weight-bold text-primary">Add Maintenance Report</h5>
     <div class="card-body">
         <form method="post" action="{{ route('ppp.maintenance.store') }}">
             @csrf
-            <div class="form-group">
-                <label for="reported_by" class="col-form-label">Reported By<span class="text-danger">*</span></label>
-                <input id="reported_by" type="text" name="reported_by" placeholder="" value="{{ $reported_by }}" class="form-control" disabled>
-                @error('reported_by')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+
+            {{-- Reported By --}}
+            <div class="form-group mb-3">
+                <label for="reported_by" class="font-weight-semibold">Reported By <span class="text-danger">*</span></label>
+                <input id="reported_by" type="text" name="reported_by" value="{{ $reported_by }}" class="form-control" disabled>
+                @error('reported_by') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-            <!-- Title -->
-            <div class="form-group">
-                <label for="inputTitle" class="col-form-label">Title <span class="text-danger">*</span></label>
+
+            {{-- Title --}}
+            <div class="form-group mb-3">
+                <label for="inputTitle" class="font-weight-semibold">Title <span class="text-danger">*</span></label>
                 <input id="inputTitle" type="text" name="title" placeholder="Enter title" value="{{ old('title') }}" class="form-control">
-                @error('title')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('title') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-            
-            <div class="form-group">
-                <label for="description" class="col-form-label">Description</label>
+
+            {{-- Description --}}
+            <div class="form-group mb-3">
+                <label for="description" class="font-weight-semibold">Description</label>
                 <textarea class="form-control" id="description" name="description">{{ old('description') }}</textarea>
-                @error('description')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('description') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-            
-            
-            <!-- Date -->
-            <div class="form-group">
-                <label for="flatpickrDate" class="col-form-label">Date <span class="text-danger">*</span></label>
+
+            {{-- Date --}}
+            <div class="form-group mb-3">
+                <label for="flatpickrDate" class="font-weight-semibold">Date <span class="text-danger">*</span></label>
                 <input id="flatpickrDate" type="text" name="date_maintenance" value="{{ old('date_maintenance') }}" class="form-control">
-                @error('date_maintenance')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('date_maintenance') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-            
-            <!-- Item Type -->
-            <div class="form-group">
-                <label for="itemType" class="col-form-label">Item Type</label>
+
+            {{-- Item Type --}}
+            <div class="form-group mb-3">
+                <label for="itemType" class="font-weight-semibold">Item Type</label>
                 <select name="itemType" id="itemType" class="form-control">
                     <option value="">----- Select Item Type -----</option>
                     <option value="furniture" {{ old('itemType') == 'furniture' ? 'selected' : '' }}>Furniture</option>
                     <option value="electronic_equipment" {{ old('itemType') == 'electronic_equipment' ? 'selected' : '' }}>Electronic</option>
                     <option value="other" {{ old('itemType') == 'other' ? 'selected' : '' }}>Other</option>
                 </select>
-                @error('itemType')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('itemType') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-            
-            <!-- Item -->
-            <div class="form-group" id="itemid-wrapper">
-                <label for="itemid" class="col-form-label">Item</label>
+
+            {{-- Item --}}
+            <div class="form-group mb-3" id="itemid-wrapper">
+                <label for="itemid" class="font-weight-semibold">Item</label>
                 <select name="itemid" id="itemid" class="form-control">
                     <option value="">----- Select Item -----</option>
                 </select>
-                @error('itemid')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('itemid') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-            <!-- Room -->
-            <div class="form-group">
-                <label for="room_id" class="col-form-label">Room</label>
+
+            {{-- Room --}}
+            <div class="form-group mb-3">
+                <label for="room_id" class="font-weight-semibold">Room</label>
                 <select name="room_id" id="room_id" class="form-control">
                     <option value="">----- Select Room -----</option>
                     @foreach($rooms as $room)
-                    <option value="{{ $room->no_room }}" {{ old('room_id') == $room->no_room ? 'selected' : '' }}>
-                        {{ $room->name }}
-                    </option>
+                        <option value="{{ $room->no_room }}" {{ old('room_id') == $room->no_room ? 'selected' : '' }}>
+                            {{ $room->name }}
+                        </option>
                     @endforeach
                 </select>
-                @error('room_id')
-                <span class="text-danger">{{ $message }}</span>
-                @enderror
+                @error('room_id') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
-            
-            <!-- Submit -->
-            <div class="form-group mb-3">
-                <button type="reset" class="btn btn-warning">Reset</button>
-                <button type="submit" class="btn btn-success">Submit</button>
+
+            {{-- Submit --}}
+            <div class="form-group mb-3 d-flex flex-column flex-sm-row justify-content-end gap-2">
+                <a href="{{ route('ppp.electronic.index') }}" class="btn btn-warning text-white shadow-sm w-100 w-sm-auto">
+                    <i class="fas fa-arrow-left me-1"></i> Back
+                </a>
+                <button type="submit" class="btn btn-success text-white shadow-sm w-100 w-sm-auto">
+                    <i class="fas fa-check me-1"></i> Submit
+                </button>
             </div>
         </form>
     </div>
@@ -103,11 +104,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
 <script>
-    // Initialize Flatpickr for Date
+    // Initialize Flatpickr
     flatpickr("#flatpickrDate", {
         altInput: true,
-        altFormat: "F j, Y", // Example: November 26, 2024
-        dateFormat: "Y-m-d", // Format for form submission
+        altFormat: "F j, Y",
+        dateFormat: "Y-m-d",
     });
 
     $('#itemType').change(function () {
@@ -116,7 +117,7 @@
 
         if (!type) {
             $('#itemid-wrapper').html(`
-                <label for="itemid" class="col-form-label">Item</label>
+                <label for="itemid" class="font-weight-semibold">Item</label>
                 <select id="itemid" name="itemid" class="form-control">
                     <option value="">----- Select Item -----</option>
                 </select>
@@ -126,7 +127,7 @@
 
         if (type === 'other') {
             $('#itemid-wrapper').html(`
-                <label for="item_text" class="col-form-label">Item</label>
+                <label for="item_text" class="font-weight-semibold">Item</label>
                 <input type="text" id="item_text" name="item_text" class="form-control" placeholder="Enter item name">
             `);
         } else {
@@ -140,9 +141,7 @@
                     });
                 }
 
-                $('#itemid-wrapper').html(`
-                    <label for="itemid" class="col-form-label">Item</label>
-                `).append(select);
+                $('#itemid-wrapper').html(`<label for="itemid" class="font-weight-semibold">Item</label>`).append(select);
             });
         }
     });
