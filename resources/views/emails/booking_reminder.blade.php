@@ -5,7 +5,7 @@
     <title>Room Booking Reminder</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             background-color: #f6f8fa;
             padding: 20px;
             color: #333;
@@ -13,44 +13,51 @@
         .container {
             max-width: 600px;
             margin: auto;
-            background: white;
+            background-color: #ffffff;
             padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0px 2px 10px rgba(0,0,0,0.05);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: #2c3e50;
+            margin-bottom: 12px;
+        }
+        p {
+            line-height: 1.6;
         }
         ul {
             padding-left: 20px;
+            margin-top: 10px;
+            margin-bottom: 20px;
         }
-        .button {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 12px 20px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
+        li {
+            margin-bottom: 5px;
         }
         .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
             margin-top: 30px;
-            font-weight: bold;
             color: #555;
         }
         .divider {
-            margin: 20px 0;
+            margin: 25px 0;
             border-top: 1px solid #ddd;
+        }
+        .footer {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.5;
+            margin-top: 40px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Room Booking Reminder!</h1>
+        <h1>📅 Room Booking Reminder</h1>
 
         <p>Hi {{ $user->name }},</p>
 
-        <p>You have an upcoming room booking. Here are the details:</p>
+        <p>This is a friendly reminder for your upcoming room booking. Below are the details:</p>
 
         <ul>
             <li><strong>Room:</strong> {{ $booking->room->name }}</li>
@@ -62,44 +69,44 @@
 
         <div class="divider"></div>
 
-        <h3 class="section-title">📚 Students Involved:</h3>
+        <h3 class="section-title">👥 Students Involved</h3>
         <ul>
-            @foreach($users as $student)
+            @forelse($users as $student)
                 <li>{{ $student->name }} ({{ $student->no_matriks }})</li>
-            @endforeach
+            @empty
+                <li>No student data available.</li>
+            @endforelse
         </ul>
 
         <div class="divider"></div>
 
-        <h3 class="section-title">🪑 Furniture Available:</h3>
+        <h3 class="section-title">🪑 Furniture Available</h3>
         <ul>
-            @if(count($furnitures))
-                @foreach($furnitures as $item)
-                    <li>{{ $item }}</li>
-                @endforeach
-            @else
+            @forelse($furnitures as $item)
+                <li>{{ $item }}</li>
+            @empty
                 <li>None</li>
-            @endif
+            @endforelse
         </ul>
 
         <div class="divider"></div>
 
-        <h3 class="section-title">⚡ Electronics Available:</h3>
+        <h3 class="section-title">⚡ Electronics Available</h3>
         <ul>
-            @if(count($electronics))
-                @foreach($electronics as $item)
-                    <li>{{ $item }}</li>
-                @endforeach
-            @else
+            @forelse($electronics as $item)
+                <li>{{ $item }}</li>
+            @empty
                 <li>None</li>
-            @endif
+            @endforelse
         </ul>
 
-        <p style="margin-top: 40px;">Thanks,<br>{{ config('app.name') }}</p>
-        <p style="font-size: 12px; color: #999;">This is an automated message. Please do not reply.</p>
-        <p style="font-size: 12px; color: #999;">&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
-        <p style="font-size: 12px; color: #999;">This email was sent to you because you are a registered user of {{ config('app.name') }}.</p>
- 
+        <p style="margin-top: 40px;">Thank you,<br><strong>{{ config('app.name') }}</strong></p>
+
+        <div class="footer">
+            <p>This is an automated message. Please do not reply to this email.</p>
+            <p>&copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.</p>
+            <p>This email was sent to you because you are a registered user of {{ config('app.name') }}.</p>
+        </div>
     </div>
 </body>
 </html>
