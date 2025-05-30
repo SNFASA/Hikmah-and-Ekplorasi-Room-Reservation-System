@@ -1,56 +1,98 @@
 
 	<!-- Start Footer Area -->
-	<footer class="footer">
-		<!-- Footer Top -->
-		<div class="footer-top section">
-			<div class="container">
-				<div class="row">
-					<div class="col-lg-5 col-md-6 col-12">
-						<!-- Single Widget -->
-						<div class="single-footer about">
-							@php
-								$settings=DB::table('settings')->get();
-							@endphp
-							<p class="text">@foreach($settings as $data) {{$data->short_des}} @endforeach</p>
-							<p class="call">Got Question? Call us 24/7<span><a href="tel:123456789">@foreach($settings as $data) {{$data->phone}} @endforeach</a></span></p>
-						</div>
-						<!-- End Single Widget -->
-					</div>
-					<div class="col-lg-3 col-md-6 col-12">
-						<!-- Single Widget -->
-						<div class="single-footer social">
-							<h4>Get In Tuch</h4>
-							<!-- Single Widget -->
-							<div class="contact">
-								<ul>
-									<li>@foreach($settings as $data) {{$data->address}} @endforeach</li>
-									<li>@foreach($settings as $data) {{$data->email}} @endforeach</li>
-									<li>@foreach($settings as $data) {{$data->phone}} @endforeach</li>
-								</ul>
-							</div>
-							<!-- End Single Widget -->
-							
-						</div>
-						<!-- End Single Widget -->
-					</div>
-				</div>
-			</div>
-		</div>
-		<!-- End Footer Top -->
-		<div class="copyright">
-			<div class="container">
-				<div class="inner">
-					<div class="row">
-						<div class="col-lg-6 col-12">
-							<div class="left">
-								<p>Copyright © {{date('Y')}} <a href="https://github.com/SNFASA" target="_blank">SYED NABIL</a>  -  All Rights Reserved.</p>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</footer>
+<!-- Start Footer Area -->
+<footer class="footer text-white pt-5" style="background-color: #171258;">
+
+    <!-- Footer Top -->
+    <div class="footer-top section">
+        <div class="container">
+            <div class="row gy-4">
+                <!-- Logo & Address -->
+                <div class="col-lg-5 col-md-6 col-12 d-flex">
+                    <img src="{{ asset('images/PTTA Logo Footer.png') }}" alt="PTTA Logo" class="me-3" style="width: 150px; height:150px ;">
+                    <div>
+                        @php $settings = DB::table('settings')->get(); @endphp
+                        <h6 class="fw-bold">Tunku Tun Aminah Library</h6>
+                        <p>Universiti Tun Hussein Onn Malaysia (UTHM),<br>
+                        86400 Parit Raja, Batu Pahat, Johor, Malaysia.</p>
+                        <p>Phone: <strong>@foreach($settings as $data) {{$data->phone}} @endforeach</strong></p>
+                        <p>Fax: +607-4533199</p>
+                        <p>Whatsapp: +607-4533318</p>
+                        <p>Email: @foreach($settings as $data) {{$data->email}} @endforeach</p>
+                    </div>
+                </div>
+
+                <!-- UTHM Links -->
+                <div class="col-lg-2 col-md-6 col-12">
+                    <h6 class="fw-bold">UTHM Links</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM Website</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM Journals</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM Periodicals</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM e-Bookstore</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM e-News</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM WeCare</li>
+                    </ul>
+                </div>
+
+                <!-- Related Links -->
+                <div class="col-lg-3 col-md-6 col-12">
+                    <h6 class="fw-bold">Related Links</h6>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-link me-2 text-primary"></i> My UniNet</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> National Library of Malaysia</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> u-Pustaka</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> Katalog Induk Kebangsaan (KIK)</li>
+                        <li><i class="fas fa-link me-2 text-primary"></i> Perbadanan Perpustakaan Awam Johor</li>
+                    </ul>
+                </div>
+
+                <!-- Social & Visitor Counter -->
+                <div class="col-lg-2 col-md-6 col-12">
+                    <h6 class="fw-bold">Follow Us</h6>
+                    <div class="d-flex gap-2 fs-5 mb-3">
+                        <a href="#" class="text-white hover-opacity"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-white hover-opacity"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-white hover-opacity"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="text-white hover-opacity"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="text-white hover-opacity"><i class="fas fa-times"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Footer Top -->
+
+    <!-- Copyright -->
+    <div class="copyright border-top border-secondary mt-4 pt-3">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="mb-0 small">Copyright © {{date('Y')}} 
+                        <a href="https://github.com/SNFASA" class="text-info" target="_blank">SYED NABIL</a> 
+                        - All Rights Reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- /End Footer Area -->
+
+<style>
+.hover-opacity:hover {
+    opacity: 0.75;
+    transition: 0.3s ease;
+}
+.footer a {
+    text-decoration: none;
+}
+.footer a:hover {
+    color: #0d6efd; /* Bootstrap primary */
+}
+
+</style>
+
 	<!-- /End Footer Area -->
  
 	<!-- Jquery -->
