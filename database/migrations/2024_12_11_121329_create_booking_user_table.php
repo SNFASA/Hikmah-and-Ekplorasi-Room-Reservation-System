@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('booking_user', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('booking_id');
-            $table->unsignedBigInteger('list_student_booking_id');;
+            $table->unsignedBigInteger('list_student_booking_id');
             $table->timestamps();
         });
     }

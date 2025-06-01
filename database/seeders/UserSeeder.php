@@ -20,8 +20,8 @@ class UserSeeder extends Seeder
             'email' => 'nabil@gmail.com',
             'password' => Hash::make('1234'),
             'role' => 'Admin',  // Set to either 'student' or 'staff' to match ENUM options
-            'facultyOffice' => 1, // Assuming this is an existing faculty_office ID
-            'course' => 1,        // Assuming this is an existing course ID
+            'facultyOffice' => 10, // Assuming this is an existing faculty_office ID
+            'course' => null,        // Assuming this is an existing course ID
         ]);
     }
 }

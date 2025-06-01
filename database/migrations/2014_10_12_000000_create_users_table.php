@@ -14,6 +14,7 @@ return new class extends Migration
         if (!Schema::hasTable('users')) {
             Schema::create('users', function (Blueprint $table) {
                 $table->id();
+                $table->string('no_matriks')->unique()->nullable();
                 $table->string('name');
                 $table->string('email')->unique();
                 $table->timestamp('email_verified_at')->nullable();
@@ -23,6 +24,7 @@ return new class extends Migration
                 $table->enum('role', ['student', 'staff','admin'])->index();
                 $table->unsignedBigInteger('facultyOffice')->nullable()->index();
                 $table->unsignedBigInteger('course')->nullable()->index();
+                $table->timestamps();
     
                 // Foreign keys for related tables
                 //$table->foreign('facultyOffice')->references('no_facultyOffice')->on('faculty_offices')->onDelete('cascade')->onUpdate('cascade');

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->date('invalid_date');
             $table->time('invalid_time_start');
             $table->time('invalid_time_end');
+            $table->unsignedBigInteger('room_id')->nullable();
             $table->timestamps();
         });
     }
