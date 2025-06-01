@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Room;
+use App\Models\room;
 use App\Models\list_student_booking;
 use Carbon\Carbon;
 
@@ -25,7 +25,7 @@ class bookings extends Model
 
     public function room()
     {
-        return $this->belongsTo(Room::class, 'no_room', 'no_room');
+        return $this->belongsTo(room::class, 'no_room', 'no_room');
     }
 
     public function listStudentBookings()

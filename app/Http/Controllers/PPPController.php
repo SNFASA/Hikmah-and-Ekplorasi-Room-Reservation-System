@@ -3,12 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Setting;
-use App\Models\Staff; 
-use App\Models\electronic;
-use App\Models\furniture;
 use Illuminate\Support\Facades\DB;
-use App\Models\Maintenance;
+use App\Models\maintenance;
 use App\Rules\MatchOldPassword;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Artisan;
@@ -126,7 +122,6 @@ class PPPController extends Controller
         }
     }
     public function userPieChart(Request $request){
-        // dd($request->all());
         $data = User::select(\DB::raw("COUNT(*) as count"), \DB::raw("DAYNAME(created_at) as day_name"), \DB::raw("DAY(created_at) as day"))
         ->where('created_at', '>', Carbon::today()->subDays(6))
         ->groupBy('day_name','day')
@@ -137,13 +132,12 @@ class PPPController extends Controller
         {
             $array[++$key] = [$value->day_name, $value->count];
         }
-    //  return $data;
      return view('ppp.index')->with('course', json_encode($array));
     }
     public function itemStatusPieChart(Request $request)
     {
         // Fetch data for furniture and electronic items based on status
-        $data = Maintenance::select(
+        $data = maintenance::select(
             \DB::raw("COUNT(*) as count"), 
             'status'
         )

@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
-use App\Models\Bookings;
+use App\Models\bookings;
 use App\Models\list_student_booking;
 use App\Models\User;
 use App\Models\room;
@@ -60,7 +60,7 @@ class BookingController extends Controller
      */
     public function index()
     {
-        $bookings = Bookings::with('room', 'listStudentBookings')
+        $bookings = bookings::with('room', 'listStudentBookings')
         ->orderBy('booking_date', 'ASC')
         ->orderBy('booking_time_start', 'ASC')
         ->paginate(10);

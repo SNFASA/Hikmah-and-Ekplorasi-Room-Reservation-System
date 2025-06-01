@@ -7,11 +7,11 @@
     <!-- Topbar (Logo and Contact Info) -->
     <div class="container py-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2 ms-auto order-lg-3">
-            <a href="#" class="text-dark fs-5"><i class="fab fa-facebook"></i></a>
-            <a href="#" class="text-dark fs-5"><i class="fab fa-instagram"></i></a>
-            <a href="#" class="text-dark fs-5"><i class="fab fa-x-twitter"></i></a>
-            <a href="#" class="text-dark fs-5"><i class="fab fa-tiktok"></i></a>
-            <a href="#" class="text-dark fs-5"><i class="fab fa-youtube"></i></a>
+            <a href="https://www.facebook.com/PTTAUTHM" class="text-dark fs-5"><i class="fab fa-facebook"></i></a>
+            <a href="https://www.instagram.com/pttauthm/" class="text-dark fs-5"><i class="fab fa-instagram"></i></a>
+            <a href="https://x.com/i/flow/login?redirect_after_login=%2Fpttauthm" class="text-dark fs-5"><i class="fab fa-x-twitter"></i></a>
+            <a href="https://www.tiktok.com/@pttauthm?lang=en" class="text-dark fs-5"><i class="fab fa-tiktok"></i></a>
+            <a href="https://www.youtube.com/@pttauthm9142/featured" class="text-dark fs-5"><i class="fab fa-youtube"></i></a>
         </div>
         <!-- Logo -->
         <div class="d-flex align-items-center">

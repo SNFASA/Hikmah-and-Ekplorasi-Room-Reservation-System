@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Models;
-use App\Models\Department;
+use App\Models\department;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +19,7 @@ class faculty_offices extends Model
 
     public function department()
     {
-        return $this->belongsTo(Department::class, 'department_id');
+        return $this->belongsTo(department::class, 'department_id');
     }
 }
 

@@ -17,7 +17,7 @@ class list_student_booking extends Model
 
     public function user()
     {
-        return $this->belongsTo(user::class, 'no_matriks', 'no_matriks');
+        return $this->belongsTo(User::class, 'no_matriks', 'no_matriks');
     }
 
     public function bookings()

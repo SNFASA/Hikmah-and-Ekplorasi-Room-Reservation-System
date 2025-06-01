@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Bookings;
+use App\Models\bookings;
 use App\Rules\MatchOldPassword;
 use Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
-use App\Models\Room;
+use App\Models\room;
 use Carbon\Carbon;
-use App\Models\Furniture;
+use App\Models\furniture;
 use Illuminate\Support\Facades\Log;
-use App\Models\Electronic;
+use App\Models\electronic;
 class HomeController extends Controller
 {
     /**
@@ -71,7 +71,7 @@ class HomeController extends Controller
         }
     
         // Query asas bilik yang aktif & tapis ikut input
-        $rooms = Room::query()
+        $rooms = room::query()
             ->where('status', 'valid')
             ->when($type_room !== 'All', function ($query) use ($type_room) {
                 $query->where('type_room', $type_room);
@@ -126,8 +126,8 @@ class HomeController extends Controller
         }
     
         // Data untuk paparan filter
-        $furnitureCategories = Furniture::getFurnitureCategories();
-        $electronicCategories = Electronic::getElectronicCategories();
+        $furnitureCategories = furniture::getFurnitureCategories();
+        $electronicCategories = electronic::getElectronicCategories();
     
         // Return view
         return view('frontend.index', compact(
@@ -140,12 +140,10 @@ class HomeController extends Controller
       
     public function profile(){
         $profile=Auth()->user();
-        // return $profile;
         return view('frontend.pages.profile')->with('profile',$profile);
     }
 
     public function profileUpdate(Request $request,$id){
-        // return $request->all();
         $user=User::findOrFail($id);
         $data=$request->all();
         $status=$user->fill($data)->save();

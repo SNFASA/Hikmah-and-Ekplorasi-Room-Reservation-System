@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Feedback;
 use App\Models\bookings;
-use App\Models\Maintenance;
+use App\Models\maintenance;
 use Illuminate\Http\Request;
 use App\Models\room;
 use Illuminate\Support\Facades\Auth;
@@ -182,7 +182,7 @@ class FeedbackController extends Controller
     
                 // Tambah damage untuk perabot
                 foreach ($request->damaged_furnitures as $furnitureId) {
-                    Maintenance::create([
+                    maintenance::create([
                         'title' => 'Damage Report: Furniture',
                         'description' => $request->comment ?? 'Reported via feedback',
                         'itemType' => 'furniture',
@@ -196,7 +196,7 @@ class FeedbackController extends Controller
     
                 // Tambah damage untuk elektronik
                 foreach ($request->damaged_electronics as $electronicId) {
-                    Maintenance::create([
+                    maintenance::create([
                         'title' => 'Damage Report: Electronic',
                         'description' => $request->comment ?? 'Reported via feedback',
                         'itemType' => 'electronic_equipment',
@@ -210,7 +210,7 @@ class FeedbackController extends Controller
     
                 // Jika tiada perabot/elektronik ditanda tetapi komen rosak
                 if (empty($request->damaged_furnitures) && empty($request->damaged_electronics)) {
-                    Maintenance::create([
+                    maintenance::create([
                         'title' => 'General Room Issue Reported',
                         'description' => $request->comment ?? 'Reported via feedback',
                         'itemType' => 'other',

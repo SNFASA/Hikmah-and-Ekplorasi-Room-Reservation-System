@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
-use App\Models\Room;
+use App\Models\room;
 use App\Helper;
 use App\Models\furniture;
 use App\Models\electronic;

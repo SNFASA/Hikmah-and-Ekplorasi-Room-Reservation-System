@@ -21,7 +21,7 @@ class room extends Model
     }
     public function bookings()
     {
-    return $this->hasMany(Bookings::class, 'no_room', 'no_room');
+    return $this->hasMany(bookings::class, 'no_room', 'no_room');
     }
     public function electronics()
     {

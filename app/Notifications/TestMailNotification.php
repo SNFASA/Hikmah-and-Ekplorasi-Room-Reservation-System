@@ -38,17 +38,4 @@ public function toMail($notifiable)
         ->line('This is a test notification email.')
         ->line('Sent via mail channel only.');
 }
-
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
-    {
-        return [
-            //
-        ];
-    }
 }

@@ -26,12 +26,12 @@
                 <div class="col-lg-2 col-md-6 col-12">
                     <h6 class="fw-bold">UTHM Links</h6>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM Website</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM Journals</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM Periodicals</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM e-Bookstore</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM e-News</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> UTHM WeCare</li>
+                        <li><a href="https://www.uthm.edu.my/en/"><i class="fas fa-link me-2 text-primary"></i> UTHM Website</li></a>
+                        <li><a href="https://penerbit.uthm.edu.my/ojs/"><i class="fas fa-link me-2 text-primary"></i> UTHM Journals</li></a>
+                        <li><a href="https://publisher.uthm.edu.my/periodicals/"><i class="fas fa-link me-2 text-primary"></i> UTHM Periodicals</li></a>
+                        <li><a href="http://e-bookstore.uthm.edu.my/"><i class="fas fa-link me-2 text-primary"></i> UTHM e-Bookstore</li></a>
+                        <li><a href="https://news.uthm.edu.my/ms/e-wacana/"><i class="fas fa-link me-2 text-primary"></i> UTHM e-News</li></a>
+                        <li><a href="https://wecare.uthm.edu.my/"><i class="fas fa-link me-2 text-primary"></i> UTHM WeCare</li></a>
                     </ul>
                 </div>
 
@@ -39,11 +39,11 @@
                 <div class="col-lg-3 col-md-6 col-12">
                     <h6 class="fw-bold">Related Links</h6>
                     <ul class="list-unstyled">
-                        <li><i class="fas fa-link me-2 text-primary"></i> My UniNet</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> National Library of Malaysia</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> u-Pustaka</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> Katalog Induk Kebangsaan (KIK)</li>
-                        <li><i class="fas fa-link me-2 text-primary"></i> Perbadanan Perpustakaan Awam Johor</li>
+                        <li><a href="http://perpun.upm.edu.my/myuninet/"><i class="fas fa-link me-2 text-primary"></i> My UniNet</li></a>
+                        <li><a href="https://www.pnm.gov.my/"><i class="fas fa-link me-2 text-primary"></i> National Library of Malaysia</li></a>
+                        <li><a href="https://www.u-library.gov.my/portal/web/guest/home"><i class="fas fa-link me-2 text-primary"></i> u-Pustaka</li></a>
+                        <li><a href="https://kik.pnm.gov.my/index.php/en/"><i class="fas fa-link me-2 text-primary"></i> Katalog Induk Kebangsaan (KIK)</li></a>
+                        <li><a href="https://ppaj.johor.gov.my/"><i class="fas fa-link me-2 text-primary"></i> Perbadanan Perpustakaan Awam Johor</li></a>
                     </ul>
                 </div>
 
@@ -51,11 +51,11 @@
                 <div class="col-lg-2 col-md-6 col-12">
                     <h6 class="fw-bold">Follow Us</h6>
                     <div class="d-flex gap-2 fs-5 mb-3">
-                        <a href="#" class="text-white hover-opacity"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="text-white hover-opacity"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-white hover-opacity"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" class="text-white hover-opacity"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="text-white hover-opacity"><i class="fas fa-times"></i></a>
+                        <a href="https://www.facebook.com/PTTAUTHM" class="text-white hover-opacity"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/pttauthm/" class="text-white hover-opacity"><i class="fab fa-instagram"></i></a>
+                        <a href="https://x.com/i/flow/login?redirect_after_login=%2Fpttauthm" class="text-white hover-opacity"><i class="fab fa-tiktok"></i></a>
+                        <a href="https://www.tiktok.com/@pttauthm?lang=en" class="text-white hover-opacity"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.youtube.com/@pttauthm9142/featured" class="text-white hover-opacity"><i class="fas fa-times"></i></a>
                     </div>
                 </div>
             </div>

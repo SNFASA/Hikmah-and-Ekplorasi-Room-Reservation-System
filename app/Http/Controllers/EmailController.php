@@ -34,7 +34,7 @@ class EmailController extends Controller
             }
         }
     
-        return true; // ✅ no redirect here!
+        return true;
     }
     
 }
