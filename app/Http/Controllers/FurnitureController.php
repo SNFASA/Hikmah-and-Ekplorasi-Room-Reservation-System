@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\furniture;
+use App\Models\CategoryEquipment;
 use Illuminate\Http\Request;
 
 class FurnitureController extends Controller
@@ -35,39 +36,31 @@ class FurnitureController extends Controller
 
     /**
      * Show the form for creating a new furniture item.
-     * 
      * @return \Illuminate\View\View The view displaying the form for creating a new furniture item.
      */
     public function create()
     {
-        $categories = [
-            'Desk',
-            'Chair',
-            'Japanese desk',
-            'Whiteboard'
-        ];
+        $categories = CategoryEquipment::orderBy('name')->get();
         return view('backend.furniture.create', compact('categories'));
     }
 
 
     /**
      * Store a newly created furniture item in storage.
-     * 
      * @param \Illuminate\Http\Request $request The request instance containing the data for the new furniture item.
-     * 
      * @return \Illuminate\Http\RedirectResponse A redirect response to the list of furniture items with a success message.
      */
     public function store(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|in:Desk,Chair,Japanese desk,Whiteboard',
+            'category_id' => 'required|exists:categories_equipment,id',
             'status' => 'required|string|max:255',
         ]);
         
-        furniture::create([  
+        furniture::create([
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
             'status' => $request->status,
         ]);
     
@@ -75,15 +68,10 @@ class FurnitureController extends Controller
     }
     
 
-    // Show the form for editing the specified 
+    // Show the form for editing the specified
     public function edit($id)
     {
-        $categories = [
-            'Desk',
-            'Chair',
-            'Japanese desk',
-            'Whiteboard'
-        ];
+        $categories = CategoryEquipment::orderBy('name')->get();
         $furniture = furniture::findOrFail($id);
         return view('backend.furniture.edit', compact('furniture', 'categories'));
     }
@@ -95,14 +83,14 @@ class FurnitureController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|in:Desk,Chair,Japanese desk,Whiteboard', // Adjust according to your categories
+            'category_id' => 'required|exists:categories_equipment,id',
             'status' => 'required|string|max:255',
         ]);
         
 
         $furniture->update([
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
             'status' => $request->status,
         ]);
 

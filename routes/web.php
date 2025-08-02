@@ -18,7 +18,9 @@ use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\ElectronicPPPController;
 use App\Http\Controllers\FurniturePPPController;
+use App\Http\Controllers\CatergoryEqupmentController;
 use App\Http\Controllers\RoomPPPController;
+use App\Http\Controllers\TypeRoomController;
 use App\Http\Controllers\MaintenancePPPController;
 use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\Auth;
@@ -139,6 +141,16 @@ Route::prefix('/ppp/furnitures')->middleware(['auth', 'role:ppp'])->group(functi
     Route::put('/{id}', [FurniturePPPController::class, 'update'])->name('ppp.furniture.update');
     Route::delete('/{id}', [FurniturePPPController::class, 'destroy'])->name('ppp.furniture.destroy');
 });
+// category equipment
+Route::prefix('/admin/categories')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [CatergoryEqupmentController::class, 'index'])->name('backend.category.index');
+    Route::get('/create', [CatergoryEqupmentController::class, 'create'])->name('backend.category.create');
+    Route::post('/', [CatergoryEqupmentController::class, 'store'])->name('backend.category.store');
+    Route::get('/{id}', [CatergoryEqupmentController::class, 'show'])->name('backend.category.show');
+    Route::get('/{id}/edit', [CatergoryEqupmentController::class, 'edit'])->name('backend.category.edit');
+    Route::put('/{id}', [CatergoryEqupmentController::class, 'update'])->name('backend.category.update');
+    Route::delete('/{id}', [CatergoryEqupmentController::class, 'destroy'])->name('backend.category.destroy');
+});
 
 //room 
 Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(function () {
@@ -149,6 +161,16 @@ Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(functio
     Route::get('/{id}/edit', [RoomController::class, 'edit'])->name('backend.room.edit');
     Route::put('/{id}', [RoomController::class, 'update'])->name('backend.room.update');
     Route::delete('/{id}', [RoomController::class, 'destroy'])->name('backend.room.destroy');
+});
+// type room 
+Route::prefix('/admin/typeroom')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [TypeRoomController::class, 'index'])->name('backend.type_room.index');
+    Route::get('/create', [TypeRoomController::class, 'create'])->name('backend.type_room.create');
+    Route::post('/', [TypeRoomController::class, 'store'])->name('backend.type_room.store');
+    Route::get('/{id}', [TypeRoomController::class, 'show'])->name('backend.type_room.show');
+    Route::get('/{id}/edit', [TypeRoomController::class, 'edit'])->name('backend.type_room.edit');
+    Route::put('/{id}', [TypeRoomController::class, 'update'])->name('backend.type_room.update');
+    Route::delete('/{id}', [TypeRoomController::class, 'destroy'])->name('backend.type_room.destroy');
 });
 //room PPP
 Route::prefix('/ppp/rooms')->middleware(['auth', 'role:ppp'])->group(function () {
@@ -331,4 +353,13 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/feedback/{feedback}', [FeedbackController::class, 'destroy'])->name('feedback.destroy');
     Route::get('/feedback/show', [FeedbackController::class, 'statistic'])->name('backend.feedback.statistic');
     Route::get('/feedback/{feedback}/show', [FeedbackController::class, 'show'])->name('frontend.pages.feedbackshow');
+});
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-email', function () {
+    Mail::raw('Test email content. ini adalah cubaan test email', function ($message) {
+        $message->to('your@email.com')
+                ->subject('Testing SMTP Mailtrap');
+    });
+    return 'Email sent.';
 });

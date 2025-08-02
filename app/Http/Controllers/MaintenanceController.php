@@ -60,27 +60,31 @@ class MaintenanceController extends Controller
             'description' => 'required|string',
             'itemType' => 'required|in:furniture,electronic_equipment,other',
             'itemid' => 'nullable|integer|required_unless:itemType,other', // Item ID only required unless 'other' is selected
-            'itemid_text' => 'nullable|string|required_if:itemType,other|max:255', // Item name is required if 'other' is selected
+            'item_text' => 'nullable|string|required_if:itemType,other|max:255', // Item name is required if 'other' is selected
             'room_id' => 'nullable|integer|exists:rooms,no_room',
             'date_maintenance' => 'required|date',
         ]);
     
         // Ensure that 'itemid' is set correctly or 'itemid_text' for 'other'
-        if ($request->itemType == 'other' && !$request->itemid_text) {
-            return redirect()->back()->withErrors(['itemid_text' => 'Item name is required for "Other".']);
+        if ($request->itemType == 'other' && !$request->item_text) {
+            return redirect()->back()->withErrors(['item_text' => 'Item name is required for "Other".']);
         }
-    
-        Maintenance::create([
+        try {
+            Maintenance::create([
             'title' => $request->title,
             'description' => $request->description,
             'itemType' => $request->itemType,
             'item_id' => $request->itemType !== 'other' ? $request->itemid : null, // Only assign item_id if not 'other'
-            'item_text' => $request->itemType === 'other' ? $request->itemid_text : null, // Assign item_text if 'other'
+            'item_text' => $request->itemType === 'other' ? $request->item_text : null, // Assign item_text if 'other'
             'room_id' => $request->room_id,
             'date_maintenance' => $request->date_maintenance,
             'status' => 'pending',
             'reported_by' => auth()->id(),
         ]);
+        } catch (\Exception $e) {
+            \Log::error('Gagal simpan maintenance: ' . $e->getMessage());
+            return back()->withErrors(['msg' => 'Simpan gagal: ' . $e->getMessage()]);
+        }
     
         return redirect()->route('backend.maintenance.index')->with('success', 'Maintenance report created successfully.');
     }
@@ -122,7 +126,7 @@ class MaintenanceController extends Controller
             'status' => $request->status,
             'reported_by' => auth()->id(),
         ]);
-    
+
         return redirect()->route('backend.maintenance.index')->with('success', 'Report updated successfully.');
     }
     // Remove the specified from storage

@@ -44,7 +44,13 @@
                     <tr>
                         <td>{{$data->no_furniture}}</td>
                         <td>{{$data->name}}</td>
-                        <td>{{$data->category}}</td>
+                        <td>
+                            @if($item->category)
+                                {{ $item->category->name }}
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif</td>
+                        </td>
                         <td>
                             <span class="badge badge-{{ $data->status == 'Active' ? 'success' : 'warning' }}">
                                 {{ $data->status }}

@@ -69,13 +69,16 @@
                 <!-- Type Room -->
                 <div>
                     <label class="form-label fw-bold mb-0"><i class="fa fa-door-open me-1"></i> Type Room</label>
-                    <select name="type_room" class="form-select uniform-input mt-1 rounded-4">
-                        <option value="All" {{ $type_room == 'All' ? 'selected' : '' }}>All</option>
-                        <option value="EKSPLORASI" {{ $type_room == 'EKSPLORASI' ? 'selected' : '' }}>Eksplorasi</option>
-                        <option value="HIKMAH" {{ $type_room == 'HIKMAH' ? 'selected' : '' }}>Hikmah</option>
+                    <select name="type_room" class="form-select">
+                        <option value="All">-- All Room Types --</option>
+                        @foreach($type_rooms as $type)
+                            <option value="{{ $type->id }}"
+                                {{ (old('type_room', $type_room ?? '') == $type->id) ? 'selected' : '' }}>
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
-
                 <!-- Date -->
                 <div>
                     <label class="form-label fw-bold mb-0"><i class="fa fa-calendar-alt me-1"></i> Date</label>
@@ -109,10 +112,11 @@
                     <label class="form-label fw-bold"><i class="fa fa-chair me-2"></i>Furniture</label>
                     @foreach ($furnitureCategories as $furniture)
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="furniture_category[]" value="{{ $furniture->category }}"
-                                {{ in_array($furniture->category, $furniture_category) ? 'checked' : '' }}>
+                            <input class="form-check-input" type="checkbox" name="furniture_category[]" 
+                                value="{{ $furniture->id }}"
+                                {{ in_array($furniture->id, $furniture_category ?? []) ? 'checked' : '' }}>
                             <label class="form-check-label">
-                                {{ $furniture->category }}
+                                {{ $furniture->name }}
                             </label>
                         </div>
                     @endforeach
@@ -123,10 +127,11 @@
                     <label class="form-label fw-bold"><i class="fa fa-plug me-2"></i>Electronics</label>
                     @foreach ($electronicCategories as $electronics)
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="electronic_category[]" value="{{ $electronics->category }}"
-                                {{ in_array($electronics->category, $electronic_category) ? 'checked' : '' }}>
+                            <input class="form-check-input" type="checkbox" name="electronic_category[]" 
+                                value="{{ $electronics->id }}"
+                                {{ in_array($electronics->id, $electronic_category ?? []) ? 'checked' : '' }}>
                             <label class="form-check-label">
-                                {{ $electronics->category }}
+                                {{ $electronics->name }}
                             </label>
                         </div>
                     @endforeach

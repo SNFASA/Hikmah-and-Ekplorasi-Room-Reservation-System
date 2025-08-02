@@ -29,7 +29,10 @@ class electronic extends Model
     }
     public static function getElectronicCategories()
     {
-    return self::select('category')->distinct()->get();
+    return self::select('category_id')->distinct()->get();
     }
-
+    public function category()
+    {
+        return $this->belongsTo(CategoryEquipment::class, 'category_id');
+    }
 }

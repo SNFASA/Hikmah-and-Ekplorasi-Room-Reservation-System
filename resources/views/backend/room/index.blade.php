@@ -51,7 +51,13 @@
                         <td>{{ $room->no_room }}</td>
                         <td>{{ $room->name }}</td>
                         <td>{{ $room->capacity }}</td>
-                        <td>{{ $room->type_room }}</td>
+                        <td>
+                            @if($room->type)
+                                {{ $room->type->name }}
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif
+                        </td>
                         <td>
                             @if($room->furnitures->isNotEmpty())
                                 {{ $room->furnitures->pluck('name')->join(', ') }}

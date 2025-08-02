@@ -26,14 +26,15 @@
             {{-- Category --}}
             <div class="form-group mb-3">
                 <label for="category" class="font-weight-semibold">Category <span class="text-danger">*</span></label>
-                <select name="category" id="category" class="form-control">
-                    <option value="">----- Select Category -----</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category }}" {{ old('category', $furniture->category) == $category ? 'selected' : '' }}>
-                            {{ $category }}
-                        </option>
-                    @endforeach
-                </select>
+                    <select name="category_id" class="form-control" required>
+                        <option value="" disabled>-- Select Category --</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}"
+                                {{ (old('category_id', $electronics->category_id ?? '') == $category->id) ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 @error('category') <small class="text-danger">{{ $message }}</small> @enderror
             </div>
 

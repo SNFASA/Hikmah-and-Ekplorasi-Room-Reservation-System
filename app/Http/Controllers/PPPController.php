@@ -18,14 +18,15 @@ class PPPController extends Controller
     public function index() {
         // Data for Furniture (Count by category)
         $furnitureData = DB::table('furniture')
-            ->select(DB::raw('category, COUNT(*) as count'))
-            ->groupBy('category')
+            ->join('categories_equipment', 'furniture.category_id', '=', 'categories_equipment.id')
+            ->select('categories_equipment.name as category_name', DB::raw('COUNT(*) as count'))
+            ->groupBy('categories_equipment.name')
             ->get();
-    
         // Data for Electronic Equipment (Count by category)
         $electronicData = DB::table('electronic_equipment')
-            ->select(DB::raw('category, COUNT(*) as count'))
-            ->groupBy('category')
+            ->join('categories_equipment', 'electronic_equipment.category_id', '=', 'categories_equipment.id')
+            ->select('categories_equipment.name as category_name', DB::raw('COUNT(*) as count'))
+            ->groupBy('categories_equipment.name')
             ->get();
     
         // Data for Maintenance (Count by status)

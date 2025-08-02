@@ -43,7 +43,13 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $item->name }}</td>
-                        <td>{{ $item->category }}</td>
+                        <td>
+                            @if($item->category)
+                                {{ $item->category->name }}
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif</td>
+                        </td>
                         <td>
                             <span class="badge badge-{{ $item->status == 'Active' ? 'success' : 'warning' }}">
                                 {{ $item->status }}

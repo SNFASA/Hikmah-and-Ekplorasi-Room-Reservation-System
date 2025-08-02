@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\room;
 use App\Models\furniture;
 use App\Models\electronic;
+use App\Models\TypeRooms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
@@ -38,30 +39,24 @@ class RoomController extends Controller
 
     /**
      * Displays the room creation form.
-     * 
      * This method retrieves all available furniture and electronics from the database,
      * and renders the room creation form with the retrieved data.
-     * 
      * @return \Illuminate\View\View The room creation form view with furniture and electronics data.
      */
     public function create()
     {
-        $type_rooms = ['HIKMAH', 'EKSPLORASI'];
+        $type_rooms = TypeRooms::orderby('name')->get(); 
         $furnitures = furniture::all();
         $electronics = electronic::all();
         return view('backend.room.create', compact('type_rooms', 'furnitures', 'electronics'));
     }
     /**
      * Creates a new room.
-     * 
      * This method validates the incoming request,
      * creates a new room with the validated data,
      * and attaches the specified furniture and electronic equipment to the room.
-     * 
      * @param Request $request The incoming request object.
-     * 
      * @return \Illuminate\Http\RedirectResponse Redirects to the room index page with a success message.
-     * 
      * @throws \Exception If the room cannot be saved.
      */
     public function store(Request $request)
@@ -72,7 +67,7 @@ class RoomController extends Controller
             'capacity' => 'required|integer|min:0',
             'furniture' => 'nullable|array',
             'electronicEquipment' => 'nullable|array',
-            'type_room' => 'required|string|in:HIKMAH,EKSPLORASI',
+            'type_room' => 'required|exists:type_rooms,id',
             'status' => 'required|string|in:valid,invalid',
         ]);
     
@@ -120,10 +115,11 @@ class RoomController extends Controller
         $room = room::with(['furnitures', 'electronics'])->findOrFail($id);
         $furnitures = furniture::all();
         $electronics = electronic::all();
+        $type_rooms = TypeRooms::orderby('name')->get(); 
         $selectedFurnitures = $room->furnitures;
         $selectedElectronics = $room->electronics;
     
-        return view('backend.room.edit', compact('room', 'furnitures', 'electronics', 'selectedFurnitures', 'selectedElectronics'));
+        return view('backend.room.edit', compact('room', 'furnitures', 'electronics','type_rooms', 'selectedFurnitures', 'selectedElectronics'));
     }
     
 
@@ -136,7 +132,7 @@ class RoomController extends Controller
             'capacity' => 'required|integer|min:0',
             'furniture' => 'nullable|array',
             'electronicEquipment' => 'nullable|array',
-            'type_room' => 'required|string|in:HIKMAH,EKSPLORASI',
+            'type_room' => 'required|exists:type_rooms,id',
             'status' => 'required|string|in:valid,invalid',
         ]);
 

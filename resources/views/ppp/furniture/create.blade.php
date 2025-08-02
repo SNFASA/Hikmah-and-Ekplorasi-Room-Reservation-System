@@ -33,12 +33,14 @@
             {{-- Category --}}
             <div class="form-group mb-3">
                 <label for="category" class="font-weight-semibold">Category <span class="text-danger">*</span></label>
-                <select name="category" id="category" class="form-control">
-                    <option value="">----- Select Category -----</option>
-                    <option value="Desk" {{ old('category') == 'Desk' ? 'selected' : '' }}>Desk</option>
-                    <option value="Chair" {{ old('category') == 'Chair' ? 'selected' : '' }}>Chair</option>
-                    <option value="Japanese desk" {{ old('category') == 'Japanese desk' ? 'selected' : '' }}>Japanese desk</option>
-                    <option value="Whiteboard" {{ old('category') == 'Whiteboard' ? 'selected' : '' }}>Whiteboard</option>
+                <select name="category_id" class="form-select" required>
+                    <option value="" disabled selected>Select a category</option>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}"
+                            @if(old('category_id', $electronics->category_id ?? '') == $category->id) selected @endif>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
                 </select>
                 @error('category')
                 <small class="text-danger">{{$message}}</small>

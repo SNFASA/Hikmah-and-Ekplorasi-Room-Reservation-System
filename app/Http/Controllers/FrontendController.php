@@ -13,6 +13,7 @@ use App\Models\room;
 use App\Helper;
 use App\Models\furniture;
 use App\Models\electronic;
+use App\Models\CategoryEquipment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
@@ -54,15 +55,15 @@ class FrontendController extends Controller
     {
     
         $rooms = collect(); // Empty collection as a placeholder
-        $type_room = 'All'; // Default value for type_room
+        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get(); // Default value for type_room
         $date = null;
         $start_time = null;
         $end_time = null;
         $furniture_category = [];
         $electronic_category = [];
-        $furnitureCategories = Furniture::getFurnitureCategories();
-        $electronicCategories = Electronic::getElectronicCategories();
-        return view('frontend.index', compact('rooms', 'type_room', 
+        $furnitureCategories = CategoryEquipment::whereHas('furniture')->orderBy('name')->get();
+        $electronicCategories = CategoryEquipment::whereHas('electronics')->orderBy('name')->get();
+        return view('frontend.index', compact('rooms', 'type_rooms',
         'date', 'start_time', 'end_time', 'furniture_category', 'electronic_category',
         'furnitureCategories', 'electronicCategories'));
     }

@@ -44,7 +44,12 @@
                     <tr>
                         <td>{{ $loop->iteration }}</td>
                         <td>{{ $device->name }}</td>
-                        <td>{{ $device->category }}</td>
+                        <td>
+                            @if($device->category)
+                                {{ $device->category->name }}
+                            @else
+                                <span class="text-muted">N/A</span>
+                            @endif</td>
                         <td>
                             <span class="badge badge-{{ $device->status == 'Active' ? 'success' : 'warning' }}">
                                 {{ $device->status }}

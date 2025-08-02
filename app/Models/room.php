@@ -42,4 +42,7 @@ class room extends Model
     {
     return self::select('type_room')->distinct()->get();
     }
+    public function type(){
+        return $this->belongsTo(TypeRooms::class, 'type_room');
+    }
 }

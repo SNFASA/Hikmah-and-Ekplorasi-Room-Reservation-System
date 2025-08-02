@@ -1,8 +1,7 @@
-@extends('ppp.layouts.master')
+@extends('backend.layouts.master')
 @section('title','LibraRoom Reservation System')
 @section('main-content')
 
-<!-- Electronics List Card -->
 <div class="card shadow-sm mb-4" style="background-color: #f8f9fa;">
     <div class="row px-3 pt-3">
         <div class="col-md-12">
@@ -11,22 +10,20 @@
     </div>
 
     <div class="card-header py-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary" style="font-size: 1.25rem;">Electronic Equipment List</h6>
-        <a href="{{ route('ppp.electronic.create') }}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Add Electronic">
-            <i class="fas fa-plus"></i> Add Electronic
+        <h6 class="m-0 font-weight-bold text-primary" style="font-size: 1.25rem;">Category List</h6>
+        <a href="{{ route('backend.category.create') }}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Add Category">
+            <i class="fas fa-plus"></i> Add Type Room
         </a>
     </div>
 
     <div class="card-body">
         <div class="table-responsive">
-            @if($electronics->isNotEmpty())
+            @if($categories->isNotEmpty())
             <table class="table table-striped table-hover table-bordered" id="post-category-dataTable" width="100%" cellspacing="0">
                 <thead class="thead-light">
                     <tr>
                         <th>S.N.</th>
                         <th>Name</th>
-                        <th>Category</th>
-                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -34,45 +31,30 @@
                     <tr>
                         <th>S.N.</th>
                         <th>Name</th>
-                        <th>Category</th>
-                        <th>Status</th>
                         <th>Action</th>
                     </tr>
                 </tfoot>
                 <tbody>
-                    @foreach($electronics as $device)
+                    @foreach($categories as $category)
                     <tr>
-                        <td>{{ $device->no_electronicEquipment }}</td>
-                        <td>{{ $device->name }}</td>
-                        <td>
-                            @if($device->category)
-                                {{ $device->category->name }}
-                            @else
-                                <span class="text-muted">N/A</span>
-                            @endif</td>
-                        </td>
-                        <td>
-                            <span class="badge badge-{{ $device->status == 'Active' ? 'success' : 'warning' }}">
-                                {{ $device->status }}
-                            </span>
-                        </td>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $category->name }}</td>
                         <td class="text-center">
-                            <a href="{{ route('ppp.electronic.edit', $device->no_electronicEquipment) }}" 
-                               class="btn btn-primary btn-sm rounded-circle mr-1 action-btn-edit" 
-                               style="height:34px; width:34px;" 
+                            <a href="{{ route('backend.category.edit', $category->id) }}"
+                               class="btn btn-primary btn-sm rounded-circle mr-1 action-btn-edit"
+                               style="height:34px; width:34px;"
                                data-toggle="tooltip" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <form method="POST" action="{{ route('ppp.electronic.destroy', $device->no_electronicEquipment) }}" class="d-inline">
-                                @csrf
-                                @method('delete')
-                                <button class="btn btn-danger btn-sm rounded-circle dltBtn action-btn-delete" 
-                                        data-id="{{ $device->no_electronicEquipment }}" 
-                                        style="height:34px; width:34px;" 
-                                        data-toggle="tooltip" title="Delete" type="button">
-                                    <i class="fas fa-trash-alt"></i>
-                                </button>
-                            </form>
+                        <form method="POST" action="{{ route('backend.category.destroy', $category->id) }}" class="d-inline delete-form">
+                            @csrf
+                            @method('delete')
+                            <button type="button" class="btn btn-danger btn-sm rounded-circle action-btn-delete"
+                                    style="height:34px; width:34px;"
+                                    data-toggle="tooltip" title="Delete">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </form>
                         </td>
                     </tr>
                     @endforeach
@@ -80,10 +62,10 @@
             </table>
 
             <div class="d-flex justify-content-center mt-4">
-                {{ $electronics->links('pagination::bootstrap-5') }}
+                {{ $categories->links('pagination::bootstrap-5') }}
             </div>
             @else
-                <h6 class="text-center text-muted">No electronic equipment found! Please create one.</h6>
+                <h6 class="text-center text-muted">No Type room found! Please create one.</h6>
             @endif
         </div>
     </div>
@@ -157,38 +139,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
 <script>
-$(document).ready(function() {
-    $('#post-category-dataTable').DataTable({
-        paging: false,
-        ordering: true,
-        columnDefs: [{
-            orderable: false,
-            targets: [4]
-        }],
-        searching: true,
-        info: false,
-        autoWidth: false
-    });
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.action-btn-delete');
 
-    $('[data-toggle="tooltip"]').tooltip();
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const form = this.closest('form');
 
-    $('.dltBtn').click(function(e) {
-        e.preventDefault();
-        var form = $(this).closest('form');
-        swal({
-            title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this data!",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        }).then((willDelete) => {
-            if (willDelete) {
-                form.submit();
-            } else {
-                swal("Your data is safe!");
-            }
+                swal({
+                    title: "Are you sure?",
+                    text: "Once deleted, you will not be able to recover this data!",
+                    icon: "warning",
+                    buttons: true,
+                    dangerMode: true,
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        form.submit();
+                    } else {
+                        swal("Your data is safe!");
+                    }
+                });
+            });
         });
     });
-});
 </script>
 @endpush

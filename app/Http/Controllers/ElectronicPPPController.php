@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\electronic;
 use Illuminate\Http\Request;
+use App\Models\CategoryEquipment;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
@@ -31,7 +32,8 @@ class ElectronicPPPController extends Controller
     // Show the form for creating a new booking
     public function create()
     {
-        return view('ppp.electronic.create');
+        $categories = CategoryEquipment::orderBy('name')->get();
+        return view('ppp.electronic.create', compact('categories'));
     }
 
     // Store a newly created electronics in storage
@@ -39,13 +41,13 @@ class ElectronicPPPController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories_equipment,id',
             'status' => 'required|string|max:255',
         ]);
     
         Electronic::create([  // Correct model name is Electronic
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
             'status' => $request->status,
         ]);
     
@@ -57,7 +59,8 @@ class ElectronicPPPController extends Controller
     public function edit($id)
     {
         $electronics = electronic::findOrFail($id);
-        return view('ppp.electronic.edit', compact('electronics'));
+        $categories = CategoryEquipment::orderBy('name')->get();
+        return view('ppp.electronic.edit', compact('electronics','categories'));
     }
 
     // Update the specified electronics in storage
@@ -67,13 +70,13 @@ class ElectronicPPPController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'category' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories_equipment,id',
             'status' => 'required|string|max:255',
         ]);
 
         $electronics->update([
             'name' => $request->name,
-            'category' => $request->category,
+            'category_id' => $request->category_id,
             'status' => $request->status,
         ]);
 

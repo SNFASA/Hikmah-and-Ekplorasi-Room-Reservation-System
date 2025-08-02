@@ -98,15 +98,19 @@
             <!-- Room Type -->
             <div class="form-group">
                 <label for="type_room" class="font-weight-semibold">Type Room <span class="text-danger">*</span></label>
-                <select name="type_room" class="form-control">
-                    <option value="HIKMAH" {{ $room->type_room == 'HIKMAH' ? 'selected' : '' }}>HIKMAH</option>
-                    <option value="EKSPLORASI" {{ $room->type_room == 'EKSPLORASI' ? 'selected' : '' }}>EKSPLORASI</option>
+                <select name="type_room" class="form-control" required>
+                    <option value="" disabled>-- Select Room Type --</option>
+                    @foreach($type_rooms as $type)
+                        <option value="{{ $type->id }}" 
+                            {{ (old('type_room', $room->type_room) == $type->id) ? 'selected' : '' }}>
+                            {{ $type->name }}
+                        </option>
+                    @endforeach
                 </select>
                 @error('type_room')
-                <small class="text-danger">{{ $message }}</small>
+                    <small class="text-danger">{{ $message }}</small>
                 @enderror
             </div>
-
             <!-- Status -->
             <div class="form-group">
                 <label for="status" class="font-weight-semibold">Status <span class="text-danger">*</span></label>

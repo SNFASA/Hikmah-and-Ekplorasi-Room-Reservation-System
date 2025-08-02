@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
 use App\Models\room;
+use App\Models\CategoryEquipment;
 use Carbon\Carbon;
 use App\Models\furniture;
 use Illuminate\Support\Facades\Log;
@@ -57,20 +58,19 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
-        $type_room = $request->input('type_room', 'All');
+        $type_room = $request->input('type_room', 'All'); // selected value from filter
+        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get(); // dropdown values
         $date = $request->input('date');
         $start_time = $request->input('start_time');
         $end_time = $request->input('end_time');
         $furniture_category = $request->input('furniture_category', []);
         $electronic_category = $request->input('electronic_category', []);
-    
-        // Validasi jika start_time dan end_time tidak konsisten
+
         if (($start_time && !$end_time) || (!$start_time && $end_time)) {
             request()->session()->flash('error', 'Both start and end time must be provided.');
             return redirect()->back();
         }
-    
-        // Query asas bilik yang aktif & tapis ikut input
+
         $rooms = room::query()
             ->where('status', 'valid')
             ->when($type_room !== 'All', function ($query) use ($type_room) {
@@ -78,66 +78,59 @@ class HomeController extends Controller
             })
             ->when(!empty($furniture_category), function ($query) use ($furniture_category) {
                 $query->whereHas('furnitures', function ($q) use ($furniture_category) {
-                    $q->whereIn('category', $furniture_category);
+                    $q->whereIn('category_id', $furniture_category);
                 });
             })
             ->when(!empty($electronic_category), function ($query) use ($electronic_category) {
                 $query->whereHas('electronics', function ($q) use ($electronic_category) {
-                    $q->whereIn('category', $electronic_category);
+                    $q->whereIn('category_id', $electronic_category);
                 });
             })
             ->get();
-    
-        // Validasi konflik masa berdasarkan setiap bilik
+
         if ($date && $start_time && $end_time) {
             foreach ($rooms as $room) {
                 $roomId = $room->no_room;
-    
-                // Semak konflik dengan jadual tidak tersedia
+
                 $conflictWithUnavailable = DB::table('schedule_booking')
                     ->where('roomid', $roomId)
                     ->where('invalid_date', $date)
                     ->where(function ($q) use ($start_time, $end_time) {
                         $q->where('invalid_time_start', '<', $end_time)
-                          ->where('invalid_time_end', '>', $start_time);
+                        ->where('invalid_time_end', '>', $start_time);
                     })
                     ->exists();
-    
+
                 if ($conflictWithUnavailable) {
                     request()->session()->flash('error', "Room $roomId is unavailable at the selected time.");
                     return redirect()->back();
                 }
-    
-                // Semak konflik dengan tempahan lain
+
                 $conflictWithBooked = DB::table('bookings')
                     ->where('no_room', $roomId)
                     ->where('booking_date', $date)
                     ->where(function ($q) use ($start_time, $end_time) {
                         $q->where('booking_time_start', '<', $end_time)
-                          ->where('booking_time_end', '>', $start_time);
+                        ->where('booking_time_end', '>', $start_time);
                     })
                     ->exists();
-    
+
                 if ($conflictWithBooked) {
                     request()->session()->flash('error', "Room $roomId is already booked at the selected time.");
                     return redirect()->back();
                 }
             }
         }
-    
-        // Data untuk paparan filter
-        $furnitureCategories = furniture::getFurnitureCategories();
-        $electronicCategories = electronic::getElectronicCategories();
-    
-        // Return view
+
+        $furnitureCategories = CategoryEquipment::whereHas('furniture')->orderBy('name')->get();
+        $electronicCategories = CategoryEquipment::whereHas('electronics')->orderBy('name')->get();
+
         return view('frontend.index', compact(
             'rooms', 'furnitureCategories', 'electronicCategories',
-            'type_room', 'date', 'start_time', 'end_time',
+            'type_rooms', 'type_room', 'date', 'start_time', 'end_time',
             'furniture_category', 'electronic_category'
         ));
     }
-    
-      
     public function profile(){
         $profile=Auth()->user();
         return view('frontend.pages.profile')->with('profile',$profile);

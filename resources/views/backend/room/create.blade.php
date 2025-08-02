@@ -69,10 +69,15 @@
             <!-- Room Type -->
             <div class="form-group mb-3">
                 <label for="type_room">Type Room <span class="text-danger">*</span></label>
-                <select name="type_room" class="form-control">
-                    <option value="HIKMAH">HIKMAH</option>
-                    <option value="EKSPLORASI">EKSPLORASI</option>
-                </select>
+                    <select name="type_room" class="form-select" required>
+                        <option value="">-- Select Room Type --</option>
+                        @foreach($type_rooms as $type)
+                            <option value="{{ $type->id }}" 
+                                @if(old('type_room', $room->type_room ?? '') == $type->id) selected @endif>
+                                {{ $type->name }}
+                            </option>
+                        @endforeach
+                    </select>
                 @error('type_room')
                 <span class="text-danger small">{{ $message }}</span>
                 @enderror

@@ -51,7 +51,7 @@
                                     <div class="col-lg-6 col-md-6 col-12">
                                         <div class="form-group">
                                             <label>Start Time<span>*</span></label>
-                                            <input type="time" name="booking_time_start" placeholder="" value="{{ $booking->booking_time_start }}" required >                                           @error('booking_time_start')
+                                            <input type="time" name="booking_time_start" placeholder="" value="{{ $booking->booking_time_start }}" required  >                                           @error('booking_time_start')
                                                 <span class='text-danger'>{{$message}}</span>
                                             @enderror
                                         </div>

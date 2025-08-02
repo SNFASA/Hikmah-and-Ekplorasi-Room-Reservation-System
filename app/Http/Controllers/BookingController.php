@@ -799,7 +799,7 @@ public function calendarAdmin()
 public function Formedit($id)
 {
     $booking = Bookings::findOrFail($id);
-    $room = Room::findOrFail($id);
+    $room = Room::where('no_room', $booking->no_room)->firstOrFail();
     $furnitureCategories = Furniture::getFurnitureCategories();
     $electronicCategories = Electronic::getElectronicCategories();
     
@@ -834,11 +834,10 @@ public function Formupdate(Request $request, $id)
     $booking = Bookings::findOrFail($id);
 
     // Format the time inputs
-    $request->merge([
-        'booking_time_start' => date('H:i', strtotime($request->input('booking_time_start'))),
-        'booking_time_end' => date('H:i', strtotime($request->input('booking_time_end'))),
-    ]);
-
+        $request->merge([
+            'booking_time_start' => Carbon::parse($request->input('booking_time_start'))->format('H:i'),
+            'booking_time_end' => Carbon::parse($request->input('booking_time_end'))->format('H:i'),
+        ]);
     // Validate the inputs
     $request->validate([
         'booking_date' => 'required|date',
@@ -865,18 +864,18 @@ public function Formupdate(Request $request, $id)
         return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
     }
 
-    $conflictWithBooked = DB::table('bookings')
-        ->where('no_room', $request->no_room)
-        ->where('booking_date', $request->booking_date)
-        ->where(function ($query) use ($request) {
-            $query->where('booking_time_start', '<', $request->booking_time_end)
-                  ->where('booking_time_end', '>', $request->booking_time_start);
-        })
-        ->exists();
-
-    if ($conflictWithBooked) {
-        return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
-    }
+        $conflictWithBooked = DB::table('bookings')
+            ->where('id', '!=', $booking->id) // ✅ exclude the current booking
+            ->where('no_room', $request->no_room)
+            ->where('booking_date', $request->booking_date)
+            ->where(function ($query) use ($request) {
+                $query->where('booking_time_start', '<', $request->booking_time_end)
+                    ->where('booking_time_end', '>', $request->booking_time_start);
+            })
+            ->exists();
+        if ($conflictWithBooked) {
+            return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
+        }
 
     // Update booking data
     $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
@@ -894,7 +893,6 @@ public function Formupdate(Request $request, $id)
     // Update students
     $students = $request->input('students');
     $this->attachStudentsToBooking($booking, $students);
-
     return redirect()->route('home')->with('success', 'Booking updated successfully.');
 }
 public function show($id)
