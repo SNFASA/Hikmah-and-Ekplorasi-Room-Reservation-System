@@ -42,14 +42,15 @@ class RoomPPPController extends Controller
      * This method retrieves all available furniture and electronics from the database,
      * and renders the room creation form with the retrieved data.
      * @return \Illuminate\View\View The room creation form view with furniture and electronics data.
+    
+    *public function create()
+    *{
+    *    $type_rooms = TypeRooms::orderby('name')->get();
+    *    $furnitures = furniture::all();
+     *   $electronics = electronic::all();
+    *   return view('ppp.room.create', compact('type_rooms', 'furnitures', 'electronics'));
+    *}
      */
-    public function create()
-    {
-        $type_rooms = TypeRooms::orderby('name')->get();
-        $furnitures = furniture::all();
-        $electronics = electronic::all();
-        return view('ppp.room.create', compact('type_rooms', 'furnitures', 'electronics'));
-    }
     /**
      * Creates a new room.
      * This method validates the incoming request,
@@ -59,9 +60,9 @@ class RoomPPPController extends Controller
      * @return \Illuminate\Http\RedirectResponse Redirects to the room index page with a success message.
      * @throws \Exception If the room cannot be saved.
      */
-    public function store(Request $request)
-    {
-        // Validate the incoming request
+    //public function store(Request $request)
+    /**{
+       // Validate the incoming request
         $request->validate([
             'name' => 'required|string|max:255',
             'capacity' => 'required|integer|min:0',
@@ -109,6 +110,7 @@ class RoomPPPController extends Controller
     
         return redirect()->route('room.index')->with('success', 'Room created successfully!');
     }
+    */
     
     public function edit($id)
     {

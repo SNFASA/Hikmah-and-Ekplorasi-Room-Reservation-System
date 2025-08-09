@@ -37,13 +37,12 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-label">Active Maintenance</div>
-                        <div class="stats-number h4 mb-0 font-weight-bold text-dark">
-                            {{ \App\Models\maintenance::countActiveMaintenance() }}
-                        </div>
+                        <div class="stat-number">{{ \App\Models\maintenance::countActiveMaintenance() }}</div>
                     </div>
                 </div>
             </div>
         </div>
+
         <!-- Electronic Card -->
         <div class="col-xl-3 col-md-6 mb-4">
             <div class="stat-card card-electronic">
@@ -53,9 +52,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-label">Electronic Equipment</div>
-                        <div class="stats-number h4 mb-0 font-weight-bold text-dark">
-                            {{ \App\Models\electronic::countActiveElectronic() }}
-                        </div>
+                        <div class="stat-number">{{ \App\Models\electronic::countActiveElectronic() }}</div>
                     </div>
                 </div>
             </div>
@@ -70,9 +67,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-label">Furniture Items</div>
-                        <div class="stats-number h4 mb-0 font-weight-bold text-dark">
-                            {{ \App\Models\furniture::countActiveFurniture() }}
-                        </div>
+                        <div class="stat-number">{{ \App\Models\furniture::countActiveFurniture() }}</div>
                     </div>
                 </div>
             </div>
@@ -87,9 +82,7 @@
                     </div>
                     <div class="stat-content">
                         <div class="stat-label">Available Rooms</div>
-                        <div class="stats-number h4 mb-0 font-weight-bold text-dark">
-                            {{ \App\Models\room::countActiveRoom() }}
-                        </div>
+                        <div class="stat-number">{{ \App\Models\room::countActiveRoom() }}</div>
                     </div>
                 </div>
             </div>
@@ -394,33 +387,5 @@
         drawElectronicChart();
         drawMaintenanceChart();
     });
-</script>
-{{-- Add some interactive animations --}}
-<script>
-$(document).ready(function() {
-    // Add loading animation
-    $('.stats-card').each(function(index) {
-        $(this).css('animation-delay', (index * 0.1) + 's');
-    });
-    
-    // Counter animation for stats numbers
-    $('.stats-number').each(function() {
-        const $this = $(this);
-        const countTo = parseInt($this.text());
-        
-        $({ countNum: 0 }).animate({
-            countNum: countTo
-        }, {
-            duration: 2000,
-            easing: 'swing',
-            step: function() {
-                $this.text(Math.floor(this.countNum));
-            },
-            complete: function() {
-                $this.text(countTo);
-            }
-        });
-    });
-});
 </script>
 @endpush

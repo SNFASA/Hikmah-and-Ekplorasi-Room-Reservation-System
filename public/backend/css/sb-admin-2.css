@@ -10449,6 +10449,36 @@ a:focus {
   font-size: 0.65rem;
 }
 
+/* ===== Base Sidebar Styling (Fixed Left) ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0 !important;
+  right: auto !important;
+  height: 100vh;
+  transition: transform 0.3s ease-in-out;
+  z-index: 1030;
+}
+
+#content-wrapper {
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* ===== Mobile View (max-width: 767.98px) ===== */
+@media (max-width: 767.98px) {
+  .sidebar {
+    transform: translateX(0);
+    width: 14rem;
+  }
+  .sidebar.closed {
+    transform: translateX(-100%) !important;
+  }
+  #content-wrapper {
+    margin-left: 0;
+  }
+}
+
+/* ===== Desktop View (min-width: 768px) ===== */
 @media (min-width: 768px) {
   .sidebar {
     width: 14rem !important;
@@ -10565,7 +10595,13 @@ a:focus {
   .sidebar.toggled .sidebar-heading {
     text-align: center;
   }
+
+  /* Adjust content for desktop sidebar */
+  #content-wrapper {
+    margin-left: 14rem;
+  }
 }
+
 
 .sidebar-light .sidebar-brand {
   color: #6e707e;

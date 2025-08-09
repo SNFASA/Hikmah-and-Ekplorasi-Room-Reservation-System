@@ -13,7 +13,7 @@ class electronic extends Model
 
     protected $fillable = [
         'name',
-        'category',
+        'category_id',
         'status',
     ];
     public static function countActiveElectronic(){

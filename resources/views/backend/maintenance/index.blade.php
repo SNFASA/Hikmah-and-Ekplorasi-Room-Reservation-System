@@ -2,144 +2,337 @@
 @section('title','LibraRoom Reservation system ')
 @section('main-content')
 
-<div class="card shadow mb-4">
-    <div class="row">
-        <div class="col-md-12">
-            @include('backend.layouts.notification')
+<!-- Main Container with Enhanced Styling -->
+<div class="container-fluid px-4">
+    <!-- Header Section with Gradient Background -->
+    <div class="header-section mb-4">
+        <div class="row align-items-center">
+            <div class="col-12">
+                @include('backend.layouts.notification')
+            </div>
+        </div>
+        
+        <div class="header-content d-flex flex-column flex-lg-row justify-content-between align-items-center">
+            <div class="header-title">
+                <h1 class="main-title text-primary">
+                    <i class="fas fa-tools me-3"></i>
+                    Maintenance Management
+                </h1>
+                <p class="subtitle">Track and manage all maintenance reports</p>
+            </div>
+            <div class="header-actions mt-3 mt-lg-0">
+                <a href="{{ route('maintenance.create') }}" class="btn btn-create">
+                    <i class="fas fa-plus me-2"></i>
+                    <span>Add Report</span>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="card-header py-3">
-        <h6 class="m-0 font-weight-bold text-primary float-left">Maintenance Report List</h6>
-        <a href="{{ route('maintenance.create') }}" class="btn btn-primary btn-sm float-right" data-toggle="tooltip" data-placement="bottom" title="Add Report">
-            <i class="fas fa-plus"></i> Add Report
-        </a>
-    </div>
-
-    <div class="card-body">
-        <div class="table-responsive">
+    <!-- Main Card with Modern Design -->
+    <div class="modern-card">
+        <div class="card-body p-0">
             @if($maintenance->isNotEmpty())
-                <table class="table table-bordered table-hover table-striped" id="post-category-dataTable" width="100%" cellspacing="0">
-                    <thead class="thead-light">
-                        <tr>
-                            <th>S.N.</th>
-                            <th>Title</th>
-                            <th>Type</th>
-                            <th>Item</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tfoot class="thead-light">
-                        <tr>
-                            <th>S.N.</th>
-                            <th>Title</th>
-                            <th>Type</th>
-                            <th>Item</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </tfoot>
-                    <tbody>
-                        @foreach($maintenance as $report)   
-                            <tr>
-                                <td>{{ $report->id }}</td>
-                                <td>{{ $report->title }}</td>
-                                <td>{{ $report->itemType }}</td>
-                                <td>{{ $report->itemName }}</td>
-                                <td>
-                                    @if($report->status == 'completed')
-                                        <span class="badge badge-success">{{ $report->status }}</span>
-                                    @elseif($report->status == 'pending')
-                                        <span class="badge badge-warning">{{ $report->status }}</span>
-                                    @elseif($report->status == 'in_progress')
-                                        <span class="badge badge-info">{{ $report->status }}</span>
-                                    @else
-                                        <span class="badge badge-danger">{{ $report->status }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('maintenance.edit', $report->id) }}" class="btn btn-primary btn-sm mr-1" style="height:30px; width:30px; border-radius:50%;" data-toggle="tooltip" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form method="POST" action="{{ route('maintenance.destroy', $report->id) }}" class="d-inline-block">
-                                        @csrf
-                                        @method('delete')
-                                        <button class="btn btn-danger btn-sm dltBtn" data-id="{{ $report->id }}" style="height:30px; width:30px; border-radius:50%;" data-toggle="tooltip" title="Delete">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>  
-                        @endforeach
-                    </tbody>
-                </table>
-            <div class="d-flex justify-content-center mt-4">
-                {{ $maintenance->links('pagination::bootstrap-5') }}
-            </div>
+                <!-- Search and Filter Section -->
+                <div class="search-section p-4 border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" class="form-control search-input" placeholder="Search reports, type, item, or status...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                            <div class="stats-info">
+                                <span class="badge badge-info">
+                                    <i class="fas fa-clipboard-list me-1"></i>
+                                    {{$maintenance->count()}} Total Reports
+                                </span>
+                                <span class="badge badge-success ms-2">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    {{$maintenance->where('status', 'completed')->count()}} Completed
+                                </span>
+                                <span class="badge badge-warning ms-2">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{$maintenance->where('status', 'pending')->count()}} Pending
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Enhanced Table -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table modern-table" id="maintenanceTable">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-column="0">
+                                        <span>ID</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="1">
+                                        <span>Title</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="2">
+                                        <span>Type</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="3">
+                                        <span>Item</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="4">
+                                        <span>Status</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($maintenance as $report)
+                                    <tr class="table-row" data-id="{{$report->id}}">
+                                        <td class="id-cell">
+                                            <span class="id-badge">#{{$report->id}}</span>
+                                        </td>
+                                        <td class="title-cell">
+                                            <div class="title-info">
+                                                <i class="fas fa-clipboard-list me-2 text-primary"></i>
+                                                <span class="title-name">{{ $report->title }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="type-cell">
+                                            <span class="type-badge">
+                                                <i class="fas fa-tag me-1"></i>
+                                                {{ $report->itemType }}
+                                            </span>
+                                        </td>
+                                        <td class="item-cell">
+                                            <span class="item-badge">
+                                                <i class="fas fa-cog me-1"></i>
+                                                {{ $report->itemName }}
+                                            </span>
+                                        </td>
+                                        <td class="status-cell">
+                                            @if($report->status == 'completed')
+                                                <span class="status-badge status-success">
+                                                    <i class="fas fa-check-circle me-1"></i>
+                                                    Completed
+                                                </span>
+                                            @elseif($report->status == 'pending')
+                                                <span class="status-badge status-warning">
+                                                    <i class="fas fa-clock me-1"></i>
+                                                    Pending
+                                                </span>
+                                            @elseif($report->status == 'in_progress')
+                                                <span class="status-badge status-info">
+                                                    <i class="fas fa-spinner me-1"></i>
+                                                    In Progress
+                                                </span>
+                                            @else
+                                                <span class="status-badge status-danger">
+                                                    <i class="fas fa-exclamation-triangle me-1"></i>
+                                                    {{ ucfirst($report->status) }}
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="action-cell">
+                                            <div class="action-buttons">
+                                                <a href="{{ route('maintenance.edit', $report->id) }}"
+                                                   class="action-btn edit-btn"
+                                                   data-bs-toggle="tooltip"
+                                                   data-bs-placement="top"
+                                                   title="Edit Report">
+                                                   <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="POST" action="{{ route('maintenance.destroy', $report->id) }}" class="d-inline">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="button"
+                                                            class="action-btn delete-btn dltBtn"
+                                                            data-id="{{ $report->id }}"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            title="Delete Report">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Enhanced Pagination -->
+                <div class="pagination-section p-4 border-top">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="pagination-info">
+                                Showing {{$maintenance->firstItem()}} to {{$maintenance->lastItem()}}
+                                of {{$maintenance->total()}} results
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="pagination-wrapper">
+                                {{ $maintenance->links('pagination::bootstrap-5') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @else
-                <h6 class="text-center">No maintenance report found! Please create a report.</h6>
+                <!-- Empty State with Better Design -->
+                <div class="empty-state">
+                    <div class="empty-state-content">
+                        <div class="empty-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="empty-title">No Maintenance Reports Found</h3>
+                        <p class="empty-description">
+                            Get started by creating your first maintenance report.
+                            You can track repairs, maintenance tasks, and equipment status.
+                        </p>
+                        <a href="{{ route('maintenance.create') }}" class="btn btn-create">
+                            <i class="fas fa-plus me-2"></i>
+                            Create Report
+                        </a>
+                    </div>
+                </div>
             @endif
         </div>
     </div>
 </div>
+
 @endsection
 
-@push('styles')
-<link href="{{ asset('backend/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css" />
-<style>
-    div.dataTables_wrapper div.dataTables_paginate {
-        display: none;
-    }
-    .table th, .table td {
-        vertical-align: middle !important;
-    }
-</style>
-@endpush
+
 
 @push('scripts')
-<!-- DataTables -->
-<script src="{{ asset('backend/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('backend/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
-
-<!-- SweetAlert -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
-<!-- Init DataTable -->
 <script>
 $(document).ready(function() {
-    $('#post-category-dataTable').DataTable({
-        paging: false,
-        ordering: true,
-        columnDefs: [{
-            orderable: false,
-            targets: [4]
-        }],
-        searching: true,
-        info: false,
-        autoWidth: false
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
+    // Enhanced search functionality
+    $('#searchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('#maintenanceTable tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
 
+    // Table sorting functionality
+    $('.sortable').click(function() {
+        var table = $('#maintenanceTable');
+        var rows = table.find('tbody tr').toArray();
+        var column = $(this).data('column');
+        var isAsc = !$(this).hasClass('asc');
+        
+        // Remove all sort classes
+        $('.sortable').removeClass('asc desc');
+        $('.sort-icon').removeClass('fa-sort-up fa-sort-down').addClass('fa-sort');
+        
+        // Add appropriate class and icon
+        if (isAsc) {
+            $(this).addClass('asc');
+            $(this).find('.sort-icon').removeClass('fa-sort').addClass('fa-sort-up');
+        } else {
+            $(this).addClass('desc');
+            $(this).find('.sort-icon').removeClass('fa-sort').addClass('fa-sort-down');
+        }
+
+        rows.sort(function(a, b) {
+            var aVal = $(a).find('td').eq(column).text().trim();
+            var bVal = $(b).find('td').eq(column).text().trim();
+            
+            // Handle numeric values
+            if (!isNaN(aVal) && !isNaN(bVal)) {
+                return isAsc ? aVal - bVal : bVal - aVal;
+            }
+            
+            // Handle text values
+            return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        });
+
+        table.find('tbody').empty().append(rows);
+        
+        // Re-animate rows
+        setTimeout(function() {
+            $('#maintenanceTable tbody tr').each(function(index) {
+                $(this).css('animation-delay', (index * 0.05) + 's');
+                $(this).addClass('fadeInUp');
+            });
+        }, 50);
+    });
+
+    // Enhanced delete confirmation
     $('.dltBtn').click(function(e) {
         e.preventDefault();
         var form = $(this).closest('form');
+        var reportId = $(this).data('id');
+        
         swal({
-            title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this data!",
+            title: "Delete Maintenance Report?",
+            text: "This action cannot be undone. The report and all its data will be permanently deleted.",
             icon: "warning",
-            buttons: true,
+            buttons: {
+                cancel: {
+                    text: "Cancel",
+                    value: null,
+                    visible: true,
+                    className: "btn-light",
+                    closeModal: true,
+                },
+                confirm: {
+                    text: "Delete",
+                    value: true,
+                    visible: true,
+                    className: "btn-danger",
+                    closeModal: true
+                }
+            },
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
+                // Add loading state
+                swal({
+                    title: "Deleting...",
+                    text: "Please wait while we process your request.",
+                    icon: "info",
+                    buttons: false,
+                    closeOnClickOutside: false,
+                    closeOnEsc: false
+                });
+                
                 form.submit();
-            } else {
-                swal("Your data is safe!");
             }
         });
     });
+
+    // Add smooth transitions for table rows
+    $('#maintenanceTable tbody tr').each(function(index) {
+        $(this).css('animation-delay', (index * 0.1) + 's');
+    });
+
+    // Search input focus effect
+    $('#searchInput').on('focus', function() {
+        $(this).parent().addClass('focused');
+    }).on('blur', function() {
+        $(this).parent().removeClass('focused');
+    });
+});
+
+// Add loading states for better UX
+$(window).on('beforeunload', function() {
+    $('body').addClass('loading');
 });
 </script>
 @endpush

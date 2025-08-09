@@ -1,157 +1,218 @@
 @extends('backend.layouts.master')
 @section('title','LibraRoom Reservation system')
 @section('main-content')
-<div class="container-fluid" style="font-family: 'Nunito', sans-serif;">
+<div class="container-fluid" style="font-family: 'Inter', 'Nunito', sans-serif; background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%); min-height: 100vh;">
     @include('backend.layouts.notification')
 
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <h1 class="h3 mb-0 text-gray-800 font-weight-bold">Dashboard</h1>
+    <!-- Page Heading with Gradient Background -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="welcome-card p-4 rounded shadow-sm position-relative overflow-hidden">
+                <div class="welcome-overlay"></div>
+                <div class="position-relative">
+                    <h1 class="h2 mb-2 text-white font-weight-bold">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard Overview
+                    </h1>
+                    <p class="text-white-50 mb-0">Welcome back! Here's what's happening with your LibraRoom system today.</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Content Row -->
+    <!-- Statistics Cards Row -->
     <div class="row">
-
-      <!-- Booking -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow-sm h-100 py-2 card-hover-primary">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Booking</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-900">{{ \App\Models\bookings::countActiveBooking() }}</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-book fa-2x text-primary" data-toggle="tooltip" data-placement="top" title="Active Bookings"></i>
-              </div>
+        <!-- Booking Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card card h-100 shadow-sm border-0 card-hover-primary">
+                <div class="card-body p-4">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="stats-label text-primary text-uppercase mb-2">Active Bookings</div>
+                            <div class="stats-number h4 mb-0 font-weight-bold text-dark">
+                                {{ \App\Models\bookings::countActiveBooking() }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stats-icon bg-primary">
+                                <i class="fas fa-book text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
 
-      <!-- Electronic -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow-sm h-100 py-2 card-hover-success">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Electronic</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-900">{{ \App\Models\electronic::countActiveElectronic() }}</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-desktop fa-2x text-success" data-toggle="tooltip" data-placement="top" title="Active Electronics"></i>
-              </div>
+        <!-- Electronic Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card card h-100 shadow-sm border-0 card-hover-success">
+                <div class="card-body p-4">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="stats-label text-success text-uppercase mb-2">Electronics</div>
+                            <div class="stats-number h4 mb-0 font-weight-bold text-dark">
+                                {{ \App\Models\electronic::countActiveElectronic() }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stats-icon bg-success">
+                                <i class="fas fa-desktop text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
 
-      <!-- Furniture -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow-sm h-100 py-2 card-hover-info">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Furniture</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-900">{{ \App\Models\furniture::countActiveFurniture() }}</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-chair fa-2x text-info" data-toggle="tooltip" data-placement="top" title="Active Furnitures"></i>
-              </div>
+        <!-- Furniture Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card card h-100 shadow-sm border-0 card-hover-info">
+                <div class="card-body p-4">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="stats-label text-info text-uppercase mb-2">Furniture</div>
+                            <div class="stats-number h4 mb-0 font-weight-bold text-dark">
+                                {{ \App\Models\furniture::countActiveFurniture() }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stats-icon bg-info">
+                                <i class="fas fa-chair text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
 
-      <!-- Room -->
-      <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow-sm h-100 py-2 card-hover-warning">
-          <div class="card-body">
-            <div class="row no-gutters align-items-center">
-              <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Room</div>
-                <div class="h5 mb-0 font-weight-bold text-gray-900">{{ \App\Models\room::countActiveRoom() }}</div>
-              </div>
-              <div class="col-auto">
-                <i class="fas fa-door-closed fa-2x text-warning" data-toggle="tooltip" data-placement="top" title="Active Rooms"></i>
-              </div>
+        <!-- Room Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="stats-card card h-100 shadow-sm border-0 card-hover-warning">
+                <div class="card-body p-4">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col">
+                            <div class="stats-label text-warning text-uppercase mb-2">Available Rooms</div>
+                            <div class="stats-number h4 mb-0 font-weight-bold text-dark">
+                                {{ \App\Models\room::countActiveRoom() }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <div class="stats-icon bg-warning">
+                                <i class="fas fa-door-closed text-white"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
-
     </div>
 
+    <!-- Charts Section -->
     <div class="row">
-
-      <!-- Bar Chart for Total Bookings per Month -->
-      <div class="col-xl-8 col-lg-7 mb-4">
-        <div class="card shadow-sm">
-          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-primary text-white">
-            <h6 class="m-0 font-weight-bold">Total Bookings per Month</h6>
-          </div>
-          <div class="card-body" style="min-height: 300px;">
-            <canvas id="myBookingsChart"></canvas>
-          </div>
+        <!-- Bar Chart for Total Bookings per Month -->
+        <div class="col-xl-8 col-lg-7 mb-4">
+            <div class="card shadow-sm border-0 chart-card">
+                <div class="card-header bg-gradient-primary text-white border-0 py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold">
+                                <i class="fas fa-chart-bar me-2"></i>Monthly Booking Analytics
+                            </h6>
+                            <small class="text-white-50">Track your booking trends over time</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4" style="min-height: 350px;">
+                    <canvas id="myBookingsChart"></canvas>
+                </div>
+            </div>
         </div>
-      </div>
 
-      <!-- Pie Chart -->
-      <div class="col-xl-4 col-lg-5 mb-4">
-        <div class="card shadow-sm">
-          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between bg-success text-white">
-            <h6 class="m-0 font-weight-bold">Users</h6>
-          </div>
-          <div class="card-body" style="overflow:hidden; min-height:320px;">
-            <div id="pie_chart" style="width:100%; height:100%; max-width:350px; margin: 0 auto;"></div>
-          </div>
+        <!-- Enhanced Pie Chart -->
+        <div class="col-xl-4 col-lg-5 mb-4">
+            <div class="card shadow-sm border-0 chart-card">
+                <div class="card-header bg-gradient-success text-white border-0 py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h6 class="m-0 font-weight-bold">
+                                <i class="fas fa-users me-2"></i>User Analytics
+                            </h6>
+                            <small class="text-white-50">Recent user registrations</small>
+                        </div>
+                        <span class="badge badge-light">7 Days</span>
+                    </div>
+                </div>
+                <div class="card-body p-4" style="min-height: 370px;">
+                    <div id="pie_chart" style="width:100%; height:100%; max-width:350px; margin: 0 auto;"></div>
+                </div>
+            </div>
         </div>
-      </div>
+    </div>
 
+    <!-- Recent Activity Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-gradient-info text-white border-0 py-3">
+                    <h6 class="m-0 font-weight-bold">
+                        <i class="fas fa-clock me-2"></i>Recent System Activity
+                    </h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="border-0 px-4 py-3">Activity</th>
+                                    <th class="border-0 py-3">Type</th>
+                                    <th class="border-0 py-3">User</th>
+                                    <th class="border-0 py-3">Time</th>
+                                    <th class="border-0 py-3">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <i class="fas fa-book text-primary me-2"></i>
+                                        New booking created for Conference Room A
+                                    </td>
+                                    <td><span class="badge badge-primary">Booking</span></td>
+                                    <td>John Doe</td>
+                                    <td class="text-muted">2 mins ago</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <i class="fas fa-desktop text-success me-2"></i>
+                                        Projector maintenance scheduled
+                                    </td>
+                                    <td><span class="badge badge-success">Electronics</span></td>
+                                    <td>Admin</td>
+                                    <td class="text-muted">15 mins ago</td>
+                                    <td><span class="badge badge-warning">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3">
+                                        <i class="fas fa-chair text-info me-2"></i>
+                                        New furniture added to inventory
+                                    </td>
+                                    <td><span class="badge badge-info">Furniture</span></td>
+                                    <td>Jane Smith</td>
+                                    <td class="text-muted">1 hour ago</td>
+                                    <td><span class="badge badge-success">Completed</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
 
-@push('styles')
-<style>
-  /* Card hover backgrounds with transparent shades */
-  .card-hover-primary:hover {
-    background-color: rgba(78, 115, 223, 0.1);
-    box-shadow: 0 0 15px rgba(78, 115, 223, 0.3);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .card-hover-success:hover {
-    background-color: rgba(28, 200, 138, 0.1);
-    box-shadow: 0 0 15px rgba(28, 200, 138, 0.3);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .card-hover-info:hover {
-    background-color: rgba(54, 185, 204, 0.1);
-    box-shadow: 0 0 15px rgba(54, 185, 204, 0.3);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .card-hover-warning:hover {
-    background-color: rgba(246, 194, 62, 0.15);
-    box-shadow: 0 0 15px rgba(246, 194, 62, 0.3);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
 
-  /* Tooltip overrides */
-  [data-toggle="tooltip"] {
-    cursor: pointer;
-  }
-
-  /* Responsive tweaks */
-  @media (max-width: 576px) {
-    h1.h3 {
-      font-size: 1.5rem;
-    }
-  }
-</style>
-@endpush
 
 @push('scripts')
-<script src="http://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -163,7 +224,7 @@
   });
 </script>
 
-{{-- Pie chart --}}
+{{-- Enhanced Pie chart --}}
 <script type="text/javascript">
   var analytics = <?php echo $users; ?>;
 
@@ -173,24 +234,49 @@
   function drawChart() {
       var data = google.visualization.arrayToDataTable(analytics);
       var options = {
-          title: 'Last 7 Days Registered Users',
+          title: 'User Registration Trends',
+          titleTextStyle: {
+            color: '#5a5c69',
+            fontSize: 16,
+            fontName: 'Inter'
+          },
           backgroundColor: 'transparent',
-          legend: { position: 'right', textStyle: {color: '#333', fontSize: 14} },
-          pieHole: 0.4,
+          legend: {
+            position: 'bottom',
+            textStyle: {color: '#5a5c69', fontSize: 12, fontName: 'Inter'}
+          },
+          pieHole: 0.5,
+          pieSliceText: 'percentage',
           slices: {
-            0: { color: '#1cc88a' },  // match success green
+            0: { color: '#1cc88a' },
             1: { color: '#36b9cc' },
             2: { color: '#f6c23e' },
-            3: { color: '#4e73df' }
+            3: { color: '#4e73df' },
+            4: { color: '#e74a3b' }
           },
-          chartArea: { left: 20, top: 30, width: '85%', height: '75%' }
+          chartArea: {
+            left: 20,
+            top: 40,
+            width: '85%',
+            height: '70%'
+          },
+          pieSliceTextStyle: {
+            color: 'white',
+            fontSize: 12,
+            fontName: 'Inter'
+          },
+          tooltip: {
+            textStyle: {
+              fontName: 'Inter'
+            }
+          }
       };
       var chart = new google.visualization.PieChart(document.getElementById('pie_chart'));
       chart.draw(data, options);
   }
 </script>
 
-{{-- Bar chart --}}
+{{-- Enhanced Bar chart --}}
 <script type="text/javascript">
   const url = "{{ route('bookings.getBookingsByMonth') }}";
   axios.get(url)
@@ -199,24 +285,32 @@
       const months = data.map(item => item.month);
       const totalBookings = data.map(item => item.total_bookings);
 
-      const monthColors = [
-        'rgba(78, 115, 223, 0.6)',  // Blue
-        'rgba(28, 200, 138, 0.6)',  // Green
-        'rgba(54, 185, 204, 0.6)',  // Cyan
-        'rgba(246, 194, 62, 0.6)',  // Yellow
-        'rgba(231, 74, 59, 0.6)',   // Red
-        'rgba(133, 135, 150, 0.6)', // Gray
-        'rgba(253, 126, 20, 0.6)',  // Orange
-        'rgba(111, 66, 193, 0.6)',  // Purple
-        'rgba(32, 201, 151, 0.6)',  // Teal
-        'rgba(255, 193, 7, 0.6)',   // Amber
-        'rgba(102, 16, 242, 0.6)',  // Indigo
-        'rgba(253, 94, 83, 0.6)'    // Coral
+      const gradientColors = [
+        {bg: 'rgba(78, 115, 223, 0.8)', border: '#4e73df'},
+        {bg: 'rgba(28, 200, 138, 0.8)', border: '#1cc88a'},
+        {bg: 'rgba(54, 185, 204, 0.8)', border: '#36b9cc'},
+        {bg: 'rgba(246, 194, 62, 0.8)', border: '#f6c23e'},
+        {bg: 'rgba(231, 74, 59, 0.8)', border: '#e74a3b'},
+        {bg: 'rgba(133, 135, 150, 0.8)', border: '#858796'},
+        {bg: 'rgba(253, 126, 20, 0.8)', border: '#fd7e14'},
+        {bg: 'rgba(111, 66, 193, 0.8)', border: '#6f42c1'},
+        {bg: 'rgba(32, 201, 151, 0.8)', border: '#20c997'},
+        {bg: 'rgba(255, 193, 7, 0.8)', border: '#ffc107'},
+        {bg: 'rgba(102, 16, 242, 0.8)', border: '#6610f2'},
+        {bg: 'rgba(253, 94, 83, 0.8)', border: '#fd5e53'}
       ];
 
-      const monthBorderColors = monthColors.map(c => c.replace('0.6', '1')); // full opacity border
-
       const ctx = document.getElementById('myBookingsChart').getContext('2d');
+      
+      // Create gradient for each bar
+      const backgroundColors = months.map((_, idx) => {
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        const color = gradientColors[idx % gradientColors.length];
+        gradient.addColorStop(0, color.bg);
+        gradient.addColorStop(1, color.bg.replace('0.8', '0.4'));
+        return gradient;
+      });
+
       new Chart(ctx, {
         type: 'bar',
         data: {
@@ -224,44 +318,119 @@
           datasets: [{
             label: 'Total Bookings',
             data: totalBookings,
-            backgroundColor: months.map((_, idx) => monthColors[idx % monthColors.length]),
-            borderColor: months.map((_, idx) => monthBorderColors[idx % monthBorderColors.length]),
-            borderWidth: 1,
-            hoverBackgroundColor: months.map((_, idx) => monthColors[idx % monthColors.length].replace('0.6', '0.8')),
-            hoverBorderColor: months.map((_, idx) => monthBorderColors[idx % monthBorderColors.length])
+            backgroundColor: backgroundColors,
+            borderColor: months.map((_, idx) => gradientColors[idx % gradientColors.length].border),
+            borderWidth: 2,
+            borderRadius: 8,
+            borderSkipped: false,
+            hoverBackgroundColor: months.map((_, idx) => gradientColors[idx % gradientColors.length].bg),
+            hoverBorderColor: months.map((_, idx) => gradientColors[idx % gradientColors.length].border),
+            hoverBorderWidth: 3
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            intersect: false,
+            mode: 'index'
+          },
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleColor: 'white',
+              bodyColor: 'white',
+              borderColor: 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+              cornerRadius: 8,
+              displayColors: false,
+              titleFont: {
+                family: 'Inter',
+                size: 14
+              },
+              bodyFont: {
+                family: 'Inter',
+                size: 13
+              }
+            }
+          },
           scales: {
             x: {
-              beginAtZero: true,
-              grid: { display: false }
+              grid: {
+                display: false
+              },
+              ticks: {
+                font: {
+                  family: 'Inter',
+                  size: 12
+                },
+                color: '#858796'
+              }
             },
             y: {
               beginAtZero: true,
-              grid: { color: '#e3e6f0' }
+              grid: {
+                color: 'rgba(133, 135, 150, 0.1)',
+                drawBorder: false
+              },
+              ticks: {
+                font: {
+                  family: 'Inter',
+                  size: 12
+                },
+                color: '#858796',
+                callback: function(value) {
+                  return value.toLocaleString();
+                }
+              }
             }
           },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              enabled: true,
-              mode: 'index',
-              intersect: false
-            }
-          },
-          interaction: {
-            mode: 'nearest',
-            intersect: false
+          animation: {
+            duration: 1000,
+            easing: 'easeInOutQuart'
           }
         }
       });
     })
     .catch(function(error) {
       console.error('Error loading bookings data:', error);
+      // Show error message in chart area
+      document.getElementById('myBookingsChart').style.display = 'none';
+      const chartContainer = document.getElementById('myBookingsChart').parentElement;
+      chartContainer.innerHTML = '<div class="text-center text-muted p-4"><i class="fas fa-exclamation-triangle fa-3x mb-3"></i><br>Error loading chart data</div>';
     });
+</script>
+
+{{-- Add some interactive animations --}}
+<script>
+$(document).ready(function() {
+    // Add loading animation
+    $('.stats-card').each(function(index) {
+        $(this).css('animation-delay', (index * 0.1) + 's');
+    });
+    
+    // Counter animation for stats numbers
+    $('.stats-number').each(function() {
+        const $this = $(this);
+        const countTo = parseInt($this.text());
+        
+        $({ countNum: 0 }).animate({
+            countNum: countTo
+        }, {
+            duration: 2000,
+            easing: 'swing',
+            step: function() {
+                $this.text(Math.floor(this.countNum));
+            },
+            complete: function() {
+                $this.text(countTo);
+            }
+        });
+    });
+});
 </script>
 
 @endpush

@@ -81,8 +81,9 @@ Route::prefix('/admin/schedules')->middleware(['auth', 'role:admin'])->group(fun
     Route::get('/{id}', [ScheduleController::class, 'show'])->name('backend.schedule.show');
     Route::get('/{id}/edit', [ScheduleController::class, 'edit'])->name('backend.schedule.edit');
     Route::put('/{id}', [ScheduleController::class, 'update'])->name('backend.schedule.update');
-    Route::delete('/{id}', [ScheduleController::class, 'destroy'])->name('backend.schedule.destroy');
-
+    Route::delete('/backend/schedule/{id}', [ScheduleController::class, 'destroy'])->name('backend.schedule.destroy');
+    Route::post('/backend/schedule/bulk-delete', [ScheduleController::class, 'bulkDestroy'])->name('backend.schedule.bulk-destroy');
+    Route::delete('/backend/schedule/batch/{batchId}', [ScheduleController::class, 'destroyByBatch'])->name('backend.schedule.destroy-batch');
 
 });
 //bookings
@@ -175,8 +176,8 @@ Route::prefix('/admin/typeroom')->middleware(['auth', 'role:admin'])->group(func
 //room PPP
 Route::prefix('/ppp/rooms')->middleware(['auth', 'role:ppp'])->group(function () {
     Route::get('/', [RoomPPPController::class, 'index'])->name('ppp.room.index');
-    Route::get('/create', [RoomPPPController::class, 'create'])->name('ppp.room.create');
-    Route::post('/', [RoomPPPController::class, 'store'])->name('ppp.room.store');
+   // Route::get('/create', [RoomPPPController::class, 'create'])->name('ppp.room.create');
+   // Route::post('/', [RoomPPPController::class, 'store'])->name('ppp.room.store');
     Route::get('/{id}', [RoomPPPController::class, 'show'])->name('ppp.room.show');
     Route::get('/{id}/edit', [RoomPPPController::class, 'edit'])->name('ppp.room.edit');
     Route::put('/{id}', [RoomPPPController::class, 'update'])->name('ppp.room.update');
@@ -282,6 +283,24 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/notification/{id}', [NotificationController::class, 'show'])->name('notification.detail');
     Route::get('/notifications', [NotificationController::class, 'index'])->name('all.notification');
     Route::delete('/notification/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
+    // View notifications list
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notification.index');
+    // Redirect to actionURL and mark as read (existing logic)
+    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notification.show');
+    // View full detail of a single notification
+    Route::get('/notifications/{id}/detail', [NotificationController::class, 'detail'])->name('notification.detail');
+    // Mark a specific notification as read
+    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead'])->name('notification.mark-read');
+
+    // Mark all notifications as read
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notification.mark-all-read');
+
+    // Soft-delete (hide) a specific notification
+    Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
+
+    // Clear all notifications (set is_deleted = true)
+    Route::post('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notification.clear-all');
+
 
     // Booking Routes
     Route::resource('/admin/bookings', BookingController::class);

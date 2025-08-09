@@ -11,9 +11,18 @@ class UsersController extends Controller
     // Display a listing of users
     public function index()
     {
+        $totalUsers = User::count();
+        $userCount  = User::where('role', 'user')->count();
+        $pppCount   = User::where('role', 'ppp')->count();
+        $adminCount = User::where('role', 'admin')->count();
+
         $users = User::orderBy('id', 'ASC')->paginate(10);
-        return view('backend.users.index')->with('users', $users);
+
+        return view('backend.users.index', compact(
+            'users', 'totalUsers', 'userCount', 'pppCount', 'adminCount'
+        ));
     }
+
 
     // Show the form for creating a new student
     public function create()

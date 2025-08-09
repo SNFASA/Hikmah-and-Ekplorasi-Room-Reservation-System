@@ -11,7 +11,7 @@ class furniture extends Model
     protected $primaryKey = 'no_furniture'; // Custom primary key if needed
     protected $fillable = [
         'name',
-        'category',
+        'category_id',
         'status',
     ];
     public static function countActiveFurniture(){

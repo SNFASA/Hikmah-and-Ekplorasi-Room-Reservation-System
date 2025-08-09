@@ -2,212 +2,354 @@
 @section('title','LibraRoom Reservation System')
 @section('main-content')
 
-<!-- Booking List Card -->
-<div class="card shadow-sm mb-4" style="background-color: #f8f9fa;">
-    <div class="row px-3 pt-3">
-        <div class="col-md-12">
-            @include('backend.layouts.notification')
+<!-- Main Container with Enhanced Styling -->
+<div class="container-fluid px-4">
+    <!-- Header Section with Gradient Background -->
+    <div class="header-section mb-4">
+        <div class="row align-items-center">
+            <div class="col-12">
+                @include('backend.layouts.notification')
+            </div>
+        </div>
+        
+        <div class="header-content d-flex flex-column flex-lg-row justify-content-between align-items-center">
+            <div class="header-title">
+                <h1 class="main-title text-primary">
+                    <i class="fas fa-calendar-check me-3"></i>
+                    Booking Management
+                </h1>
+                <p class="subtitle">Manage all room reservations and bookings</p>
+            </div>
+            <div class="header-actions mt-3 mt-lg-0">
+                <a href="{{ route('bookings.create') }}" class="btn btn-create">
+                    <i class="fas fa-plus me-2"></i>
+                    <span>Add Booking</span>
+                </a>
+            </div>
         </div>
     </div>
 
-    <div class="card-header py-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
-        <h6 class="m-0 font-weight-bold text-primary" style="font-size: 1.25rem;">Booking List</h6>
-        <a href="{{ route('bookings.create') }}" class="btn btn-primary btn-sm" data-toggle="tooltip" title="Add Booking">
-            <i class="fas fa-plus"></i> Add Booking
-        </a>
-    </div>
-
-    <div class="card-body">
-        <div class="table-responsive">
+    <!-- Main Card with Modern Design -->
+    <div class="modern-card">
+        <div class="card-body p-0">
             @if($bookings->count() > 0)
-            <table class="table table-striped table-hover table-bordered" id="booking-dataTable" width="100%" cellspacing="0">
-                <thead class="thead-light">
-                    <tr>
-                        <th>S.N.</th>
-                        <th>Purpose</th>
-                        <th>List Student/Staff</th>
-                        <th>Room</th>
-                        <th>Date & Time</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tfoot class="thead-light">
-                    <tr>
-                        <th>S.N.</th>
-                        <th>Purpose</th>
-                        <th>List Student/Staff</th>
-                        <th>Room</th>
-                        <th>Date & Time</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    @foreach($bookings as $booking)
-                        @php
-                            $room = DB::table('rooms')->where('no_room', $booking->no_room)->value('name');
-                        @endphp
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $booking->purpose }}</td>
-                            <td>
-                                @if($booking->listStudentBookings)
-                                    <ul class="mb-0">
-                                        @foreach($booking->listStudentBookings as $student)
-                                            <li>{{ $student->no_matriks }}</li>
-                                        @endforeach
-                                    </ul>
-                                @else
-                                    <span class="text-muted">None</span>
-                                @endif
-                            </td>
-                            <td>{{ $room }}</td>
-                            <td>{{ $booking->booking_date }}, {{ $booking->booking_time_start }} - {{ $booking->booking_time_end }}</td>
-                            <td>
-                                <span class="badge badge-{{ $booking->status == 'approved' ? 'success' : 'warning' }}">
-                                    {{ ucfirst($booking->status) }}
+                <!-- Search and Filter Section -->
+                <div class="search-section p-4 border-bottom">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="search-box">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="searchInput" class="form-control search-input" placeholder="Search purpose, room, student ID, or status...">
+                            </div>
+                        </div>
+                        <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                            <div class="stats-info">
+                                <span class="badge badge-info">
+                                    <i class="fas fa-calendar-check me-1"></i>
+                                    {{$bookings->count()}} Total Bookings
                                 </span>
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ route('bookings.show', $booking->id) }}" 
-                                   class="btn btn-primary btn-sm rounded-circle mr-1 action-btn-edit" 
-                                   style="height:34px; width:34px;" 
-                                   data-toggle="tooltip" title="View">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('bookings.edit', $booking->id) }}" 
-                                   class="btn btn-primary btn-sm rounded-circle mr-1 action-btn-edit" 
-                                   style="height:34px; width:34px;" 
-                                   data-toggle="tooltip" title="Edit">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form method="POST" action="{{ route('bookings.destroy', $booking->id) }}" class="d-inline">
-                                    @csrf 
-                                    @method('delete')
-                                    <button class="btn btn-danger btn-sm rounded-circle dltBtn action-btn-delete" 
-                                            data-id="{{ $booking->id }}" 
-                                            style="height:34px; width:34px;" 
-                                            data-toggle="tooltip" title="Delete" type="button">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                <span class="badge badge-success ms-2">
+                                    <i class="fas fa-check-circle me-1"></i>
+                                    {{$bookings->where('status', 'approved')->count()}} Approved
+                                </span>
+                                <span class="badge badge-warning ms-2">
+                                    <i class="fas fa-clock me-1"></i>
+                                    {{$bookings->where('status', 'pending')->count()}} Pending
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="d-flex justify-content-center mt-4">
-                {{ $bookings->links('pagination::bootstrap-5') }}
-            </div>
+                <!-- Enhanced Table -->
+                <div class="table-container">
+                    <div class="table-responsive">
+                        <table class="table modern-table" id="bookingTable">
+                            <thead>
+                                <tr>
+                                    <th class="sortable" data-column="0">
+                                        <span>S.N.</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="1">
+                                        <span>Purpose</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th>List Student/Staff</th>
+                                    <th class="sortable" data-column="3">
+                                        <span>Room</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="4">
+                                        <span>Date & Time</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="sortable" data-column="5">
+                                        <span>Status</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($bookings as $booking)
+                                    @php
+                                        $room = DB::table('rooms')->where('no_room', $booking->no_room)->value('name');
+                                    @endphp
+                                    <tr class="table-row" data-id="{{$booking->id}}">
+                                        <td class="id-cell">
+                                            <span class="id-badge">#{{ $loop->iteration }}</span>
+                                        </td>
+                                        <td class="purpose-cell">
+                                            <div class="purpose-info">
+                                                <i class="fas fa-bookmark me-2 text-primary"></i>
+                                                <span class="purpose-text">{{ $booking->purpose }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="students-cell">
+                                            @if($booking->listStudentBookings)
+                                                <div class="students-list">
+                                                    @foreach($booking->listStudentBookings->take(2) as $student)
+                                                        <span class="student-tag">
+                                                            <i class="fas fa-user me-1"></i>
+                                                            {{ $student->no_matriks }}
+                                                        </span>
+                                                    @endforeach
+                                                    @if($booking->listStudentBookings->count() > 2)
+                                                        <span class="more-items">+{{ $booking->listStudentBookings->count() - 2 }} more</span>
+                                                    @endif
+                                                </div>
+                                            @else
+                                                <span class="text-muted">
+                                                    <i class="fas fa-minus me-1"></i>
+                                                    None
+                                                </span>
+                                            @endif
+                                        </td>
+                                        <td class="room-cell">
+                                            <div class="room-info">
+                                                <i class="fas fa-door-open me-2 text-primary"></i>
+                                                <span class="room-name">{{ $room }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="datetime-cell">
+                                            <div class="datetime-info">
+                                                <div class="date-section">
+                                                    <i class="fas fa-calendar me-1 text-info"></i>
+                                                    <span class="booking-date">{{ $booking->booking_date }}</span>
+                                                </div>
+                                                <div class="time-section">
+                                                    <i class="fas fa-clock me-1 text-warning"></i>
+                                                    <span class="booking-time">{{ $booking->booking_time_start }} - {{ $booking->booking_time_end }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="status-cell">
+                                            <span class="status-badge status-{{ $booking->status == 'approved' ? 'success' : 'warning' }}">
+                                                <i class="fas fa-{{ $booking->status == 'approved' ? 'check-circle' : 'clock' }} me-1"></i>
+                                                {{ ucfirst($booking->status) }}
+                                            </span>
+                                        </td>
+                                        <td class="action-cell">
+                                            <div class="action-buttons">
+                                                <a href="{{ route('bookings.show', $booking->id) }}"
+                                                   class="action-btn view-btn"
+                                                   data-bs-toggle="tooltip"
+                                                   data-bs-placement="top"
+                                                   title="View Booking">
+                                                   <i class="fas fa-eye"></i>
+                                                </a>
+                                                <a href="{{ route('bookings.edit', $booking->id) }}"
+                                                   class="action-btn edit-btn"
+                                                   data-bs-toggle="tooltip"
+                                                   data-bs-placement="top"
+                                                   title="Edit Booking">
+                                                   <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form method="POST" action="{{ route('bookings.destroy', $booking->id) }}" class="d-inline">
+                                                    @csrf 
+                                                    @method('delete')
+                                                    <button type="button"
+                                                            class="action-btn delete-btn dltBtn"
+                                                            data-id="{{ $booking->id }}"
+                                                            data-bs-toggle="tooltip"
+                                                            data-bs-placement="top"
+                                                            title="Delete Booking">
+                                                        <i class="fas fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Enhanced Pagination -->
+                <div class="pagination-section p-4 border-top">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="pagination-info">
+                                Showing {{$bookings->firstItem()}} to {{$bookings->lastItem()}}
+                                of {{$bookings->total()}} results
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="pagination-wrapper">
+                                {{ $bookings->links('pagination::bootstrap-5') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             @else
-                <h6 class="text-center text-muted">No bookings found! Please create a booking.</h6>
+                <!-- Empty State with Better Design -->
+                <div class="empty-state">
+                    <div class="empty-state-content">
+                        <div class="empty-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <h3 class="empty-title">No Bookings Found</h3>
+                        <p class="empty-description">
+                            Get started by creating your first booking.
+                            You can schedule room reservations and manage student lists.
+                        </p>
+                        <a href="{{ route('bookings.create') }}" class="btn btn-create">
+                            <i class="fas fa-plus me-2"></i>
+                            Create Booking
+                        </a>
+                    </div>
+                </div>
             @endif
         </div>
     </div>
 </div>
+
 @endsection
-
-@push('styles')
-<link href="{{ asset('backend/vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.css" />
-
-<style>
-    div.dataTables_wrapper div.dataTables_paginate {
-        display: none !important; /* hide DataTables pagination */
-    }
-
-    .pagination .page-link {
-        font-size: 0.875rem;
-        padding: 0.375rem 0.75rem;
-    }
-
-    .page-item.active .page-link {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-
-    .page-link {
-        color: #0d6efd;
-    }
-
-    .page-link:hover {
-        background-color: #e2e6ea;
-    }
-
-    .action-btn-edit:hover {
-        background-color: #0b5ed7 !important;
-        color: #fff !important;
-        box-shadow: 0 0 8px rgba(11,94,215,.7);
-    }
-
-    .action-btn-delete:hover {
-        background-color: #dc3545 !important;
-        color: #fff !important;
-        box-shadow: 0 0 8px rgba(220,53,69,.7);
-    }
-
-    .tooltip-inner {
-        font-size: 0.875rem;
-    }
-
-    @media (max-width: 575.98px) {
-        .card-header h6 {
-            margin-bottom: 0.5rem;
-            text-align: center;
-            width: 100%;
-        }
-        .card-header a.btn {
-            width: 100%;
-            text-align: center;
-        }
-        td .btn {
-            display: block;
-            margin-bottom: 5px;
-        }
-    }
-</style>
-@endpush
-
 @push('scripts')
-<script src="{{ asset('backend/vendor/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('backend/vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
 <script>
 $(document).ready(function() {
-    $('#booking-dataTable').DataTable({
-        paging: false,
-        ordering: true,
-        columnDefs: [{
-            orderable: false,
-            targets: [6]
-        }],
-        searching: true,
-        info: false,
-        autoWidth: false
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
     });
 
-    $('[data-toggle="tooltip"]').tooltip();
+    // Enhanced search functionality
+    $('#searchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('#bookingTable tbody tr').filter(function() {
+            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+    });
 
+    // Table sorting functionality
+    $('.sortable').click(function() {
+        var table = $('#bookingTable');
+        var rows = table.find('tbody tr').toArray();
+        var column = $(this).data('column');
+        var isAsc = !$(this).hasClass('asc');
+        
+        // Remove all sort classes
+        $('.sortable').removeClass('asc desc');
+        $('.sort-icon').removeClass('fa-sort-up fa-sort-down').addClass('fa-sort');
+        
+        // Add appropriate class and icon
+        if (isAsc) {
+            $(this).addClass('asc');
+            $(this).find('.sort-icon').removeClass('fa-sort').addClass('fa-sort-up');
+        } else {
+            $(this).addClass('desc');
+            $(this).find('.sort-icon').removeClass('fa-sort').addClass('fa-sort-down');
+        }
+
+        rows.sort(function(a, b) {
+            var aVal = $(a).find('td').eq(column).text().trim();
+            var bVal = $(b).find('td').eq(column).text().trim();
+            
+            // Handle numeric values
+            if (!isNaN(aVal) && !isNaN(bVal)) {
+                return isAsc ? aVal - bVal : bVal - aVal;
+            }
+            
+            // Handle text values
+            return isAsc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+        });
+
+        table.find('tbody').empty().append(rows);
+        
+        // Re-animate rows
+        setTimeout(function() {
+            $('#bookingTable tbody tr').each(function(index) {
+                $(this).css('animation-delay', (index * 0.05) + 's');
+                $(this).addClass('fadeInUp');
+            });
+        }, 50);
+    });
+
+    // Enhanced delete confirmation
     $('.dltBtn').click(function(e) {
         e.preventDefault();
         var form = $(this).closest('form');
+        var bookingId = $(this).data('id');
+        
         swal({
-            title: "Are you sure?",
-            text: "Once deleted, you will not be able to recover this data!",
+            title: "Delete Booking?",
+            text: "This action cannot be undone. The booking and all its data will be permanently deleted.",
             icon: "warning",
-            buttons: true,
+            buttons: {
+                cancel: {
+                    text: "Cancel",
+                    value: null,
+                    visible: true,
+                    className: "btn-light",
+                    closeModal: true,
+                },
+                confirm: {
+                    text: "Delete",
+                    value: true,
+                    visible: true,
+                    className: "btn-danger",
+                    closeModal: true
+                }
+            },
             dangerMode: true,
         }).then((willDelete) => {
             if (willDelete) {
+                // Add loading state
+                swal({
+                    title: "Deleting...",
+                    text: "Please wait while we process your request.",
+                    icon: "info",
+                    buttons: false,
+                    closeOnClickOutside: false,
+                    closeOnEsc: false
+                });
+                
                 form.submit();
-            } else {
-                swal("Your data is safe!");
             }
         });
     });
+
+    // Add smooth transitions for table rows
+    $('#bookingTable tbody tr').each(function(index) {
+        $(this).css('animation-delay', (index * 0.1) + 's');
+    });
+
+    // Search input focus effect
+    $('#searchInput').on('focus', function() {
+        $(this).parent().addClass('focused');
+    }).on('blur', function() {
+        $(this).parent().removeClass('focused');
+    });
+});
+
+// Add loading states for better UX
+$(window).on('beforeunload', function() {
+    $('body').addClass('loading');
 });
 </script>
 @endpush

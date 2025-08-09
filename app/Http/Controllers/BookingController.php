@@ -360,13 +360,30 @@ public function update(Request $request, $id)
          * 
          * 
          */
-public function destroy($id)
-    {
-        $booking = Bookings::findOrFail($id);
-        $booking->delete();
-
-        return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully.');
-}
+        public function destroy($id)
+        {
+            \Log::info('Delete request received for schedule ID: ' . $id);
+            
+            if (!auth()->check()) {
+                \Log::error('User not authenticated');
+                return redirect()->route('login');
+            }
+            
+            try {
+                $schedule = Schedule::findOrFail($id);
+                \Log::info('Schedule found: ' . json_encode($schedule));
+                
+                $schedule->delete();
+                \Log::info('Schedule deleted successfully');
+                
+                return redirect()->route('schedule.index')
+                    ->with('success', 'Schedule deleted successfully');
+            } catch (\Exception $e) {
+                \Log::error('Error deleting schedule: ' . $e->getMessage());
+                return redirect()->route('schedule.index')
+                    ->with('error', 'Error deleting schedule: ' . $e->getMessage());
+            }
+        }
 
         /**
          * Attach students to a booking.
@@ -901,6 +918,7 @@ public function show($id)
     $booking = bookings::with([
         'room.electronics',     // Get room + electronics
         'room.furnitures',      // Get room + furnitures
+        'room.type', // Get room + type_rooms
         'listStudentBookings',  // Get student list
     ])->findOrFail($id);
 
