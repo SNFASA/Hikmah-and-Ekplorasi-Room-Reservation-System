@@ -45,7 +45,7 @@ class RoomController extends Controller
      */
     public function create()
     {
-        $type_rooms = TypeRooms::orderby('name')->get(); 
+        $type_rooms = TypeRooms::orderby('name')->get();
         $furnitures = furniture::all();
         $electronics = electronic::all();
         return view('backend.room.create', compact('type_rooms', 'furnitures', 'electronics'));

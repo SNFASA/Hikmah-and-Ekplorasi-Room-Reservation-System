@@ -25,6 +25,8 @@ use App\Http\Controllers\MaintenancePPPController;
 use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\CourseController;
 
 
 // Authentication Routes
@@ -73,6 +75,29 @@ Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/{id}', [UsersController::class, 'update'])->name('backend.users.update');
     Route::delete('/{id}', [UsersController::class, 'destroy'])->name('backend.users.destroy');
 });
+
+//department 
+Route::prefix('/depatment')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [DepartmentController::class, 'index'])->name('backend.department.index');
+    Route::get('/create', [DepartmentController::class, 'create'])->name('backend.department.create');
+    Route::post('/', [DepartmentController::class, 'store'])->name('backend.department.store');
+    Route::get('/{id}', [DepartmentController::class, 'show'])->name('backend.department.show');
+    Route::get('/{id}/edit', [DepartmentController::class, 'edit'])->name('backend.department.edit');
+    Route::put('/{id}', [DepartmentController::class, 'update'])->name('backend.department.update');
+    Route::delete('/{id}', [DepartmentController::class, 'destroy'])->name('backend.department.destroy');
+});
+
+//cpurses
+Route::prefix('/courses')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [CourseController::class, 'index'])->name('backend.course.index');
+    Route::get('/create', [CourseController::class, 'create'])->name('backend.course.create');
+    Route::post('/', [CourseController::class, 'store'])->name('backend.course.store');
+    Route::get('/{id}', [CourseController::class, 'show'])->name('backend.course.show');
+    Route::get('/{id}/edit', [CourseController::class, 'edit'])->name('backend.course.edit');
+    Route::put('/{id}', [CourseController::class, 'update'])->name('backend.course.update');
+    Route::delete('/{id}', [CourseController::class, 'destroy'])->name('backend.course.destroy');
+});
+
 //schedule
 Route::prefix('/admin/schedules')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [ScheduleController::class, 'index'])->name('backend.schedule.index'); 
@@ -266,7 +291,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     
     // User Management Routes
     Route::resource('users', UsersController::class);
+
+    //department 
+    Route::resource('department', DepartmentController::class);
     
+    //course
+    Route::resource('course', CourseController::class);
     // Profile Routes
     Route::get('/admin.profile', [AdminController::class, 'profile'])->name('admin-profile');
     Route::post('admin/profile/{id}', [AdminController::class, 'profileUpdate'])->name('admin-profile-update');

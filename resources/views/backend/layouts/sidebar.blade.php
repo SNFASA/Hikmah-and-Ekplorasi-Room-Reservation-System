@@ -192,9 +192,15 @@
         </a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="{{ route('settings') }}">
+        <a class="nav-link" href="{{ route('backend.department.index') }}">
           <i class="fas fa-building"></i>
-        <span>Settings</span>
+        <span>Departiment</span>
+      </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" href="{{ route('backend.course.index') }}">
+          <i class="fas fa-building"></i>
+        <span>Courses</span>
       </a>
     </li>
     <li class="nav-item">

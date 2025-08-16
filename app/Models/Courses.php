@@ -11,8 +11,7 @@ class Courses extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'no_course'; // Custom primary key if needed
-
+    protected $primaryKey = 'no_course';
     protected $fillable = [
         'name',
         'department_id',
@@ -20,6 +19,14 @@ class Courses extends Model
 
     public function department()
     {
-        return $this->belongsTo(department::class, 'department_id');
+        return $this->belongsTo(department::class, 'department_id', 'no_department');
+    }
+    public static function getAllCourses()
+    {
+        return self::all();
+    }
+    public static function getAlldepartments()
+    {
+        return department::all();
     }
 }
