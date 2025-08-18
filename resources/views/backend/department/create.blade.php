@@ -36,7 +36,7 @@
                 <div class="card-header bg-gradient-primary text-white p-4 border-0">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h5 class="card-title mb-0 fw-bold">
+                            <h5 class="card-title text-white mb-0 fw-bold">
                                 <i class="fas fa-tags me-2"></i>
                                 Department Configuration
                             </h5>

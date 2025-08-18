@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title', 'Furniture Equipment Create')
+@section('title', 'Faculty Office Edit')
 @section('main-content')
 
 <div class="container-fluid px-4 py-4">
@@ -9,15 +9,19 @@
             <div class="d-flex justify-content-between align-items-center">
                 <div>
                     <h2 class="text-primary fw-bold mb-1">
-                        <i class="fas fa-chair me-2"></i>
-                        Add Furniture Equipment
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Faculty Office
                     </h2>
-                    <p class="text-muted mb-0">Create new Furniture equipment for room assignment</p>
+                    <p class="text-muted mb-0">Update Faculty Office details and specifications</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="badge bg-success text-white px-3 py-2 rounded-pill">
-                        <i class="fas fa-plus me-1"></i>
-                        New Furniture
+                    <div class="badge bg-primary text-white px-3 py-2 rounded-pill">
+                        <i class="fas fa-edit me-1"></i>
+                        Edit Mode
+                    </div>
+                    <div class="badge bg-light text-dark px-3 py-2 rounded-pill">
+                        <i class="fas fa-hashtag me-1"></i>
+                        id: {{ $facultyOffice->no_facultyOffice }}
                     </div>
                     <div class="badge bg-light text-dark px-3 py-2 rounded-pill">
                         <i class="fas fa-clock me-1"></i>
@@ -37,17 +41,17 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h5 class="card-title text-white mb-0 fw-bold">
-                                <i class="fas fa-cog me-2"></i>
-                                Equipment Configuration
+                                <i class="fas fa-tags me-2"></i>
+                                Faculty Office Configuration
                             </h5>
                             <p class="mb-0 mt-1 opacity-75">
-                                Set up Furniture equipment details and specifications
+                                Update Faculty Office and specifications
                             </p>
                         </div>
                         <div class="col-md-4 text-md-end">
                             <div class="creation-info">
-                                <small class="d-block opacity-75">Creation Date:</small>
-                                <strong>{{ now()->format('M d, Y') }}</strong>
+                                <small class="d-block opacity-75">Faculty Office id:</small>
+                                <strong>{{ $facultyOffice->no_facultyOffice }}</strong>
                             </div>
                         </div>
                     </div>
@@ -55,35 +59,36 @@
 
                 <!-- Card Body -->
                 <div class="card-body bg-light p-4">
-                    <form method="POST" action="{{ route('backend.furniture.store') }}" id="electronicCreateForm">
+                    <form method="POST" action="{{ route('backend.facultyOffice.update', $facultyOffice->no_facultyOffice) }}" id="electronicEditForm">
                         @csrf
+                        @method('PUT')
                         
-                        <!-- Equipment Details Section -->
+                        <!-- Faculty Office Details Section -->
                         <div class="form-section mb-5 fade-in">
                             <div class="section-header mb-4">
                                 <h6 class="text-primary fw-bold mb-2">
                                     <span class="step-number">1</span>
-                                    Furniture Information
+                                    Faculty Office Information
                                 </h6>
-                                <p class="text-muted mb-0 small">Enter the basic details for the Furniture equipment</p>
+                                <p class="text-muted mb-0 small">Update the details for this Faculty Office</p>
                             </div>
 
                             <div class="row g-4">
-                                <!-- Equipment Name -->
+                                <!-- Faculty Office Name -->
                                 <div class="col-md-12">
                                     <div class="form-floating">
                                         <input
-                                            id="inputName"
+                                            id="inputTitle"
                                             type="text"
                                             name="name"
                                             class="form-control form-control-modern @error('name') is-invalid @enderror"
-                                            placeholder="Enter equipment name"
-                                            value="{{ old('name') }}"
+                                            placeholder="Enter faculty office name"
+                                            value="{{ old('name', $facultyOffice->name) }}"
                                             required
                                         >
-                                        <label for="inputName">
+                                        <label for="inputTitle">
                                             <i class="fas fa-tag me-2"></i>
-                                            Equipment Name <span class="text-danger">*</span>
+                                            Faculty Office <span class="text-danger">*</span>
                                         </label>
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -91,44 +96,30 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div class="row g-4 mt-2">
-                                <!-- Category -->
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <select name="category_id" class="form-control form-control-modern @error('category_id') is-invalid @enderror" required>
-                                            <option value="">-- Select Category --</option>
-                                            @foreach($categories as $category)
-                                                <option value="{{ $category->id }}"
-                                                    @if(old('category_id', $furniture->category_id ?? '') == $category->id) selected @endif>
-                                                    {{ $category->name }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                        <label for="category_id">
-                                            <i class="fas fa-list me-2"></i>
-                                            Category <span class="text-danger">*</span>
-                                        </label>
-                                        @error('category_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
+                        <!-- Current Values Display -->
+                        <div class="form-section mb-5 fade-in">
+                            <div class="section-header mb-4">
+                                <h6 class="text-primary fw-bold mb-2">
+                                    <span class="step-number-info">i</span>
+                                    Current Values
+                                </h6>
+                                <p class="text-muted mb-0 small">Review current Faculty Office information</p>
+                            </div>
 
-                                <!-- Status -->
-                                <div class="col-md-6">
-                                    <div class="form-floating">
-                                        <select name="status" class="form-control form-control-modern @error('status') is-invalid @enderror" required>
-                                            <option value="Active" {{ old('status', 'Active') == 'Active' ? 'selected' : '' }}>Active</option>
-                                            <option value="Damage" {{ old('status') == 'Damage' ? 'selected' : '' }}>Damage</option>
-                                        </select>
-                                        <label for="status">
-                                            <i class="fas fa-check-circle me-2"></i>
-                                            Status <span class="text-danger">*</span>
-                                        </label>
-                                        @error('status')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                            <div class="card border-0 bg-white shadow-sm rounded-3">
+                                <div class="card-body p-4">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="info-item">
+                                                <div class="info-label">
+                                                    <i class="fas fa-tag text-primary me-2"></i>
+                                                    <strong>Current Name:</strong>
+                                                </div>
+                                                <div class="info-value text-muted">{{ $facultyOffice->name }}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -140,11 +131,11 @@
                                 <div class="card-body p-4">
                                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
                                         <div class="form-summary">
-                                            <h6 class="mb-1 fw-bold text-dark">Ready to Create Furniture?</h6>
-                                            <p class="mb-0 text-muted small">Review your Furniture configuration before creating</p>
+                                            <h6 class="mb-1 fw-bold text-dark">Ready to Update Faculty Office?</h6>
+                                            <p class="mb-0 text-muted small">Review your changes before updating the Faculty Office</p>
                                         </div>
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('backend.furniture.index') }}"
+                                            <a href="{{ route('backend.facultyOffice.index') }}"
                                                class="btn btn-outline-danger btn-lg rounded-pill px-4 shadow-sm">
                                                 <i class="fas fa-arrow-left me-2"></i>
                                                 Back
@@ -157,14 +148,14 @@
                                             </button>
                                             <button class="btn btn-success btn-lg rounded-pill px-4 shadow-sm"
                                                     type="submit"
-                                                    id="submitBtn">
+                                                    no_department="submitBtn">
                                                 <span class="btn-text">
-                                                    <i class="fas fa-check me-2"></i>
-                                                    Create Furniture
+                                                    <i class="fas fa-save me-2"></i>
+                                                    Update Faculty Office
                                                 </span>
                                                 <span class="btn-spinner d-none">
                                                     <span class="spinner-border spinner-border-sm me-2"></span>
-                                                    Creating...
+                                                    Updating...
                                                 </span>
                                             </button>
                                         </div>
@@ -185,7 +176,7 @@
                 <div class="card-body p-4">
                     <h6 class="text-white fw-bold mb-3">
                         <i class="fas fa-lightbulb me-2"></i>
-                        Furniture Creation Tips
+                        Faculty Office Update Tips
                     </h6>
                     <div class="row g-3">
                         <div class="col-md-4">
@@ -194,19 +185,8 @@
                                     <i class="fas fa-info-circle text-white"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-semibold text-white">Required Fields</div>
-                                    <small class="text-white">All fields marked with * are mandatory</small>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="d-flex align-items-start">
-                                <div class="tip-icon me-3">
-                                    <i class="fas fa-list text-white"></i>
-                                </div>
-                                <div>
-                                    <div class="fw-semibold text-white">Select Category</div>
-                                    <small class="text-white">Choose appropriate equipment category</small>
+                                    <div class="fw-semibold text-white">Review Changes</div>
+                                    <small class="text-white">Compare with current values before updating</small>
                                 </div>
                             </div>
                         </div>
@@ -216,8 +196,19 @@
                                     <i class="fas fa-save text-white"></i>
                                 </div>
                                 <div>
-                                    <div class="fw-semibold text-white">Save Progress</div>
-                                    <small class="text-white">Review before submitting the form</small>
+                                    <div class="fw-semibold text-white">Save Changes</div>
+                                    <small class="text-white">Click update to save your modifications</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <div class="tip-icon me-3">
+                                    <i class="fas fa-undo text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-white">Reset Form</div>
+                                    <small class="text-white">Use reset to restore original values</small>
                                 </div>
                             </div>
                         </div>
@@ -233,24 +224,33 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    console.log('Electronic Equipment Create Form initializing...');
+    console.log('Faculty Office Edit Form initializing...');
 
-    // Progress tracking function
-    function updateProgress() {
-        let progress = 0;
-        const total = 3; // Total required fields
+    // Store original values for reset functionality
+    const originalValues = {
+        name: $('#inputTitle').val()
+    };
 
-        // Check equipment name
-        if ($('#inputName').val().trim()) progress++;
+    // Check if form has changes
+    function hasChanges() {
+        return (
+            $('#inputTitle').val() !== originalValues.name
+        );
+    }
+
+    // Update form state based on changes
+    function updateFormState() {
+        const changed = hasChanges();
         
-        // Check category
-        if ($('select[name="category_id"]').val()) progress++;
-        
-        // Check status
-        if ($('select[name="status"]').val()) progress++;
-
-        const percentage = (progress / total) * 100;
-        console.log('Progress updated:', percentage + '%');
+        if (changed) {
+            $('#submitBtn').removeClass('btn-outline-warning').addClass('btn-warning text-white');
+            $('.form-summary h6').text('Changes Detected - Ready to Update?');
+            $('.form-summary p').text('You have unsaved changes. Click update to save them.');
+        } else {
+            $('#submitBtn').removeClass('btn-warning text-white').addClass('btn-outline-warning');
+            $('.form-summary h6').text('No Changes Made');
+            $('.form-summary p').text('Make changes to the form fields to enable update.');
+        }
     }
 
     // Show notification function
@@ -291,21 +291,9 @@ $(document).ready(function() {
         let isValid = true;
         const errors = [];
 
-        // Validate equipment name
-        if (!$('#inputName').val().trim()) {
-            errors.push('Equipment name is required');
-            isValid = false;
-        }
-
-        // Validate category
-        if (!$('select[name="category_id"]').val()) {
-            errors.push('Category is required');
-            isValid = false;
-        }
-
-        // Validate status
-        if (!$('select[name="status"]').val()) {
-            errors.push('Status is required');
+        // Validate faculty office name
+        if (!$('#inputTitle').val().trim()) {
+            errors.push('Faculty Office name is required');
             isValid = false;
         }
 
@@ -334,7 +322,7 @@ $(document).ready(function() {
             </div>
         `;
 
-        $('#electronicCreateForm').before(alertHtml);
+        $('#electronicEditForm').before(alertHtml);
 
         // Auto-remove alert after 5 seconds
         setTimeout(() => {
@@ -352,26 +340,30 @@ $(document).ready(function() {
 
     // Reset form function
     function resetForm() {
-        console.log('Resetting form...');
+        console.log('Resetting form to original values...');
         
-        // Reset form fields
-        $('#electronicCreateForm')[0].reset();
+        // Reset to original values
+        $('#inputTitle').val(originalValues.name);
         
-        // Set default status to Active
-        $('select[name="status"]').val('Active');
-        
-        updateProgress();
-        showNotification('Form has been reset', 'info');
+        updateFormState();
+        showNotification('Form has been reset to original values', 'info');
     }
 
     // Event Listeners
 
     // Form submission with validation and loading state
-    $('#electronicCreateForm').on('submit', function(e) {
+    $('#electronicEditForm').on('submit', function(e) {
         console.log('Form submitted');
         
         const btnText = $('#submitBtn .btn-text');
         const btnSpinner = $('#submitBtn .btn-spinner');
+        
+        // Check if there are changes
+        if (!hasChanges()) {
+            e.preventDefault();
+            showNotification('No changes detected. Please make changes before updating.', 'warning');
+            return;
+        }
         
         // Show loading state
         btnText.addClass('d-none');
@@ -393,14 +385,18 @@ $(document).ready(function() {
     $('#resetBtn').on('click', function(e) {
         e.preventDefault();
         
-        if (confirm('Are you sure you want to reset the form? All entered data will be lost.')) {
-            resetForm();
+        if (hasChanges()) {
+            if (confirm('Are you sure you want to reset the form? All changes will be lost.')) {
+                resetForm();
+            }
+        } else {
+            showNotification('No changes to reset', 'info');
         }
     });
 
-    // Form field change listeners for progress tracking
-    $('#inputName, select[name="category_id"], select[name="status"]').on('input change', function() {
-        updateProgress();
+    // Form field change listeners
+    $('#inputTitle').on('input change', function() {
+        updateFormState();
     });
 
     // Keyboard shortcuts
@@ -408,8 +404,16 @@ $(document).ready(function() {
         // Ctrl+Enter to submit
         if (e.ctrlKey && e.key === 'Enter') {
             e.preventDefault();
-            if (validateForm()) {
-                $('#electronicCreateForm').submit();
+            if (hasChanges() && validateForm()) {
+                $('#electronicEditForm').submit();
+            }
+        }
+        
+        // Ctrl+R to reset (prevent default browser refresh)
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            if (hasChanges()) {
+                resetForm();
             }
         }
         
@@ -417,6 +421,20 @@ $(document).ready(function() {
         if (e.key === 'Escape') {
             $('#resetBtn').focus();
         }
+    });
+
+    // Warn user about unsaved changes when leaving page
+    $(window).on('beforeunload', function(e) {
+        if (hasChanges()) {
+            const message = 'You have unsaved changes. Are you sure you want to leave?';
+            e.returnValue = message;
+            return message;
+        }
+    });
+
+    // Remove beforeunload warning when form is submitted
+    $('#electronicEditForm').on('submit', function() {
+        $(window).off('beforeunload');
     });
 
     // Add smooth scroll to form sections on focus
@@ -440,10 +458,11 @@ $(document).ready(function() {
         });
     }, 100);
 
-    // Initialize progress
-    updateProgress();
+    // Initialize form state
+    updateFormState();
 
-    console.log('Furniture Equipment Create Form initialized successfully');
+    console.log('Faculty Office Edit Form initialized successfully');
+    console.log('Original values:', originalValues);
 });
 </script>
 @endpush

@@ -2,7 +2,7 @@
 @section('title', 'Courses Edit')
 @section('main-content')
 
-<div class="container-fluno_Courses px-4 py-4">
+<div class="container-fluid px-4 py-4">
     <!-- Header Section -->
     <div class="row mb-4">
         <div class="col-12">
@@ -35,12 +35,12 @@
     <!-- Main Form Card -->
     <div class="row justify-content-center">
         <div class="col-xl-10 col-lg-12">
-            <div class="card electronic-card shadow-lg border-0 rounded-4 overflow-hno_Coursesden">
+            <div class="card electronic-card shadow-lg border-0 rounded-4 overflow-hidden">
                 <!-- Card Header -->
                 <div class="card-header bg-gradient-primary text-white p-4 border-0">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h5 class="card-title mb-0 fw-bold">
+                            <h5 class="card-title text-white mb-0 fw-bold">
                                 <i class="fas fa-tags me-2"></i>
                                 Courses Configuration
                             </h5>
@@ -59,7 +59,7 @@
 
                 <!-- Card Body -->
                 <div class="card-body bg-light p-4">
-                    <form method="POST" action="{{ route('backend.course.update', $crs->no_course) }}" no_course="electronicEditForm">
+                    <form method="POST" action="{{ route('backend.course.update', $crs->no_course) }}" id="electronicEditForm">
                         @csrf
                         @method('PUT')
                         
@@ -74,15 +74,15 @@
                             </div>
 
                             <div class="row g-4">
-                                <!-- Equipment Name -->
+                                <!-- Course Name -->
                                 <div class="col-md-12">
                                     <div class="form-floating">
                                         <input
-                                            no_Courses="inputTitle"
+                                            id="inputTitle"
                                             type="text"
                                             name="name"
-                                            class="form-control form-control-modern @error('name') is-invalno_Courses @enderror"
-                                            placeholder="Enter equipment name"
+                                            class="form-control form-control-modern @error('name') is-invalid @enderror"
+                                            placeholder="Enter course name"
                                             value="{{ old('name', $crs->name) }}"
                                             required
                                         >
@@ -91,32 +91,34 @@
                                             Courses <span class="text-danger">*</span>
                                         </label>
                                         @error('name')
-                                            <div class="invalno_Courses-feedback">{{ $message }}</div>
+                                            <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
+                                <!-- Department Selection -->
                                 <div class="col-md-12">
-                                        <div class="form-floating">
-                                            <select name="department_id" class="form-control form-control-modern @error('department_id') is-invalid @enderror" required>
-                                                <option value="">-- Select Department --</option>
-                                                    @foreach($dpt as $dpts)
-                                                        <option value="{{ $dpts->no_department }}"
-                                                            @if(old('department_id', $crs->department_id) == $dpts->no_department) selected @endif>
-                                                            {{ $dpts->name }}
-                                                        </option>
-                                                    @endforeach
-                                            </select>
-                                            <label for="department_id">
-                                                <i class="fas fa-building me-2"></i>
-                                                Department<span class="text-danger">*</span>
-                                            </label>
-                                            @error('department_id')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                                    <div class="form-floating">
+                                        <select name="department_id" id="department_id" class="form-control form-control-modern @error('department_id') is-invalid @enderror" required>
+                                            <option value="">-- Select Department --</option>
+                                                @foreach($dpt as $dpts)
+                                                    <option value="{{ $dpts->no_department }}"
+                                                        @if(old('department_id', $crs->department_id) == $dpts->no_department) selected @endif>
+                                                        {{ $dpts->name }}
+                                                    </option>
+                                                @endforeach
+                                        </select>
+                                        <label for="department_id">
+                                            <i class="fas fa-building me-2"></i>
+                                            Department<span class="text-danger">*</span>
+                                        </label>
+                                        @error('department_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
+                                </div>
                             </div>
                         </div>
+
                         <!-- Current Values Display -->
                         <div class="form-section mb-5 fade-in">
                             <div class="section-header mb-4">
@@ -124,12 +126,13 @@
                                     <span class="step-number-info">i</span>
                                     Current Values
                                 </h6>
-                                <p class="text-muted mb-0 small">Review current Type Room information</p>
+                                <p class="text-muted mb-0 small">Review current Courses information</p>
                             </div>
+
                             <div class="card border-0 bg-white shadow-sm rounded-3">
                                 <div class="card-body p-4">
                                     <div class="row g-3">
-                                        <div class="col-md-12">
+                                        <div class="col-md-6">
                                             <div class="info-item">
                                                 <div class="info-label">
                                                     <i class="fas fa-tag text-primary me-2"></i>
@@ -138,7 +141,7 @@
                                                 <div class="info-value text-muted">{{ $crs->name }}</div>
                                             </div>
                                         </div>
-                                        <div class = col-md-12>
+                                        <div class="col-md-6">
                                             <div class="info-item">
                                                 <div class="info-label">
                                                     <i class="fas fa-building text-primary me-2"></i>
@@ -149,11 +152,11 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <!-- Action Buttons -->
                         <div class="form-actions fade-in">
                             <div class="card border-0 bg-white shadow-sm rounded-3">
@@ -171,16 +174,16 @@
                                             </a>
                                             <button type="reset"
                                                     class="btn btn-outline-warning btn-lg rounded-pill px-4 shadow-sm"
-                                                    no_Courses="resetBtn">
+                                                    id="resetBtn">
                                                 <i class="fas fa-undo-alt me-2"></i>
                                                 Reset
                                             </button>
                                             <button class="btn btn-success btn-lg rounded-pill px-4 shadow-sm"
                                                     type="submit"
-                                                    no_Courses="submitBtn">
+                                                    no_department="submitBtn">
                                                 <span class="btn-text">
                                                     <i class="fas fa-save me-2"></i>
-                                                    Update Courses
+                                                    Update Course
                                                 </span>
                                                 <span class="btn-spinner d-none">
                                                     <span class="spinner-border spinner-border-sm me-2"></span>
@@ -258,14 +261,14 @@ $(document).ready(function() {
     // Store original values for reset functionality
     const originalValues = {
         name: $('#inputTitle').val(),
-        category_no_Courses: $('select[name="category_no_Courses"]').val(),
-        status: $('select[name="status"]').val()
+        department_id: $('select[name="department_id"]').val()
     };
 
     // Check if form has changes
     function hasChanges() {
         return (
             $('#inputTitle').val() !== originalValues.name ||
+            $('select[name="department_id"]').val() !== originalValues.department_id
         );
     }
 
@@ -296,7 +299,7 @@ $(document).ready(function() {
 
         const alertHtml = `
             <div class="alert ${alertClass} alert-dismissible fade show notification-alert position-fixed"
-                 style="top: 20px; right: 20px; z-index: 1050; min-wno_Coursesth: 300px;" role="alert">
+                 style="top: 20px; right: 20px; z-index: 1050; min-width: 300px;" role="alert">
                 <i class="fas ${icon} me-2"></i>
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -317,32 +320,38 @@ $(document).ready(function() {
         }, 3000);
     }
 
-    // Form valno_Coursesation function
-    function valno_CoursesateForm() {
-        let isValno_Courses = true;
+    // Form validation function
+    function validateForm() {
+        let isValid = true;
         const errors = [];
 
-        // Valno_Coursesate equipment name
+        // Validate course name
         if (!$('#inputTitle').val().trim()) {
-            errors.push('Equipment name is required');
-            isValno_Courses = false;
+            errors.push('Course name is required');
+            isValid = false;
+        }
+
+        // Validate department selection
+        if (!$('select[name="department_id"]').val()) {
+            errors.push('Department selection is required');
+            isValid = false;
         }
 
         // Show errors if any
-        if (!isValno_Courses) {
-            showValno_CoursesationErrors(errors);
+        if (!isValid) {
+            showValidationErrors(errors);
         }
 
-        return isValno_Courses;
+        return isValid;
     }
 
-    // Show valno_Coursesation errors function
-    function showValno_CoursesationErrors(errors) {
-        const existingAlerts = $('.valno_Coursesation-alert');
+    // Show validation errors function
+    function showValidationErrors(errors) {
+        const existingAlerts = $('.validation-alert');
         existingAlerts.remove();
 
         const alertHtml = `
-            <div class="alert alert-danger valno_Coursesation-alert fade-in" role="alert">
+            <div class="alert alert-danger validation-alert fade-in" role="alert">
                 <h6 class="alert-heading mb-2">
                     <i class="fas fa-exclamation-triangle me-2"></i>
                     Please fix the following errors:
@@ -357,13 +366,13 @@ $(document).ready(function() {
 
         // Auto-remove alert after 5 seconds
         setTimeout(() => {
-            $('.valno_Coursesation-alert').fadeOut(300, function() {
+            $('.validation-alert').fadeOut(300, function() {
                 $(this).remove();
             });
         }, 5000);
 
         // Scroll to alert
-        $('.valno_Coursesation-alert')[0].scrollIntoView({
+        $('.validation-alert')[0].scrollIntoView({
             behavior: 'smooth',
             block: 'nearest'
         });
@@ -375,17 +384,15 @@ $(document).ready(function() {
         
         // Reset to original values
         $('#inputTitle').val(originalValues.name);
-        $('select[name="category_no_Courses"]').val(originalValues.category_no_Courses);
-        $('select[name="status"]').val(originalValues.status);
+        $('select[name="department_id"]').val(originalValues.department_id);
         
-        updateProgress();
         updateFormState();
         showNotification('Form has been reset to original values', 'info');
     }
 
     // Event Listeners
 
-    // Form submission with valno_Coursesation and loading state
+    // Form submission with validation and loading state
     $('#electronicEditForm').on('submit', function(e) {
         console.log('Form submitted');
         
@@ -404,8 +411,8 @@ $(document).ready(function() {
         btnSpinner.removeClass('d-none');
         $('#submitBtn').prop('disabled', true);
         
-        // Basic valno_Coursesation
-        if (!valno_CoursesateForm()) {
+        // Basic validation
+        if (!validateForm()) {
             e.preventDefault();
             // Reset button state
             btnText.removeClass('d-none');
@@ -429,8 +436,7 @@ $(document).ready(function() {
     });
 
     // Form field change listeners
-    $('#inputTitle, select[name="category_no_Courses"], select[name="status"]').on('input change', function() {
-        updateProgress();
+    $('#inputTitle, select[name="department_id"]').on('input change', function() {
         updateFormState();
     });
 
@@ -439,7 +445,7 @@ $(document).ready(function() {
         // Ctrl+Enter to submit
         if (e.ctrlKey && e.key === 'Enter') {
             e.preventDefault();
-            if (hasChanges() && valno_CoursesateForm()) {
+            if (hasChanges() && validateForm()) {
                 $('#electronicEditForm').submit();
             }
         }
@@ -493,11 +499,10 @@ $(document).ready(function() {
         });
     }, 100);
 
-    // Initialize progress and form state
-    updateProgress();
+    // Initialize form state
     updateFormState();
 
-    console.log('Type Room Edit Form initialized successfully');
+    console.log('Courses Edit Form initialized successfully');
     console.log('Original values:', originalValues);
 });
 </script>

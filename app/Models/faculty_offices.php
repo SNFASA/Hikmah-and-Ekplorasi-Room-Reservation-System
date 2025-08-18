@@ -14,12 +14,7 @@ class faculty_offices extends Model
 
     protected $fillable = [
         'name',
-        'department_id',
+        
     ];
-
-    public function department()
-    {
-        return $this->belongsTo(department::class, 'department_id');
-    }
 }
 

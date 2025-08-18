@@ -96,47 +96,47 @@
         </div>
         
         <div class="table-responsive">
-            <table class="table feedback-table">
+            <table class="table  feedback-table">
                 <thead>
                     <tr>
                         <th class="text-center">
-                            <div class="th-content">
+                            <div class="th-content text-white">
                                 <i class="fas fa-hashtag me-1"></i>
                                 Room No
                             </div>
                         </th>
                         <th>
-                            <div class="th-content">
+                            <div class="th-content text-white">
                                 <i class="fas fa-home me-1"></i>
                                 Room Name
                             </div>
                         </th>
                         <th class="text-center">
-                            <div class="th-content">
+                            <div class="th-content text-white">
                                 <i class="fas fa-chart-bar me-1"></i>
                                 Feedbacks
                             </div>
                         </th>
                         <th class="text-center">
-                            <div class="th-content">
+                            <div class="th-content text-white">
                                 <i class="fas fa-star-half-alt me-1"></i>
                                 Rating
                             </div>
                         </th>
                         <th class="text-center">
-                            <div class="th-content">
+                            <div class="th-content text-white">
                                 <i class="fas fa-chart-pie me-1"></i>
                                 Breakdown
                             </div>
                         </th>
-                        <th class="text-center">
+                        <th class="text-center text-white">
                             <div class="th-content">
                                 <i class="fas fa-comment-alt me-1"></i>
                                 Comments
                             </div>
                         </th>
                         <th class="text-center">
-                            <div class="th-content">
+                            <div class="th-content text-white">
                                 <i class="fas fa-tags me-1"></i>
                                 Category
                             </div>
@@ -147,17 +147,17 @@
                     @foreach ($roomStats as $index => $stat)
                         <tr class="table-row" style="animation-delay: {{ $index * 0.1 }}s">
                             <td class="text-center">
-                                <div class="room-number">
+                                <div class="room-number text-white">
                                     {{ $stat['room_no'] }}
                                 </div>
                             </td>
                             <td>
-                                <div class="room-info">
+                                <div class="room-info text-white">
                                     <div class="room-name">{{ $stat['room_name'] }}</div>
                                 </div>
                             </td>
                             <td class="text-center">
-                                <span class="feedback-badge">
+                                <span class="feedback-badge text-white">
                                     {{ $stat['total_feedbacks'] }}
                                 </span>
                             </td>

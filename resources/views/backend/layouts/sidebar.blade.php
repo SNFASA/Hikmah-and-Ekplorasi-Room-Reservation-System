@@ -192,6 +192,12 @@
         </a>
     </li>
     <li class="nav-item">
+        <a class="nav-link" href="{{ route('backend.facultyOffice.index') }}">
+          <i class="fas fa-building"></i>
+        <span>Faculty/Office</span>
+      </a>
+    </li>
+    <li class="nav-item">
         <a class="nav-link" href="{{ route('backend.department.index') }}">
           <i class="fas fa-building"></i>
         <span>Departiment</span>

@@ -26,6 +26,7 @@ use App\Http\Controllers\EmailController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\FacultyOfficeController;
 use App\Http\Controllers\CourseController;
 
 
@@ -85,6 +86,17 @@ Route::prefix('/depatment')->middleware(['auth', 'role:admin'])->group(function 
     Route::get('/{id}/edit', [DepartmentController::class, 'edit'])->name('backend.department.edit');
     Route::put('/{id}', [DepartmentController::class, 'update'])->name('backend.department.update');
     Route::delete('/{id}', [DepartmentController::class, 'destroy'])->name('backend.department.destroy');
+});
+
+//faculty_office
+Route::prefix('/facultyOffice')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [FacultyOfficeController::class, 'index'])->name('backend.facultyOffice.index');
+    Route::get('/create', [FacultyOfficeController::class, 'create'])->name('backend.facultyOffice.create');
+    Route::post('/', [FacultyOfficeController::class, 'store'])->name('backend.facultyOffice.store');
+    Route::get('/{id}', [FacultyOfficeController::class, 'show'])->name('backend.facultyOffice.show');
+    Route::get('/{id}/edit', [FacultyOfficeController::class, 'edit'])->name('backend.facultyOffice.edit');
+    Route::put('/{id}', [FacultyOfficeController::class, 'update'])->name('backend.facultyOffice.update');
+    Route::delete('/{id}', [FacultyOfficeController::class, 'destroy'])->name('backend.facultyOffice.destroy');
 });
 
 //cpurses
@@ -294,6 +306,9 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     //department 
     Route::resource('department', DepartmentController::class);
+
+    //Faculty_office routers
+    //Route::resource('facultyOffice', FacultyOfficeController::class);
     
     //course
     Route::resource('course', CourseController::class);

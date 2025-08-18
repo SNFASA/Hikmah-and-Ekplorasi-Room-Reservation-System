@@ -15,7 +15,7 @@
                     <p class="text-muted mb-0">Modify existing schedule booking for room reservations</p>
                 </div>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="badge bg-warning text-dark px-3 py-2 rounded-pill">
+                    <div class="badge bg-warning text-white px-3 py-2 rounded-pill">
                         <i class="fas fa-edit me-1"></i>
                         Editing Schedule #{{ $schedule->id }}
                     </div>
@@ -36,7 +36,7 @@
                 <div class="card-header bg-gradient-primary text-white p-4 border-0">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h5 class="card-title mb-0 fw-bold">
+                            <h5 class="card-title text-white mb-0 fw-bold">
                                 <i class="fas fa-calendar-check me-2"></i>
                                 Schedule Configuration Update
                             </h5>
