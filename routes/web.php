@@ -28,6 +28,7 @@ use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\FacultyOfficeController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\AdminReservationController;
 
 
 // Authentication Routes
@@ -77,7 +78,7 @@ Route::prefix('/users')->middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/{id}', [UsersController::class, 'destroy'])->name('backend.users.destroy');
 });
 
-//department 
+//department
 Route::prefix('/depatment')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [DepartmentController::class, 'index'])->name('backend.department.index');
     Route::get('/create', [DepartmentController::class, 'create'])->name('backend.department.create');
@@ -112,7 +113,7 @@ Route::prefix('/courses')->middleware(['auth', 'role:admin'])->group(function ()
 
 //schedule
 Route::prefix('/admin/schedules')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/', [ScheduleController::class, 'index'])->name('backend.schedule.index'); 
+    Route::get('/', [ScheduleController::class, 'index'])->name('backend.schedule.index');
     Route::get('/create', [ScheduleController::class, 'create'])->name('backend.schedule.create');
     Route::post('/', [ScheduleController::class, 'store'])->name('backend.schedule.store');
     Route::get('/{id}', [ScheduleController::class, 'show'])->name('backend.schedule.show');
@@ -125,7 +126,7 @@ Route::prefix('/admin/schedules')->middleware(['auth', 'role:admin'])->group(fun
 });
 //bookings
 Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index'); 
+    Route::get('/', [BookingController::class, 'index'])->name('backend.booking.index');
     Route::get('/create', [BookingController::class, 'create'])->name('backend.booking.create');
     Route::post('/', [BookingController::class, 'store'])->name('backend.booking.store');
     Route::get('/{id}', [BookingController::class, 'show'])->name('backend.booking.show');
@@ -137,7 +138,7 @@ Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(func
     Route::get('bookings/chart', [BookingController::class, 'getBookingsByMonth'])->name('bookings.getBookingsByMonth');
 });
 
-//electronic 
+//electronic
 Route::prefix('/admin/electronics')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [ElectronicController::class, 'index'])->name('backend.electronic.index');
     Route::get('/create', [ElectronicController::class, 'create'])->name('backend.electronic.create');
@@ -147,7 +148,7 @@ Route::prefix('/admin/electronics')->middleware(['auth', 'role:admin'])->group(f
     Route::put('/{id}', [ElectronicController::class, 'update'])->name('backend.electronic.update');
     Route::delete('/{id}', [ElectronicController::class, 'destroy'])->name('backend.electronic.destroy');
 });
-//electronic PPP 
+//electronic PPP
 Route::prefix('/ppp/electronics')->middleware(['auth', 'role:ppp'])->group(function () {
     Route::get('/', [ElectronicPPPController::class, 'index'])->name('ppp.electronic.index');
     Route::get('/create', [ElectronicPPPController::class, 'create'])->name('ppp.electronic.create');
@@ -158,7 +159,7 @@ Route::prefix('/ppp/electronics')->middleware(['auth', 'role:ppp'])->group(funct
     Route::delete('/{id}', [ElectronicPPPController::class, 'destroy'])->name('ppp.electronic.destroy');
 });
 
-//furniture 
+//furniture
 Route::prefix('/admin/furnitures')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [FurnitureController::class, 'index'])->name('backend.furniture.index');
     Route::get('/create', [FurnitureController::class, 'create'])->name('backend.furniture.create');
@@ -190,7 +191,7 @@ Route::prefix('/admin/categories')->middleware(['auth', 'role:admin'])->group(fu
     Route::delete('/{id}', [CatergoryEqupmentController::class, 'destroy'])->name('backend.category.destroy');
 });
 
-//room 
+//room
 Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [RoomController::class, 'index'])->name('backend.room.index');
     Route::get('/create', [RoomController::class, 'create'])->name('backend.room.create');
@@ -200,7 +201,7 @@ Route::prefix('/admin/rooms')->middleware(['auth', 'role:admin'])->group(functio
     Route::put('/{id}', [RoomController::class, 'update'])->name('backend.room.update');
     Route::delete('/{id}', [RoomController::class, 'destroy'])->name('backend.room.destroy');
 });
-// type room 
+// type room
 Route::prefix('/admin/typeroom')->middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [TypeRoomController::class, 'index'])->name('backend.type_room.index');
     Route::get('/create', [TypeRoomController::class, 'create'])->name('backend.type_room.create');
@@ -273,18 +274,18 @@ Route::middleware(['auth', 'role:ppp'])->group(function () {
      
     // Password Change Routes
     Route::get('ppp.change-password', [PPPController::class, 'changePassword'])->name('ppp.change-password.form');
-    Route::post('ppp/change-password/update', [PPPController::class, 'changePasswordStore'])->name('ppp.change-password.store'); 
+    Route::post('ppp/change-password/update', [PPPController::class, 'changePasswordStore'])->name('ppp.change-password.store');
     // Electronic Routes
-    Route::resource('/ppp/electronic', ElectronicPPPController::class); 
+    Route::resource('/ppp/electronic', ElectronicPPPController::class);
     // Furniture Routes
-    Route::resource('/ppp/furniture', FurniturePPPController::class); 
+    Route::resource('/ppp/furniture', FurniturePPPController::class);
     // Room Routes
     Route::resource('/ppp/room', RoomPPPController::class);
     //maintenance
     Route::resource('/ppp/maintenance', MaintenancePPPController::class);
 });
 
-//admin section 
+//admin section
 Route::middleware(['auth', 'role:admin'])->group(function () {
     // Dashboard and index
     Route::get('/admin', [AdminController::class, 'index'])->name('backend.index');
@@ -304,7 +305,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     // User Management Routes
     Route::resource('users', UsersController::class);
 
-    //department 
+    //department
     Route::resource('department', DepartmentController::class);
 
     //Faculty_office routers
@@ -382,7 +383,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
 });
 
 
-// Booking form and filters home page 
+// Booking form and filters home pagr
 Route::get('/booking-filter', [BookingController::class, 'showFilterForm'])->name('booking.filter.form');
 Route::post('/filter-available-rooms', [BookingController::class, 'filterAvailableRooms'])->name('filter.available.rooms')->middleware('auth');
 
@@ -391,20 +392,33 @@ Route::post('/filter-available-rooms', [BookingController::class, 'filterAvailab
 Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])->name('room.reserve');
 Route::post('/room.reserve/{id} ', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
 // calander booking home page
-Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');  
+Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');
 Route::get('/calendarAdmin', [BookingController::class, 'calendarAdmin'])->name('show.calendar.admin');
 //My Booking
 Route::get('/my-bookings', [BookingController::class, 'myBookings'])->name('my.bookings');
-// cancel booking 
+// cancel booking
 Route::delete('/cancel-booking/{id}', [BookingController::class, 'cancelBooking'])->name('cancel.booking');
-//edit 
+//edit
 Route::get('booking/{id}/edit', [BookingController::class, 'Formedit'])->name('booking.edit');
 Route::put('booking/{id}', [BookingController::class, 'Formupdate'])->name('booking.update');
 
 // email ( not uses)
 Route::get('/emails/send/{booking}', [EmailController::class, 'sendBookingEmail'])->name('emails.send');
+Route::get('/emails/send-reservation/{reservation}', [EmailController::class, 'sendReservationEmail'])->name('emails.reservation');
 
+// Add this to your routes/web.php file
 
+// Admin routes (protected by admin middleware)
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Existing reservation routes
+    Route::get('reservations', [AdminReservationController::class, 'index'])->name('reservations.index');
+    Route::get('reservations/{id}', [AdminReservationController::class, 'show'])->name('reservations.show');
+    
+    // New status update route
+    Route::patch('reservations/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.updateStatus');
+    
+});
 //Feedback Routes
 
 
