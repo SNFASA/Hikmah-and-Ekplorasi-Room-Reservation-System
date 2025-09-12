@@ -43,8 +43,7 @@ class FasilitesReservation extends Model
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
+        // Remove the problematic time casts - let them remain as strings
         'declaration_accepted' => 'boolean',
         'admin_updated_at' => 'datetime',
     ];
@@ -54,8 +53,8 @@ class FasilitesReservation extends Model
     {
         return $this->belongsTo(List_Student_Booking::class, 'created_by_matric_no', 'id');
     }
-
-    public function staffMember()
+    
+    public function listStudentBooking()
     {
         return $this->belongsTo(List_Student_Booking::class, 'staff_id_matric_no', 'id');
     }
@@ -109,12 +108,34 @@ class FasilitesReservation extends Model
         return $badges[$this->status] ?? '<span class="badge badge-light">Unknown</span>';
     }
 
-    // Get duration in hours
+    // Fixed duration calculation
     public function getDurationHoursAttribute()
     {
-        $start = \Carbon\Carbon::parse($this->start_date . ' ' . $this->start_time);
-        $end = \Carbon\Carbon::parse($this->end_date . ' ' . $this->end_time);
-        return $start->diffInHours($end);
+        try {
+            // Parse date and time separately, then combine
+            $startDate = \Carbon\Carbon::parse($this->start_date);
+            $endDate = \Carbon\Carbon::parse($this->end_date);
+            
+            // Parse just the time part (H:i format)
+            $startTime = \Carbon\Carbon::createFromFormat('H:i:s', $this->start_time);
+            $endTime = \Carbon\Carbon::createFromFormat('H:i:s', $this->end_time);
+            
+            // Combine date and time
+            $start = $startDate->setTimeFrom($startTime);
+            $end = $endDate->setTimeFrom($endTime);
+            
+            return $start->diffInHours($end);
+        } catch (\Exception $e) {
+            // Fallback: try alternative parsing
+            try {
+                $start = \Carbon\Carbon::parse($this->start_date . ' ' . $this->start_time);
+                $end = \Carbon\Carbon::parse($this->end_date . ' ' . $this->end_time);
+                return $start->diffInHours($end);
+            } catch (\Exception $e2) {
+                \Log::error('Failed to calculate duration for reservation ' . $this->id . ': ' . $e2->getMessage());
+                return 0; // Default fallback
+            }
+        }
     }
 
     // Scope for filtering by status

@@ -7,6 +7,8 @@
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script type="module" src="{{ mix('/js/app.js') }}"></script>
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+    <script src="{{ asset('js/notifications.js') }}" defer></script>
     <title>LibraRoom Reservation System|| DASHBOARD</title>
   
     <!-- Custom fonts for this template-->
@@ -28,4 +30,8 @@
     <script>
         window.userId = "{{ Auth::id() }}";
     </script>
+    <script>
+        window.authUser = @json(auth()->user());
+    </script>
+
 </head>

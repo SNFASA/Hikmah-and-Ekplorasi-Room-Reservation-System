@@ -15,20 +15,12 @@
                 <p class="subtitle">Stay updated with all your notifications</p>
             </div>
             <div class="header-actions mt-3 mt-lg-0">
-                @if(count(Auth::user()->Notifications) > 0)
+                @if($notifications->count() > 0)
                     <form method="POST" action="{{ route('notification.mark-all-read') }}" class="d-inline me-2">
                         @csrf
                         <button type="submit" class="btn btn-outline-success">
                             <i class="fas fa-check-double me-2"></i>
                             <span>Mark All Read</span>
-                        </button>
-                    </form>
-                    <form method="POST" action="{{ route('notification.clear-all') }}" class="d-inline">
-                        @csrf
-                        @method('delete')
-                        <button type="button" class="btn btn-outline-danger clearAllBtn">
-                            <i class="fas fa-trash-alt me-2"></i>
-                            <span>Clear All</span>
                         </button>
                     </form>
                 @endif
@@ -39,7 +31,7 @@
     <!-- Main Card with Modern Design -->
     <div class="modern-card">
         <div class="card-body p-0">
-            @if(count(Auth::user()->Notifications) > 0)
+            @if($notifications->count() > 0)
                 <!-- Search and Filter Section -->
                 <div class="search-section p-4 border-bottom">
                     <div class="row align-items-center">
@@ -51,17 +43,34 @@
                         </div>
                         <div class="col-md-6 text-md-end mt-3 mt-md-0">
                             <div class="stats-info">
+                                @php
+                                    $totalNotifications = Auth::user()->notifications()
+                                        ->where(function($query) {
+                                            $query->whereNull('data->is_deleted')
+                                                  ->orWhere('data->is_deleted', '!=', true);
+                                        })
+                                        ->count();
+                                    
+                                    $unreadNotifications = Auth::user()->unreadNotifications()
+                                        ->where(function($query) {
+                                            $query->whereNull('data->is_deleted')
+                                                  ->orWhere('data->is_deleted', '!=', true);
+                                        })
+                                        ->count();
+                                    
+                                    $readNotifications = $totalNotifications - $unreadNotifications;
+                                @endphp
                                 <span class="badge badge-info">
                                     <i class="fas fa-bell me-1"></i>
-                                    {{count(Auth::user()->Notifications)}} Total
+                                    {{ $totalNotifications }} Total
                                 </span>
                                 <span class="badge badge-warning ms-2">
                                     <i class="fas fa-envelope me-1"></i>
-                                    {{Auth::user()->unreadNotifications->count()}} Unread
+                                    {{ $unreadNotifications }} Unread
                                 </span>
                                 <span class="badge badge-success ms-2">
                                     <i class="fas fa-envelope-open me-1"></i>
-                                    {{Auth::user()->readNotifications->count()}} Read
+                                    {{ $readNotifications }} Read
                                 </span>
                             </div>
                         </div>
@@ -91,7 +100,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (Auth::user()->Notifications as $notification)
+                                @foreach ($notifications as $notification)
                                 <tr class="table-row notification-row {{ $notification->unread() ? 'unread-notification' : 'read-notification' }}"
                                     data-id="{{$notification->id}}">
                                     <td class="id-cell">
@@ -149,7 +158,7 @@
                                                 </form>
                                             @endif
                                             <form method="POST" action="{{ route('notification.delete', $notification->id) }}" class="d-inline">
-                                                @csrf 
+                                                @csrf
                                                 @method('delete')
                                                 <button type="button"
                                                         class="action-btn delete-btn dltBtn"
@@ -170,7 +179,7 @@
                 </div>
 
                 <!-- Enhanced Pagination -->
-                @if(method_exists($notifications ?? collect(), 'links'))
+                @if(method_exists($notifications, 'links'))
                 <div class="pagination-section p-4 border-top">
                     <div class="row align-items-center">
                         <div class="col-md-6">

@@ -556,123 +556,128 @@ public function showBookingForm($id, Request $request){
  * 
  * @throws \Illuminate\Validation\ValidationException If the validation fails.
  */
-    public function storeBookingForm(Request $request)
-    {
-        $request->validate([
-            'booking_date' => 'required|date',
-            'booking_time_start' => 'required|date_format:H:i',
-            'booking_time_end' => 'required|date_format:H:i|after:booking_time_start',
-            'purpose' => 'required|string|max:255',
-            'no_room' => 'required|exists:rooms,no_room',
-            'phone_number' => 'required|string|max:15',
-            'students' => 'required|array|min:4',
-            'students.*.no_matriks' => 'required|max:255',
-            'students.*.name' => 'required|max:255',
-        ]);
+public function storeBookingForm(Request $request)
+{
+    $request->validate([
+        'booking_date' => 'required|date',
+        'booking_time_start' => 'required|date_format:H:i',
+        'booking_time_end' => 'required|date_format:H:i|after:booking_time_start',
+        'purpose' => 'required|string|max:255',
+        'no_room' => 'required|exists:rooms,no_room',
+        'phone_number' => 'required|string|max:15',
+        'students' => 'required|array|min:4',
+        'students.*.no_matriks' => 'required|max:255',
+        'students.*.name' => 'required|max:255',
+    ]);
 
-        $students = $request->input('students');
+    $students = $request->input('students');
 
-        // Create or retrieve users
-        foreach ($students as $student) {
-            User::firstOrCreate(
-                ['no_matriks' => $student['no_matriks']],
-                [
-                    'name' => $student['name'],
-                    'facultyOffice' => null,
-                    'course' => null,
-                    'email' => $student['no_matriks'] . '@student.uthm.edu.my',
-                    'password' => Hash::make($student['no_matriks']),
-                    'role' => 'user',
-                ]
-            );
-        }
-
-        // Conflict: unavailable slot
-        $conflictWithUnavailable = DB::table('schedule_booking')
-            ->where('invalid_date', $request->booking_date)
-            ->where(function ($query) use ($request) {
-                $query->where('invalid_time_start', '<', $request->booking_time_end)
-                    ->where('invalid_time_end', '>', $request->booking_time_start);
-            })
-            ->exists();
-
-        if ($conflictWithUnavailable) {
-            return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
-        }
-
-        // Conflict: already booked
-        $conflictWithBooked = DB::table('bookings')
-            ->where('no_room', $request->no_room)
-            ->where('booking_date', $request->booking_date)
-            ->where(function ($query) use ($request) {
-                $query->where('booking_time_start', '<', $request->booking_time_end)
-                    ->where('booking_time_end', '>', $request->booking_time_start);
-            })
-            ->exists();
-
-        if ($conflictWithBooked) {
-            return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
-        }
-
-        $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
-
-        $booking = Bookings::create([
-            'booking_date' => $request->booking_date,
-            'booking_time_start' => $request->booking_time_start,
-            'booking_time_end' => $request->booking_time_end,
-            'duration' => $duration,
-            'purpose' => $request->purpose,
-            'no_room' => $request->no_room,
-            'phone_number' => $request->phone_number,
-            'status' => 'approved',
-        ]);
-
-        // Attach students to booking
-        $this->attachStudentsToBooking($booking, $students);
-
-        // Fetch users
-        $bookingUsers = DB::table('booking_user')
-            ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
-            ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
-            ->where('booking_user.booking_id', $booking->id)
-            ->select('users.name', 'users.email', 'users.no_matriks')
-            ->get();
-
-        // Furniture & electronics
-        $furnitures = DB::table('furniture_room')
-            ->join('furniture', 'furniture_room.furniture_id', '=', 'furniture.no_furniture')
-            ->where('furniture_room.room_id', $booking->no_room)
-            ->pluck('furniture.name')
-            ->toArray();
-
-        $electronics = DB::table('electronic_equipment_room')
-            ->join('electronic_equipment', 'electronic_equipment_room.electronic_equipment_id', '=', 'electronic_equipment.no_electronicEquipment')
-            ->where('electronic_equipment_room.room_id', $booking->no_room)
-            ->pluck('electronic_equipment.name')
-            ->toArray();
-
-        $durationHours = $duration;
-
-        // Dispatch queued emails
-        foreach ($bookingUsers as $user) {
-            if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                dispatch(new SendBookingReminderMail(
-                    $user,
-                    $booking,
-                    $bookingUsers,
-                    $furnitures,
-                    $electronics,
-                    $durationHours
-                ));
-            } else {
-                \Log::warning("Invalid or missing email for user: " . json_encode($user));
-            }
-        }
-        $admins = User::where('role', 'admin')->get();
-        Notification::send($admins, new NewBookingNotification($booking));
-
-        return redirect()->route('home')->with('success', 'Booking created successfully.');
+    // Create or retrieve users
+    foreach ($students as $student) {
+        User::firstOrCreate(
+            ['no_matriks' => $student['no_matriks']],
+            [
+                'name' => $student['name'],
+                'facultyOffice' => null,
+                'course' => null,
+                'email' => $student['no_matriks'] . '@student.uthm.edu.my',
+                'password' => Hash::make($student['no_matriks']),
+                'role' => 'user',
+            ]
+        );
     }
+
+    // Conflict: unavailable slot
+    $conflictWithUnavailable = DB::table('schedule_booking')
+        ->where('invalid_date', $request->booking_date)
+        ->where(function ($query) use ($request) {
+            $query->where('invalid_time_start', '<', $request->booking_time_end)
+                ->where('invalid_time_end', '>', $request->booking_time_start);
+        })
+        ->exists();
+
+    if ($conflictWithUnavailable) {
+        return back()->withErrors(['booking_time_start' => 'Selected time is unavailable due to schedule conflict.']);
+    }
+
+    // Conflict: already booked
+    $conflictWithBooked = DB::table('bookings')
+        ->where('no_room', $request->no_room)
+        ->where('booking_date', $request->booking_date)
+        ->where(function ($query) use ($request) {
+            $query->where('booking_time_start', '<', $request->booking_time_end)
+                ->where('booking_time_end', '>', $request->booking_time_start);
+        })
+        ->exists();
+
+    if ($conflictWithBooked) {
+        return back()->withErrors(['booking_time_start' => 'Selected time is already booked for this room.']);
+    }
+
+    $duration = $this->calculateDuration($request->booking_time_start, $request->booking_time_end);
+
+    $booking = Bookings::create([
+        'booking_date' => $request->booking_date,
+        'booking_time_start' => $request->booking_time_start,
+        'booking_time_end' => $request->booking_time_end,
+        'duration' => $duration,
+        'purpose' => $request->purpose,
+        'no_room' => $request->no_room,
+        'phone_number' => $request->phone_number,
+        'status' => 'approved',
+    ]);
+
+    // Attach students to booking
+    $this->attachStudentsToBooking($booking, $students);
+
+    // Fetch users
+    $bookingUsers = DB::table('booking_user')
+        ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+        ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
+        ->where('booking_user.booking_id', $booking->id)
+        ->select('users.name', 'users.email', 'users.no_matriks')
+        ->get();
+
+    // Furniture & electronics
+    $furnitures = DB::table('furniture_room')
+        ->join('furniture', 'furniture_room.furniture_id', '=', 'furniture.no_furniture')
+        ->where('furniture_room.room_id', $booking->no_room)
+        ->pluck('furniture.name')
+        ->toArray();
+
+    $electronics = DB::table('electronic_equipment_room')
+        ->join('electronic_equipment', 'electronic_equipment_room.electronic_equipment_id', '=', 'electronic_equipment.no_electronicEquipment')
+        ->where('electronic_equipment_room.room_id', $booking->no_room)
+        ->pluck('electronic_equipment.name')
+        ->toArray();
+
+    $durationHours = $duration;
+
+    // Dispatch queued emails to users
+    $delay = 0;
+    foreach ($bookingUsers as $user) {
+        if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+            dispatch(new SendBookingReminderMail(
+                $user,
+                $booking,
+                $bookingUsers,
+                $furnitures,
+                $electronics,
+                $durationHours
+            ))->delay(now()->addSeconds($delay));
+
+            $delay += 2; // 2 second delay between emails
+        } else {
+            \Log::warning("Invalid or missing email for user: " . json_encode($user));
+        }
+    }
+
+    // Send notifications to admins (database + real-time via Pusher)
+    $admins = User::where('role', 'admin')->get();
+    Notification::send($admins, new NewBookingNotification($booking));
+
+    return redirect()->route('home')->with('success', 'Booking created successfully.');
+}
 /**
  * Display the calendar view with events.
  *

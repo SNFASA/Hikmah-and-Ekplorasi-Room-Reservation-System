@@ -59,13 +59,26 @@
     <li class="nav-item">
         <a class="nav-link collapsed" href="#bookingCollapse" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="bookingCollapse">
             <i class="fas fa-book"></i>
-            <span>Booking</span>
+            <span>Booking Room</span>
         </a>
         <div id="bookingCollapse" class="collapse" data-parent="#accordionSidebar">
             <div class="bg-light rounded collapse-inner p-2">
                 <h6 class="collapse-header text-primary small">Booking Options:</h6>
                 <a class="collapse-item" href="{{ route('bookings.index') }}"><i class="fas fa-list me-2"></i>Booking</a>
                 <a class="collapse-item" href="{{ route('bookings.create') }}"><i class="fas fa-plus me-2"></i>Add Booking</a>
+            </div>
+        </div>
+    </li>
+        <li class="nav-item">
+        <a class="nav-link collapsed" href="#reservationCollapse" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="reservationCollapse">
+            <i class="fas fa-book"></i>
+            <span>Reservation fasilities </span>
+        </a>
+        <div id="reservationCollapse" class="collapse" data-parent="#accordionSidebar">
+            <div class="bg-light rounded collapse-inner p-2">
+                <h6 class="collapse-header text-primary small">Booking Options:</h6>
+                <a class="collapse-item" href="{{ route('backend.reservation.index') }}"><i class="fas fa-list me-2"></i>Reservation</a>
+                <a class="collapse-item" href="{{ route('backend.reservation.create') }}"><i class="fas fa-plus me-2"></i>Add Reservation</a>
             </div>
         </div>
     </li>

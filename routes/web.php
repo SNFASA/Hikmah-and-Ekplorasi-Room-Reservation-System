@@ -29,6 +29,7 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\FacultyOfficeController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AdminReservationController;
+use App\Http\Controllers\FacilitiesReservationController;
 
 
 // Authentication Routes
@@ -136,6 +137,19 @@ Route::prefix('/admin/bookings')->middleware(['auth', 'role:admin'])->group(func
     Route::get('/booking', [BookingController::class, 'roomChart'])->name('backend.booking.Chart');
     Route::post('/bookings/remove-student', [BookingController::class, 'removeStudent'])->name('bookings.remove-student');
     Route::get('bookings/chart', [BookingController::class, 'getBookingsByMonth'])->name('bookings.getBookingsByMonth');
+});
+
+//reservation facilites
+Route::prefix('/admin/reservation')->middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/', [FacilitiesReservationController::class, 'index'])->name('backend.reservation.index');
+    Route::get('/create', [FacilitiesReservationController::class, 'create'])->name('backend.reservation.create');
+    Route::post('/', [FacilitiesReservationController::class, 'store'])->name('backend.reservation.store');
+    Route::get('/{id}', [FacilitiesReservationController::class, 'show'])->name('backend.reservation.show');
+    Route::get('/{id}/edit', [FacilitiesReservationController::class, 'edit'])->name('backend.reservation.edit');
+    Route::put('/{id}', [FacilitiesReservationController::class, 'update'])->name('backend.reservation.update');
+    Route::delete('/{id}', [FacilitiesReservationController::class, 'destroy'])->name('backend.reservation.destroy');
+    Route::get('/reservation', [FacilitiesReservationController::class, 'roomChart'])->name('backend.reservationChart');
+    Route::get('reservation/chart', [FacilitiesReservationController::class, 'getreservationsByMonth'])->name('bookings.reservationsByMonth');
 });
 
 //electronic
@@ -325,27 +339,35 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('settings', [AdminController::class, 'settings'])->name('settings');
     Route::post('setting/update', [AdminController::class, 'settingsUpdate'])->name('settings.update');
     
-    // Notification Routes
-    Route::get('/notification/{id}', [NotificationController::class, 'show'])->name('notification.detail');
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('all.notification');
-    Route::delete('/notification/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
-    // View notifications list
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notification.index');
-    // Redirect to actionURL and mark as read (existing logic)
-    Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notification.show');
-    // View full detail of a single notification
-    Route::get('/notifications/{id}/detail', [NotificationController::class, 'detail'])->name('notification.detail');
-    // Mark a specific notification as read
-    Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead'])->name('notification.mark-read');
+        // Notification Routes
+    Route::middleware(['auth'])->group(function () {
+        // Main notifications index
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notification.index');
+        
+        // Get notification count for AJAX
+        Route::get('/notifications/count', [NotificationController::class, 'getCount'])->name('notification.count');
+        
+        // Show notification (redirect to actionURL and mark as read)
+        Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notification.show');
+        
+        // View full detail of a single notification
+        Route::get('/notifications/{id}/detail', [NotificationController::class, 'detail'])->name('notification.detail');
+        
+        // Mark a specific notification as read
+        Route::post('/notifications/{id}/mark-read', [NotificationController::class, 'markRead'])->name('notification.mark-read');
+        
+        // Mark all notifications as read
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notification.mark-all-read');
+        
+        // Soft-delete (hide) a specific notification
+        Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
+        
+        // Clear all notifications (set is_deleted = true)
+        Route::post('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notification.clear-all');
+    });
 
-    // Mark all notifications as read
-    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notification.mark-all-read');
-
-    // Soft-delete (hide) a specific notification
-    Route::delete('/notifications/{id}', [NotificationController::class, 'delete'])->name('notification.delete');
-
-    // Clear all notifications (set is_deleted = true)
-    Route::post('/notifications/clear-all', [NotificationController::class, 'clearAll'])->name('notification.clear-all');
+    // Add Pusher broadcasting routes
+    Broadcast::routes(['middleware' => ['auth']]);
 
 
     // Booking Routes

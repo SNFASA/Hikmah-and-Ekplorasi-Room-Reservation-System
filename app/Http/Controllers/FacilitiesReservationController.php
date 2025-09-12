@@ -1,26 +1,53 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\User;
-use App\Models\Room;
+use App\Mail\ReservationRemainder;
 use App\Models\FasilitesReservation;
-use App\Models\list_student_booking; // keep the original table/model name
+use App\Models\faculty_offices;
+use App\Models\Room;
+use  Illuminate\Support\Facades\DB;
+use App\Models\list_student_booking;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Notification;
+use App\Models\User;
+   use Illuminate\Support\Facades\Notification;
+   use App\Notifications\NewReservationNotification;
+use Illuminate\Support\Facades\Mail;
+use Carbon\Carbon;
+use App\Jobs\ReservationEmail;
+use Illuminate\Support\Facades\Hash;
 
-class ReservationController extends Controller
+class FacilitiesReservationController extends Controller
 {
-    /**
-     * Store a new reservation (multi-room capable) without auto-creating Users.
-     *
-     * Key changes:
-     * - NEVER creates a new User.
-     * - Will NOT create a new list_student_booking row if the referenced User does not exist.
-     * - Resolves the logged-in creator via list_student_booking.no_matriks; if missing, aborts.
-     * - Wraps DB writes in a transaction; sends emails/notifications after commit.
-     */
+    public function __construct()
+    {
+        $this->middleware(function ($request, $next) {
+            // Allow access if the user is either an admin, a user, or a PPP
+            if (!auth()->user() ||
+                (!auth()->user()->isAdmin() && !auth()->user()->isUser() && !auth()->user()->isPpp())) {
+                abort(403, 'Unauthorized access.');
+            }
+            return $next($request);
+        });
+    }
+    public function index()
+    {
+        $reservation = FasilitesReservation::with('room', 'listStudentBooking', 'facultyOffice')
+            ->orderBy('created_at', 'DESC') // Changed to DESC for newest first
+            ->paginate(10);
+        
+        return view('backend.reservation.index', compact('reservation'));
+    }
+    public function create()
+    {
+            $rooms = Room::all();
+            $facultie = faculty_offices::all();
+            $participant_category = ['Staff', 'VVIP', 'Public', 'Student', 'Other'];
+            $event_type = ['Physical','Online'];
+            
+            // Remove the students variable since we're using text input now
+            return view('backend.reservation.create', compact('rooms', 'facultie', 'participant_category', 'event_type'));
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -58,7 +85,7 @@ class ReservationController extends Controller
         }
 
         // -------------------------------------------------------------
-        // Resolve the logged-in creator via list_student_booking (NO auto-create)
+        // Resolve the logged-in creator via list_student_booking (AUTO-CREATE if needed)
         // -------------------------------------------------------------
         $auth = auth()->user();
         $authNoMatriks = $auth->no_matriks ?? $auth->student_id ?? null; // prefer no_matriks; fallback to student_id
@@ -68,27 +95,36 @@ class ReservationController extends Controller
                 ->with('error', 'Your account is missing a matric number (no_matriks). Please contact administrator.');
         }
 
-        $creatorLSB = list_student_booking::where('no_matriks', $authNoMatriks)->first();
-        if (!$creatorLSB) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Your account is not registered as a student in the booking list. Please contact administrator.');
-        }
+        // Ensure the logged-in user has a list_student_booking record
+        $creatorLSB = list_student_booking::firstOrCreate([
+            'no_matriks' => $authNoMatriks,
+        ]);
         $createdByMatricNo = $creatorLSB->id; // this is the FK expected by created_by_matric_no
 
         // -------------------------------------------------------------
-        // Validate the STAFF/REQUESTED matric no: MUST exist in users table
-        // If not in users, DO NOT create list_student_booking; abort.
+        // Validate the STAFF/REQUESTED matric no: Check if exists in users table
+        // If not in users, CREATE new user first, then ensure lsb row exists
         // If user exists, ensure an lsb row exists (create only then).
         // -------------------------------------------------------------
         $matricNo = trim($request->staff_id_matric_no);
         $user = User::where('no_matriks', $matricNo)->first();
+        
         if (!$user) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Matric number "' . $matricNo . '" does not exist in the system. Please contact administrator or use a valid matric number.');
+            // Create new user record first
+            $user = User::firstOrCreate(
+                ['no_matriks' => $matricNo],
+                [
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'facultyOffice' => $request->faculty_office_id,
+                    'course' => null,
+                    'password' => Hash::make($matricNo),
+                    'role' => 'user',
+                ]
+            );
         }
 
+        // Now ensure the list_student_booking record exists
         $studentBookingRecord = list_student_booking::firstOrCreate([
             'no_matriks' => $matricNo,
         ]);
@@ -117,7 +153,7 @@ class ReservationController extends Controller
                         ->whereBetween('invalid_date', [$request->start_date, $request->end_date])
                         ->where(function ($q) use ($request) {
                             $q->where('invalid_time_start', '<', $request->end_time)
-                              ->where('invalid_time_end',   '>', $request->start_time);
+                            ->where('invalid_time_end',   '>', $request->start_time);
                         })
                         ->exists();
 
@@ -132,17 +168,17 @@ class ReservationController extends Controller
                         ->whereNotIn('status', ['Rejected', 'Cancelled'])
                         ->where(function ($q) use ($request) {
                             $q->whereBetween('start_date', [$request->start_date, $request->end_date])
-                              ->orWhereBetween('end_date',   [$request->start_date, $request->end_date])
-                              ->orWhere(function ($qq) use ($request) { // enclosing case
-                                  $qq->where('start_date', '<=', $request->start_date)
-                                     ->where('end_date',   '>=', $request->end_date);
-                              })
-                              ->orWhere(function ($qq) use ($request) { // same-day time overlap
-                                  $qq->whereColumn('start_date', 'end_date')
-                                     ->where('start_date', $request->start_date)
-                                     ->where('start_time', '<', $request->end_time)
-                                     ->where('end_time',   '>', $request->start_time);
-                              });
+                            ->orWhereBetween('end_date',   [$request->start_date, $request->end_date])
+                            ->orWhere(function ($qq) use ($request) { // enclosing case
+                                $qq->where('start_date', '<=', $request->start_date)
+                                    ->where('end_date',   '>=', $request->end_date);
+                            })
+                            ->orWhere(function ($qq) use ($request) { // same-day time overlap
+                                $qq->whereColumn('start_date', 'end_date')
+                                    ->where('start_date', $request->start_date)
+                                    ->where('start_time', '<', $request->end_time)
+                                    ->where('end_time',   '>', $request->start_time);
+                            });
                         })
                         ->exists();
 
@@ -202,14 +238,20 @@ class ReservationController extends Controller
         // AFTER COMMIT: send emails & notify admins
         if (count($createdReservations) > 0) {
             $admins = User::where('role', 'admin')->get();
+            
             foreach ($createdReservations as $reservation) {
-                if (class_exists('App\\Notifications\\NewReservationNotification')) {
-                    Notification::send($admins, new \App\Notifications\NewReservationNotification($reservation));
-                }
+                // Send notification to admins (database + real-time via Pusher)
+                Notification::send($admins, new NewReservationNotification($reservation));
+                
+                // Send emails to reservation users
                 if (class_exists('App\\Http\\Controllers\\EmailController')) {
                     $emailController = new \App\Http\Controllers\EmailController();
                     if (method_exists($emailController, 'sendReservationEmail')) {
-                        $emailController->sendReservationEmail($reservation->id);
+                        try {
+                            $emailController->sendReservationEmailViaQueue($reservation->id);
+                        } catch (\Exception $e) {
+                            \Log::error('Failed to send reservation email: ' . $e->getMessage());
+                        }
                     }
                 }
             }
@@ -228,5 +270,93 @@ class ReservationController extends Controller
 
         $baseMessage = "No reservations could be created. All selected rooms have conflicts: " . implode(', ', $conflictRooms);
         return redirect()->route('backend.reservation.create')->withInput()->with('error', $baseMessage);
+    }
+    /**
+     * Handle file upload and return file data
+     */
+    private function handleFileUpload($file)
+    {
+        if (!$file) {
+            throw new \Exception('No file uploaded');
+        }
+
+        // Generate unique filename
+        $originalName = $file->getClientOriginalName();
+        $extension = $file->getClientOriginalExtension();
+        $fileName = time() . '_' . uniqid() . '.' . $extension;
+        
+        // Store file in public/uploads/reservations directory
+        $filePath = $file->storeAs('public/reservations', $fileName);
+        
+        // Get file size and mime type
+        $fileSize = $file->getSize();
+        $mimeType = $file->getMimeType();
+        
+        return [
+            'path' => $filePath,
+            'original_name' => $originalName,
+            'size' => $fileSize,
+            'type' => $mimeType,
+            'name' => $fileName
+        ];
+    }
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:pending,approved,rejected,cancelled',
+            'admin_comment' => 'nullable|string|max:1000',
+        ]);
+
+        $reservation = FasilitesReservation::findOrFail($id);
+        
+        // Store old status for comparison
+        $oldStatus = $reservation->status;
+        
+        // Update reservation status and admin comment
+        $reservation->update([
+            'status' => $request->status,
+            'admin_comment' => $request->admin_comment,
+            'admin_updated_by' => auth()->id(),
+            'admin_updated_at' => now(),
+        ]);
+
+        // Send status update email only if status actually changed
+        if ($oldStatus !== $request->status) {
+            $emailController = new \App\Http\Controllers\EmailController();
+            $emailController->sendReservationStatusUpdateEmail($reservation->id);
+        }
+
+        return redirect()->back()
+            ->with('success', 'Reservation status updated successfully and notification email sent.');
+    }
+    public function show($id) {
+        $reservation = FasilitesReservation::with([
+            'room.furnitures',
+            'room.electronics',
+            'room.type',
+            'createdBy.user',
+            'listStudentBooking.user',
+            'facultyOffice'
+        ])->findOrFail($id);
+        
+        return view('backend.reservation.show', compact('reservation'));
+    }
+    public function edit($id){
+        $reservation = FasilitesReservation::findOrFail($id);
+        $rooms = Room::all();
+        $faculties = faculty_offices::all();
+        $students = list_student_booking::all();
+        return view('backend.reservation.edit', compact('reservation', 'rooms', 'faculties', 'students'));
+    }
+    public function update(Request $request, $id)
+    {
+        // Logic to update the specified facility reservation
+    }
+    public function destroy($id)
+    {
+        // Logic to delete the specified facility reservation
+        $reservation = FasilitesReservation::findOrFail($id);
+        $reservation->delete();
+        return redirect()->route('backend.reservation.index')->with('success', 'Reservation deleted successfully.');
     }
 }
