@@ -1,232 +1,280 @@
-<?php
-
-namespace App\Http\Controllers;
-
-use App\Models\User;
-use App\Models\Room;
-use App\Models\FasilitesReservation;
-use App\Models\list_student_booking; // keep the original table/model name
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Notification;
-
-class ReservationController extends Controller
-{
-    /**
-     * Store a new reservation (multi-room capable) without auto-creating Users.
-     *
-     * Key changes:
-     * - NEVER creates a new User.
-     * - Will NOT create a new list_student_booking row if the referenced User does not exist.
-     * - Resolves the logged-in creator via list_student_booking.no_matriks; if missing, aborts.
-     * - Wraps DB writes in a transaction; sends emails/notifications after commit.
-     */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'name' => 'required|string|max:255',
-            'staff_id_matric_no' => 'required|string|max:255',
-            'faculty_office_id' => 'required|exists:faculty_offices,no_facultyOffice',
-            'contact_no' => 'required|string|max:255',
-            'room_selections' => 'required|array|min:1',
-            'room_selections.*.room_id' => 'required|string',
-            'room_selections.*.other_room_description' => 'required_if:room_selections.*.room_id,other|nullable|string|max:255',
-            'purpose_program_name' => 'required|string|max:255',
-            'start_date' => 'required|date|after_or_equal:' . now()->addDays(3)->format('Y-m-d'),
-            'start_time' => 'required|date_format:H:i',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'end_time' => 'required|date_format:H:i',
-            'no_of_participants' => 'required|integer|min:1',
-            'participant_category' => 'required|in:Staff,VVIP,Public,Student,Other',
-            'other_participant_category' => 'required_if:participant_category,Other|nullable|string|max:255',
-            'event_type' => 'required|in:Physical,Online',
-            'document_file' => 'required|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
-            'declaration_accepted' => 'required|accepted',
-            'status' => 'required|in:Pending,Approved,Rejected',
-        ]);
-
-        // Custom validation for room selections with "other" option
-        foreach ($request->room_selections as $index => $roomSelection) {
-            if ($roomSelection['room_id'] === 'other') {
-                if (empty($roomSelection['other_room_description']) || trim($roomSelection['other_room_description']) === '') {
-                    return redirect()->back()
-                        ->withInput()
-                        ->with('error', 'Please specify the room name for "Other" selection in Room #' . ($index + 1));
+<!-- Enhanced File Preview Container with Fixed Display Issues -->
+<div class="file-preview-container d-none" id="filePreviewContainer" 
+     style="height: 600px; border: 2px solid #e9ecef; border-radius: 12px; overflow: hidden; background: #ffffff;">
+    @php
+        $fileExtension = strtolower(pathinfo($reservation->file_original_name, PATHINFO_EXTENSION));
+        $fileUrl = Storage::url($reservation->file_path);
+    @endphp
+    
+    @if(in_array($fileExtension, ['pdf']))
+        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
+            <span class="small text-muted"><i class="fas fa-file-pdf me-1 text-danger"></i>PDF Document</span>
+            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-external-link-alt me-1"></i>Open in New Tab
+            </a>
+        </div>
+        <iframe src="{{ $fileUrl }}" 
+                style="width: 100%; height: calc(100% - 45px); border: none; background: #ffffff;" 
+                title="PDF Document Preview">
+            <p class="p-4 text-center">Your browser does not support PDF preview. 
+            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-primary">Click here to view the document</a>
+            </p>
+        </iframe>
+    @elseif(in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
+            <span class="small text-muted"><i class="fas fa-image me-1 text-primary"></i>Image File</span>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleImageZoom(this)">
+                    <i class="fas fa-search-plus me-1"></i>Zoom
+                </button>
+                <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-external-link-alt me-1"></i>Full Size
+                </a>
+            </div>
+        </div>
+        <div class="image-preview-container text-center p-3 h-100 d-flex align-items-center justify-content-center" 
+             style="overflow: auto; background: #ffffff;">
+            <img src="{{ $fileUrl }}" 
+                alt="Document Preview" 
+                class="img-fluid shadow rounded image-preview-content" 
+                id="previewImage"
+                style="max-height: calc(100% - 20px); max-width: calc(100% - 20px); object-fit: contain; cursor: zoom-in;"
+                onclick="toggleImageZoom(this)">
+        </div>
+    @elseif(in_array($fileExtension, ['txt', 'md']))
+        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
+            <span class="small text-muted"><i class="fas fa-file-alt me-1 text-info"></i>Text Document</span>
+            <span class="small text-muted">Read-only preview</span>
+        </div>
+        <div class="p-4 h-100" style="overflow-y: auto; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.5; white-space: pre-wrap; background: #ffffff;">
+            @php
+                try {
+                    $content = Storage::get($reservation->file_path);
+                    echo htmlspecialchars($content);
+                } catch (Exception $e) {
+                    echo "Unable to preview this file. Please download to view the contents.";
                 }
-            }
-        }
+            @endphp
+        </div>
+    @elseif(in_array($fileExtension, ['doc', 'docx']))
+        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
+            <span class="small text-muted"><i class="fas fa-file-word me-1 text-primary"></i>Word Document</span>
+            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="fas fa-external-link-alt me-1"></i>Open in New Tab
+            </a>
+        </div>
+        <div class="document-preview-container h-100" style="background: #ffffff;">
+            <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ urlencode(url($fileUrl)) }}" 
+                    style="width: 100%; height: calc(100% - 45px); border: none; background: #ffffff;" 
+                    title="Word Document Preview">
+                <div class="d-flex align-items-center justify-content-center h-100 text-center">
+                    <div class="p-4">
+                        <i class="fas fa-file-word fa-5x text-primary mb-4"></i>
+                        <h5 class="text-muted mb-3">Word Document Preview</h5>
+                        <p class="text-muted mb-4">This Word document cannot be previewed inline.<br>
+                        Please download the file to view its contents.</p>
+                        <a href="{{ $fileUrl }}" download="{{ $reservation->file_original_name }}" 
+                           class="btn btn-primary btn-lg">
+                            <i class="fas fa-download me-2"></i>
+                            Download Document
+                        </a>
+                    </div>
+                </div>
+            </iframe>
+        </div>
+    @else
+        <div class="d-flex align-items-center justify-content-center h-100 text-center" style="background: #ffffff;">
+            <div class="p-4">
+                <i class="fas fa-file-alt fa-5x text-muted mb-4"></i>
+                <h5 class="text-muted mb-3">Preview Not Available</h5>
+                <p class="text-muted mb-4">This file type ({{ strtoupper($fileExtension) }}) cannot be previewed inline.<br>
+                Please download the file to view its contents.</p>
+                <a href="{{ $fileUrl }}" download="{{ $reservation->file_original_name }}" 
+                   class="btn btn-primary btn-lg">
+                    <i class="fas fa-download me-2"></i>
+                    Download File
+                </a>
+            </div>
+        </div>
+    @endif
+</div>
 
-        // -------------------------------------------------------------
-        // Resolve the logged-in creator via list_student_booking (NO auto-create)
-        // -------------------------------------------------------------
-        $auth = auth()->user();
-        $authNoMatriks = $auth->no_matriks ?? $auth->student_id ?? null; // prefer no_matriks; fallback to student_id
-        if (!$authNoMatriks) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Your account is missing a matric number (no_matriks). Please contact administrator.');
-        }
+<style>
+/* Enhanced File Preview Styling */
+.file-preview-container {
+    transition: all 0.3s ease;
+    background: #ffffff !important;
+}
 
-        $creatorLSB = list_student_booking::where('no_matriks', $authNoMatriks)->first();
-        if (!$creatorLSB) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Your account is not registered as a student in the booking list. Please contact administrator.');
-        }
-        $createdByMatricNo = $creatorLSB->id; // this is the FK expected by created_by_matric_no
+.file-preview-container.show {
+    animation: slideDown 0.3s ease;
+}
 
-        // -------------------------------------------------------------
-        // Validate the STAFF/REQUESTED matric no: MUST exist in users table
-        // If not in users, DO NOT create list_student_booking; abort.
-        // If user exists, ensure an lsb row exists (create only then).
-        // -------------------------------------------------------------
-        $matricNo = trim($request->staff_id_matric_no);
-        $user = User::where('no_matriks', $matricNo)->first();
-        if (!$user) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Matric number "' . $matricNo . '" does not exist in the system. Please contact administrator or use a valid matric number.');
-        }
-
-        $studentBookingRecord = list_student_booking::firstOrCreate([
-            'no_matriks' => $matricNo,
-        ]);
-        $staffIdMatricNoId = $studentBookingRecord->id; // this is the FK expected by staff_id_matric_no
-
-        // Basic time sanity when same date
-        if ($request->start_date === $request->end_date && $request->start_time >= $request->end_time) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'End time must be after start time when booking for the same date.');
-        }
-
-        $createdReservations = [];
-        $conflictRooms = [];
-
-        DB::beginTransaction();
-        try {
-            foreach ($request->room_selections as $roomSelection) {
-                $roomId = $roomSelection['room_id'];
-                $otherDescription = $roomSelection['other_room_description'] ?? null;
-
-                if ($roomId !== 'other') {
-                    // Conflict with UNAVAILABLE schedule (time overlap)
-                    $conflictWithUnavailable = DB::table('schedule_booking')
-                        ->where('roomid', $roomId)
-                        ->whereBetween('invalid_date', [$request->start_date, $request->end_date])
-                        ->where(function ($q) use ($request) {
-                            $q->where('invalid_time_start', '<', $request->end_time)
-                              ->where('invalid_time_end',   '>', $request->start_time);
-                        })
-                        ->exists();
-
-                    if ($conflictWithUnavailable) {
-                        $room = Room::where('no_room', $roomId)->first();
-                        $conflictRooms[] = $room->name ?? ("Room ID: $roomId");
-                        continue;
-                    }
-
-                    // Conflict with EXISTING reservations (date and time windows)
-                    $conflictWithReservations = FasilitesReservation::where('room_id', $roomId)
-                        ->whereNotIn('status', ['Rejected', 'Cancelled'])
-                        ->where(function ($q) use ($request) {
-                            $q->whereBetween('start_date', [$request->start_date, $request->end_date])
-                              ->orWhereBetween('end_date',   [$request->start_date, $request->end_date])
-                              ->orWhere(function ($qq) use ($request) { // enclosing case
-                                  $qq->where('start_date', '<=', $request->start_date)
-                                     ->where('end_date',   '>=', $request->end_date);
-                              })
-                              ->orWhere(function ($qq) use ($request) { // same-day time overlap
-                                  $qq->whereColumn('start_date', 'end_date')
-                                     ->where('start_date', $request->start_date)
-                                     ->where('start_time', '<', $request->end_time)
-                                     ->where('end_time',   '>', $request->start_time);
-                              });
-                        })
-                        ->exists();
-
-                    if ($conflictWithReservations) {
-                        $room = Room::where('no_room', $roomId)->first();
-                        $conflictRooms[] = $room->name ?? ("Room ID: $roomId");
-                        continue;
-                    }
-                }
-
-                // Handle file upload (kept as your existing helper)
-                $fileData = $this->handleFileUpload($request->file('document_file'));
-
-                // Create the reservation
-                $reservation = FasilitesReservation::create([
-                    'created_by_matric_no' => $createdByMatricNo, // FK to list_student_booking.id
-                    'email' => $request->email,
-                    'name' => $request->name,
-                    'staff_id_matric_no' => $staffIdMatricNoId,   // FK to list_student_booking.id of staff/request owner
-                    'faculty_office_id' => $request->faculty_office_id,
-                    'contact_no' => $request->contact_no,
-                    'room_id' => $roomId === 'other' ? null : $roomId,
-                    'other_room_description' => $roomId === 'other' ? $otherDescription : null,
-                    'purpose_program_name' => $request->purpose_program_name,
-                    'start_date' => $request->start_date,
-                    'start_time' => $request->start_time,
-                    'end_date' => $request->end_date,
-                    'end_time' => $request->end_time,
-                    'no_of_participants' => $request->no_of_participants,
-                    'participant_category' => $request->participant_category,
-                    'other_participant_category' => $request->other_participant_category,
-                    'event_type' => $request->event_type,
-                    'file_path' => $fileData['path'],
-                    'file_original_name' => $fileData['original_name'],
-                    'file_size' => $fileData['size'],
-                    'file_type' => $fileData['type'],
-                    'declaration_accepted' => $request->boolean('declaration_accepted') ? 1 : 0,
-                    'status' => $request->status,
-                ]);
-
-                $createdReservations[] = $reservation;
-
-                // Attach student to reservation if your controller provides it
-                if (method_exists($this, 'attachStudentToReservation')) {
-                    $this->attachStudentToReservation($reservation, $createdByMatricNo, $staffIdMatricNoId);
-                }
-            }
-
-            DB::commit();
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Failed to create reservation(s). ' . $e->getMessage());
-        }
-
-        // AFTER COMMIT: send emails & notify admins
-        if (count($createdReservations) > 0) {
-            $admins = User::where('role', 'admin')->get();
-            foreach ($createdReservations as $reservation) {
-                if (class_exists('App\\Notifications\\NewReservationNotification')) {
-                    Notification::send($admins, new \App\Notifications\NewReservationNotification($reservation));
-                }
-                if (class_exists('App\\Http\\Controllers\\EmailController')) {
-                    $emailController = new \App\Http\Controllers\EmailController();
-                    if (method_exists($emailController, 'sendReservationEmail')) {
-                        $emailController->sendReservationEmail($reservation->id);
-                    }
-                }
-            }
-        }
-
-        // Build response message
-        $successCount = count($createdReservations);
-        $conflictCount = count($conflictRooms);
-        if ($successCount > 0 && $conflictCount > 0) {
-            $baseMessage = "Successfully created {$successCount} reservation(s). However, {$conflictCount} room(s) could not be reserved due to conflicts: " . implode(', ', $conflictRooms);
-            return redirect()->route('backend.reservation.index')->with('warning', $baseMessage);
-        } elseif ($successCount > 0) {
-            $baseMessage = $successCount === 1 ? 'Reservation created successfully.' : "Successfully created {$successCount} reservations.";
-            return redirect()->route('backend.reservation.index')->with('success', $baseMessage);
-        }
-
-        $baseMessage = "No reservations could be created. All selected rooms have conflicts: " . implode(', ', $conflictRooms);
-        return redirect()->route('backend.reservation.create')->withInput()->with('error', $baseMessage);
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        background: #ffffff;
+    }
+    to {
+        opacity: 1;
+        max-height: 600px;
+        background: #ffffff;
     }
 }
+
+/* Image Preview Enhancements */
+.image-preview-container {
+    background: #ffffff !important;
+}
+
+.image-preview-content {
+    transition: all 0.3s ease;
+}
+
+.image-preview-content.zoomed {
+    max-height: none !important;
+    max-width: none !important;
+    height: auto;
+    width: auto;
+    cursor: zoom-out;
+}
+
+.image-preview-container.zoomed {
+    overflow: auto;
+    cursor: grab;
+}
+
+.image-preview-container.zoomed:active {
+    cursor: grabbing;
+}
+
+/* PDF Preview Enhancements */
+iframe {
+    background: #ffffff !important;
+}
+
+/* Document Preview Container */
+.document-preview-container {
+    background: #ffffff !important;
+}
+</style>
+
+<script>
+// Enhanced Image Zoom Functionality
+function toggleImageZoom(element) {
+    const img = document.getElementById('previewImage');
+    const container = img.closest('.image-preview-container');
+    
+    if (img.classList.contains('zoomed')) {
+        // Zoom out
+        img.classList.remove('zoomed');
+        container.classList.remove('zoomed');
+        img.style.cursor = 'zoom-in';
+        
+        // Reset scroll position
+        container.scrollTop = 0;
+        container.scrollLeft = 0;
+        
+        // Update button text
+        const button = container.parentElement.querySelector('button');
+        if (button) {
+            button.innerHTML = '<i class="fas fa-search-plus me-1"></i>Zoom';
+        }
+    } else {
+        // Zoom in
+        img.classList.add('zoomed');
+        container.classList.add('zoomed');
+        img.style.cursor = 'zoom-out';
+        
+        // Update button text
+        const button = container.parentElement.querySelector('button');
+        if (button) {
+            button.innerHTML = '<i class="fas fa-search-minus me-1"></i>Zoom Out';
+        }
+    }
+}
+
+// Enhanced File Preview Toggle with White Background
+window.togglePreview = function() {
+    const container = $('#filePreviewContainer');
+    const toggleText = $('#previewToggleText');
+    
+    if (container.hasClass('d-none')) {
+        // Show preview with white background
+        container.removeClass('d-none').addClass('show');
+        container.css('background', '#ffffff');
+        toggleText.text('Hide Preview');
+        
+        // Ensure all child elements have white background
+        container.find('iframe, .image-preview-container, .document-preview-container').css('background', '#ffffff');
+        
+        showNotification('Document preview opened', 'info');
+        
+        // Scroll to preview container
+        $('html, body').animate({
+            scrollTop: container.offset().top - 20
+        }, 500);
+    } else {
+        // Hide preview
+        container.addClass('d-none').removeClass('show');
+        toggleText.text('Show Preview');
+    }
+};
+
+// Auto-resize iframe content for better fit
+$(document).ready(function() {
+    // Wait for iframe to load
+    $('iframe').on('load', function() {
+        try {
+            // Ensure iframe fills the container properly
+            $(this).css({
+                'width': '100%',
+                'height': 'calc(100% - 45px)',
+                'background': '#ffffff'
+            });
+        } catch (e) {
+            console.log('Cross-origin iframe content - cannot access');
+        }
+    });
+    
+    // Handle image loading for proper sizing
+    $('.image-preview-content').on('load', function() {
+        const img = $(this);
+        const container = img.closest('.image-preview-container');
+        
+        // Calculate optimal size to fill container while maintaining aspect ratio
+        const containerWidth = container.width() - 40; // 20px padding each side
+        const containerHeight = container.height() - 40; // 20px padding top/bottom
+        
+        const imgWidth = this.naturalWidth;
+        const imgHeight = this.naturalHeight;
+        
+        const aspectRatio = imgWidth / imgHeight;
+        const containerAspectRatio = containerWidth / containerHeight;
+        
+        if (aspectRatio > containerAspectRatio) {
+            // Image is wider - fit to width
+            img.css({
+                'max-width': containerWidth + 'px',
+                'max-height': 'none',
+                'height': 'auto'
+            });
+        } else {
+            // Image is taller - fit to height
+            img.css({
+                'max-height': containerHeight + 'px',
+                'max-width': 'none',
+                'width': 'auto'
+            });
+        }
+    });
+    
+    // Handle window resize
+    $(window).on('resize', function() {
+        if (!$('#filePreviewContainer').hasClass('d-none')) {
+            $('.image-preview-content').trigger('load');
+        }
+    });
+});
+</script>

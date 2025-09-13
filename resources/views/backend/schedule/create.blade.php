@@ -226,7 +226,7 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="form-actions">
+                        <div class="row">
                             <div class="card border-0 bg-white shadow-sm rounded-3">
                                 <div class="card-body p-4">
                                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">

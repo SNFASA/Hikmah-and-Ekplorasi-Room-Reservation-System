@@ -85,17 +85,59 @@ class EmailController extends Controller
     public function sendReservationStatusUpdateEmail($reservationId)
     {
         try {
-            $reservation = FasilitesReservation::findOrFail($reservationId);
+            $reservation = FasilitesReservation::with(['createdBy.user', 'listStudentBooking.user'])->findOrFail($reservationId);
+            \Log::info('Starting to send reservation status update email for reservation ID: ' . $reservationId);
             
             // Get common data
             $data = $this->getReservationEmailData($reservation);
             
-            // Send status update email to each user
-            foreach ($data['reservationUsers'] as $user) {
-                if ($user && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                    Mail::to($user->email)->send(
+            $emailsSent = 0;
+            $emailsFailed = 0;
+            
+            // Get unique email addresses to send to
+            $emailAddresses = collect();
+            
+            // 1. Add creator email (person who created the reservation)
+            $createdByUser = DB::table('list_student_booking')
+                ->join('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
+                ->where('list_student_booking.id', $reservation->created_by_matric_no)
+                ->select('users.name', 'users.email', 'users.no_matriks')
+                ->first();
+            
+            if ($createdByUser && filter_var($createdByUser->email, FILTER_VALIDATE_EMAIL)) {
+                $emailAddresses->push([
+                    'name' => $createdByUser->name,
+                    'email' => $createdByUser->email,
+                    'type' => 'creator'
+                ]);
+            }
+            
+            // 2. Add reservation contact email if different
+            if ($reservation->email && filter_var($reservation->email, FILTER_VALIDATE_EMAIL)) {
+                // Only add if it's different from creator email
+                if (!$emailAddresses->pluck('email')->contains($reservation->email)) {
+                    $emailAddresses->push([
+                        'name' => $reservation->name,
+                        'email' => $reservation->email,
+                        'type' => 'contact'
+                    ]);
+                }
+            }
+            
+            \Log::info('Found ' . $emailAddresses->count() . ' unique email addresses for status update');
+            
+            // Send emails to each recipient with delay to avoid rate limiting
+            foreach ($emailAddresses as $index => $recipient) {
+                try {
+                    // Add delay between emails to avoid rate limiting (except for first email)
+                    if ($index > 0) {
+                        sleep(3); // Wait 3 seconds between emails
+                        \Log::info("Added 3-second delay before sending to: " . $recipient['email']);
+                    }
+                    
+                    Mail::to($recipient['email'])->send(
                         new \App\Mail\ReservationStatusUpdate(
-                            $user,
+                            (object) $recipient,
                             $reservation,
                             $data['reservationUsers'],
                             $data['furnitures'],
@@ -103,13 +145,40 @@ class EmailController extends Controller
                             $data['durationHours']
                         )
                     );
-                    \Log::info("Reservation status update email sent to: " . $user->email);
-                } else {
-                    \Log::warning("Invalid or missing email for user: " . json_encode($user));
+                    $emailsSent++;
+                    \Log::info("Reservation status update email sent to: " . $recipient['email'] . " (type: " . $recipient['type'] . ")");
+                } catch (\Exception $e) {
+                    $emailsFailed++;
+                    \Log::error("Failed to send status update email to " . $recipient['email'] . ": " . $e->getMessage());
+                    
+                    // If rate limited, wait longer and retry once
+                    if (strpos($e->getMessage(), 'Too many emails per second') !== false) {
+                        \Log::info("Rate limited, waiting 5 seconds and retrying for: " . $recipient['email']);
+                        sleep(5);
+                        try {
+                            Mail::to($recipient['email'])->send(
+                                new \App\Mail\ReservationStatusUpdate(
+                                    (object) $recipient,
+                                    $reservation,
+                                    $data['reservationUsers'],
+                                    $data['furnitures'],
+                                    $data['electronics'],
+                                    $data['durationHours']
+                                )
+                            );
+                            $emailsSent++;
+                            $emailsFailed--;
+                            \Log::info("Retry successful for: " . $recipient['email']);
+                        } catch (\Exception $retryError) {
+                            \Log::error("Retry also failed for " . $recipient['email'] . ": " . $retryError->getMessage());
+                        }
+                    }
                 }
             }
-        
-            return true;
+            
+            \Log::info("Status update email summary for ID {$reservationId}: {$emailsSent} sent, {$emailsFailed} failed");
+            return $emailsSent > 0;
+            
         } catch (\Exception $e) {
             \Log::error('Failed to send reservation status update email for reservation ' . $reservationId . ': ' . $e->getMessage());
             return false;

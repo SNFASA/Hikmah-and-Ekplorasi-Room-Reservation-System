@@ -7,7 +7,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Storage;
 
 class ReservationStatusUpdate extends Mailable
 {
@@ -55,11 +57,35 @@ class ReservationStatusUpdate extends Mailable
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        
+        // Attach the reservation document if it exists
+        if ($this->reservation->file_path && Storage::exists($this->reservation->file_path)) {
+            $attachments[] = Attachment::fromStorage($this->reservation->file_path)
+                ->as($this->reservation->file_original_name ?? 'reservation_document')
+                ->withMime($this->getFileMimeType($this->reservation->file_type));
+        }
+        
+        return $attachments;
+    }
+    
+    /**
+     * Get proper MIME type for file attachment
+     */
+    private function getFileMimeType($fileType)
+    {
+        $mimeTypes = [
+            'pdf' => 'application/pdf',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+        ];
+        
+        return $mimeTypes[strtolower($fileType)] ?? 'application/octet-stream';
     }
 }

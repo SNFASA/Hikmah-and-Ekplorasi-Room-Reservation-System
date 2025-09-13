@@ -224,7 +224,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-actions">
+                            <div class="row">
                                 <button type="submit" class="btn btn-update">
                                     <i class="fas fa-save me-2"></i>
                                     <span>Update Profile</span>

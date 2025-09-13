@@ -92,6 +92,13 @@
             font-size: 2rem;
             margin-bottom: 10px;
         }
+        .file-attachment {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -137,18 +144,31 @@
             @if($reservation->admin_updated_at)
                 <small><em>Updated on {{ \Carbon\Carbon::parse($reservation->admin_updated_at)->format('F j, Y \a\t g:i A') }}</em></small>
             @endif
+            @if($reservation->adminUpdatedBy)
+                <small><em>by {{ $reservation->adminUpdatedBy->name }}</em></small>
+            @endif
         </div>
         @endif
 
         <div class="divider"></div>
 
-        <h3>📋 Reservation Details</h3>
+        <h3>📋 Complete Reservation Details</h3>
 
         <div class="reservation-details">
             <ul>
+                <li><strong>Reservation ID:</strong> #{{ $reservation->id }}</li>
+                <li><strong>Applicant Name:</strong> {{ $reservation->name }}</li>
+                <li><strong>Contact Email:</strong> {{ $reservation->email }}</li>
+                <li><strong>Contact Number:</strong> {{ $reservation->contact_no }}</li>
+                @if($reservation->listStudentBooking && $reservation->listStudentBooking->no_matriks)
+                    <li><strong>Matric Number:</strong> {{ $reservation->listStudentBooking->no_matriks }}</li>
+                @endif
+                @if($reservation->facultyOffice)
+                    <li><strong>Department/Faculty:</strong> {{ $reservation->facultyOffice->name }}</li>
+                @endif
                 <li><strong>Purpose/Program:</strong> {{ $reservation->purpose_program_name }}</li>
-                @if($reservation->room_id)
-                    <li><strong>Room ID:</strong> {{ $reservation->room_id }}</li>
+                @if($reservation->room_id && $reservation->room)
+                    <li><strong>Room:</strong> {{ $reservation->room->name }} (ID: {{ $reservation->room_id }})</li>
                 @endif
                 @if($reservation->other_room_description)
                     <li><strong>Room Description:</strong> {{ $reservation->other_room_description }}</li>
@@ -158,8 +178,14 @@
                 <li><strong>End Date:</strong> {{ \Carbon\Carbon::parse($reservation->end_date)->format('l, F j, Y') }}</li>
                 <li><strong>End Time:</strong> {{ \Carbon\Carbon::parse($reservation->end_time)->format('g:i A') }}</li>
                 <li><strong>Duration:</strong> {{ $durationHours }} hour(s)</li>
-                <li><strong>Participants:</strong> {{ $reservation->no_of_participants }} ({{ $reservation->participant_category }})</li>
+                <li><strong>Number of Participants:</strong> {{ $reservation->no_of_participants }}</li>
+                <li><strong>Participant Category:</strong> {{ $reservation->participant_category }}
+                    @if($reservation->participant_category == 'Other' && $reservation->other_participant_category)
+                        ({{ $reservation->other_participant_category }})
+                    @endif
+                </li>
                 <li><strong>Event Type:</strong> {{ $reservation->event_type }}</li>
+                <li><strong>Reservation Created:</strong> {{ $reservation->created_at->format('F j, Y \a\t g:i A') }}</li>
                 <li><strong>Current Status:</strong> 
                     <span style="color: 
                         @if($reservation->status == 'approved') green 
@@ -173,6 +199,16 @@
             </ul>
         </div>
 
+        @if($reservation->file_path)
+        <div class="file-attachment">
+            <h4>📎 Attached Document</h4>
+            <p><strong>File:</strong> {{ $reservation->file_original_name }}</p>
+            <p><strong>Size:</strong> {{ number_format($reservation->file_size / 1024, 2) }} KB</p>
+            <p><strong>Type:</strong> {{ strtoupper($reservation->file_type) }}</p>
+            <small><em>This document has been attached to this email for your reference.</em></small>
+        </div>
+        @endif
+
         <div class="divider"></div>
 
         <h3 class="section-title">👥 People Involved</h3>
@@ -184,7 +220,7 @@
                     @endif
                 </li>
             @empty
-                <li>No user data available.</li>
+                <li>No additional user data available.</li>
             @endforelse
         </ul>
 

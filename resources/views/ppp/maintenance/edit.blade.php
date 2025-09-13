@@ -337,7 +337,7 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="form-actions fade-in">
+                        <div class="row fade-in">
                             <div class="card border-0 bg-white shadow-sm rounded-3">
                                 <div class="card-body p-4">
                                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
@@ -646,7 +646,7 @@ $(document).ready(function() {
         
         // Update progress bar if it exists
         if ($('#form-progress').length === 0) {
-            $('.form-actions .form-summary').append(`
+            $('.row .form-summary').append(`
                 <div id="form-progress" class="mt-2">
                     <div class="progress" style="height: 4px;">
                         <div class="progress-bar bg-warning" role="progressbar" style="width: ${progress}%"></div>

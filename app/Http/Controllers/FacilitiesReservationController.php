@@ -341,16 +341,223 @@ class FacilitiesReservationController extends Controller
         
         return view('backend.reservation.show', compact('reservation'));
     }
-    public function edit($id){
+    public function edit($id)
+    {
         $reservation = FasilitesReservation::findOrFail($id);
         $rooms = Room::all();
-        $faculties = faculty_offices::all();
+        $facultie = faculty_offices::all(); 
         $students = list_student_booking::all();
-        return view('backend.reservation.edit', compact('reservation', 'rooms', 'faculties', 'students'));
+        
+        // Get current user's matric number
+        $auth = auth()->user();
+        $currentUserMatricNo = $auth->no_matriks ?? $auth->student_id ?? null;
+        
+        // Determine user permissions
+        $isAdmin = $auth->role === 'admin';
+        $isOwner = false;
+        
+        if ($currentUserMatricNo) {
+            // Check if current user is the creator or the staff member
+            $creatorRecord = list_student_booking::find($reservation->created_by_matric_no);
+            $staffRecord = list_student_booking::find($reservation->staff_id_matric_no);
+            
+            $isOwner = ($creatorRecord && $creatorRecord->no_matriks === $currentUserMatricNo) ||
+                    ($staffRecord && $staffRecord->no_matriks === $currentUserMatricNo);
+        }
+        
+        // Define what fields can be edited
+        $canEditAll = $isOwner;
+        $canEditAdminFields = $isAdmin;
+        
+        // If user has no permissions, redirect or show error
+        if (!$canEditAll && !$canEditAdminFields) {
+            return redirect()->route('backend.reservation.index')
+                ->with('error', 'You do not have permission to edit this reservation.');
+        }
+        
+        // Get dropdown options
+        $participant_category = ['Staff', 'VVIP', 'Public', 'Student', 'Other'];
+        $event_type = ['Physical', 'Online'];
+        $status_options = ['Pending', 'Approved', 'Rejected', 'Cancelled'];
+        
+        return view('backend.reservation.edit', compact(
+            'reservation',
+            'rooms',
+            'facultie',
+            'students',
+            'participant_category',
+            'event_type',
+            'status_options',
+            'canEditAll',
+            'canEditAdminFields',
+            'isAdmin',
+            'isOwner'
+        ));
     }
+
     public function update(Request $request, $id)
     {
-        // Logic to update the specified facility reservation
+        $reservation = FasilitesReservation::findOrFail($id);
+        
+        // Get current user's matric number and role
+        $auth = auth()->user();
+        $currentUserMatricNo = $auth->no_matriks ?? $auth->student_id ?? null;
+        $isAdmin = $auth->role === 'admin';
+        
+        // Determine user permissions (same logic as edit method)
+        $isOwner = false;
+        if ($currentUserMatricNo) {
+            $creatorRecord = list_student_booking::find($reservation->created_by_matric_no);
+            $staffRecord = list_student_booking::find($reservation->staff_id_matric_no);
+            
+            $isOwner = ($creatorRecord && $creatorRecord->no_matriks === $currentUserMatricNo) ||
+                    ($staffRecord && $staffRecord->no_matriks === $currentUserMatricNo);
+        }
+        
+        $canEditAll = $isOwner;
+        $canEditAdminFields = $isAdmin;
+        
+        if (!$canEditAll && !$canEditAdminFields) {
+            return redirect()->route('backend.reservation.index')
+                ->with('error', 'You do not have permission to update this reservation.');
+        }
+        
+        // Define validation rules based on permissions
+        if ($canEditAll) {
+            // Full validation for owners
+            $validationRules = [
+                'email' => 'required|email',
+                'name' => 'required|string|max:255',
+                'staff_id_matric_no' => 'required|string|max:255',
+                'faculty_office_id' => 'required|exists:faculty_offices,no_facultyOffice',
+                'contact_no' => 'required|string|max:255',
+                'room_id' => 'required|string',
+                'other_room_description' => 'required_if:room_id,other|nullable|string|max:255',
+                'purpose_program_name' => 'required|string|max:255',
+                'start_date' => 'required|date',
+                'start_time' => 'required|date_format:H:i',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'end_time' => 'required|date_format:H:i',
+                'no_of_participants' => 'required|integer|min:1',
+                'participant_category' => 'required|in:Staff,VVIP,Public,Student,Other',
+                'other_participant_category' => 'required_if:participant_category,Other|nullable|string|max:255',
+                'event_type' => 'required|in:Physical,Online',
+                'document_file' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
+            ];
+        } else {
+            // Admin-only validation
+            $validationRules = [
+                'status' => 'required|in:Pending,Approved,Rejected,Cancelled',
+                'admin_comment' => 'nullable|string|max:1000',
+            ];
+        }
+        
+        $request->validate($validationRules);
+        
+        DB::beginTransaction();
+        try {
+            $originalStatus = $reservation->status; // Store original status
+            
+            if ($canEditAll) {
+                // Handle full update for owners
+                
+                // Handle staff_id_matric_no update (similar to store logic)
+                $matricNo = trim($request->staff_id_matric_no);
+                $user = User::where('no_matriks', $matricNo)->first();
+                
+                if (!$user) {
+                    $user = User::firstOrCreate(
+                        ['no_matriks' => $matricNo],
+                        [
+                            'name' => $request->name,
+                            'email' => $request->email,
+                            'facultyOffice' => $request->faculty_office_id,
+                            'course' => null,
+                            'password' => Hash::make($matricNo),
+                            'role' => 'user',
+                        ]
+                    );
+                }
+                
+                $studentBookingRecord = list_student_booking::firstOrCreate([
+                    'no_matriks' => $matricNo,
+                ]);
+                
+                // Handle file upload if new file provided
+                $updateData = [
+                    'email' => $request->email,
+                    'name' => $request->name,
+                    'staff_id_matric_no' => $studentBookingRecord->id,
+                    'faculty_office_id' => $request->faculty_office_id,
+                    'contact_no' => $request->contact_no,
+                    'room_id' => $request->room_id === 'other' ? null : $request->room_id,
+                    'other_room_description' => $request->room_id === 'other' ? $request->other_room_description : null,
+                    'purpose_program_name' => $request->purpose_program_name,
+                    'start_date' => $request->start_date,
+                    'start_time' => $request->start_time,
+                    'end_date' => $request->end_date,
+                    'end_time' => $request->end_time,
+                    'no_of_participants' => $request->no_of_participants,
+                    'participant_category' => $request->participant_category,
+                    'other_participant_category' => $request->other_participant_category,
+                    'event_type' => $request->event_type,
+                ];
+                
+                // Handle file upload if provided
+                if ($request->hasFile('document_file')) {
+                    $fileData = $this->handleFileUpload($request->file('document_file'));
+                    $updateData = array_merge($updateData, [
+                        'file_path' => $fileData['path'],
+                        'file_original_name' => $fileData['original_name'],
+                        'file_size' => $fileData['size'],
+                        'file_type' => $fileData['type'],
+                    ]);
+                }
+                
+                $reservation->update($updateData);
+                
+            } elseif ($canEditAdminFields) {
+                // Admin-only update
+                $updateData = [
+                    'status' => $request->status,
+                    'admin_updated_by' => $auth->id,
+                    'admin_updated_at' => now(),
+                ];
+                
+                if ($request->filled('admin_comment')) {
+                    $updateData['admin_comment'] = $request->admin_comment;
+                }
+                
+                $reservation->update($updateData);
+            }
+            
+            DB::commit();
+            
+            // Send status update email only if status actually changed
+            if ($canEditAdminFields && isset($updateData['status']) && $originalStatus !== $updateData['status']) {
+                try {
+                    if (class_exists('App\\Http\\Controllers\\EmailController')) {
+                        $emailController = new \App\Http\Controllers\EmailController();
+                        if (method_exists($emailController, 'sendReservationStatusUpdateEmail')) {
+                            $emailController->sendReservationStatusUpdateEmail($reservation->id);
+                            \Log::info('Reservation status update email sent for reservation ID: ' . $reservation->id);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Failed to send reservation status update email: ' . $e->getMessage());
+                    // Don't fail the update if email fails
+                }
+            }
+            
+            $message = $canEditAll ? 'Reservation updated successfully.' : 'Reservation status updated successfully.';
+            return redirect()->route('backend.reservation.index')->with('success', $message);
+            
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to update reservation. ' . $e->getMessage());
+        }
     }
     public function destroy($id)
     {
