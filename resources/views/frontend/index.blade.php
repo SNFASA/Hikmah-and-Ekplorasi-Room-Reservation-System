@@ -153,7 +153,11 @@
                 @foreach ($rooms as $room)
                     <div class="col">
                         <div class="card h-100 shadow-sm border-0">
-                            <img src="{{ asset($room->type_room === 'EKSPLORASI' ? 'images/OIP 2.jpeg' : 'images/OIP.jpeg') }}" class="card-img-top" alt="Room Image">
+                            @if ($room->image)
+                                <img src="{{ asset('storage/' . $room->image) }}" class="card-img-top" alt="Room Image">
+                            @else
+                                <img src="{{ asset('images/ruang terbuka.jpg') }}" class="card-img-top" alt="No Image Available">
+                            @endif
                             <div class="card-body">
                                 <h5 class="card-title">{{ $room->name }}</h5>
                                 <p class="card-text"><i class="fa fa-users me-1"></i> Capacity: {{ $room->capacity }}</p>
