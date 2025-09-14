@@ -5,7 +5,7 @@ use App\Models\Faculty_offices;
 use App\Models\Department;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-
+use App\Services\ActivityLogger;
 class FacultyOfficeController extends Controller
 {
     public function __construct()
@@ -33,13 +33,17 @@ class FacultyOfficeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|unique:faculty_offices,name|max:255',
+            'created_at' => now(),
+            'updated_at' => now(),
             
         ]);
 
-        Faculty_offices::create([
+        $facultyOffice=Faculty_offices::create([
             'name' => $request->name,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
-
+        ActivityLogger::logFaculty('created', $facultyOffice, 'Faculty office created');
         return redirect()->route('backend.facultyOffice.index')
             ->with('success', 'Faculty office added successfully.');
     }
@@ -59,16 +63,17 @@ class FacultyOfficeController extends Controller
 
         $facultyOffice->update([
             'name' => $request->name,
+            'updated_at' => now(),
             
         ]);
-
+        ActivityLogger::logFaculty('updated', $facultyOffice, 'Faculty office updated');
         return redirect()->route('backend.facultyOffice.index')
             ->with('success', 'Faculty office updated successfully.');
     }
     public function destroy($id){
         $facultyOffice = Faculty_offices::findOrFail($id);
         $facultyOffice->delete();
-
+        ActivityLogger::logFaculty('deleted', $facultyOffice, 'Faculty office deleted');
         return redirect()->route('backend.facultyOffice.index')
             ->with('success', 'Faculty office deleted successfully.');
     }

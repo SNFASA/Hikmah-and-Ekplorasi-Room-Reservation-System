@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Services\ActivityLogger;
+use Illuminate\Support\Facades\Storage;
 class RoomPPPController extends Controller
 {
     /**
@@ -112,23 +113,29 @@ class RoomPPPController extends Controller
     }
     */
     
-    public function edit($id)
+public function edit($id)
     {
         $room = room::with(['furnitures', 'electronics'])->findOrFail($id);
         $furnitures = furniture::all();
         $electronics = electronic::all();
-        $type_rooms = TypeRooms::orderby('name')->get();
+        $type_rooms = TypeRooms::orderby('name')->get(); 
         $selectedFurnitures = $room->furnitures;
         $selectedElectronics = $room->electronics;
-    
+
+        // Debug the room data
+        \Log::info('Edit room data:', [
+            'room_id' => $room->id,
+            'image_value' => $room->image,
+            'image_type' => gettype($room->image),
+            'image_empty' => empty($room->image)
+        ]);
+
         return view('ppp.room.edit', compact('room', 'furnitures', 'electronics','type_rooms', 'selectedFurnitures', 'selectedElectronics'));
     }
-    
 
     public function update(Request $request, $id)
     {
         $room = room::findOrFail($id);
-
         $request->validate([
             'name' => 'required|string|max:255',
             'capacity' => 'required|integer|min:0',
@@ -136,50 +143,112 @@ class RoomPPPController extends Controller
             'electronicEquipment' => 'nullable|array',
             'type_room' => 'required|exists:type_rooms,id',
             'status' => 'required|string|in:valid,invalid',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
+            'remove_image' => 'nullable|boolean',
         ]);
-
-        // Update room details
-            DB::transaction(function () use ($request, $id) {
-            try {
-                
-                $room = Room::findOrFail($id);
         
+        // Update room details
+        DB::transaction(function () use ($request, $id) {
+            try {
+                $room = Room::findOrFail($id);
+                $oldImagePath = $room->image;
+
+                // Handle image removal if requested
+                if ($request->has('remove_image') && $request->remove_image) {
+                    if ($oldImagePath) {
+                        // Delete from storage
+                        if (Storage::disk('public')->exists($oldImagePath)) {
+                            Storage::disk('public')->delete($oldImagePath);
+                            \Log::info('Image deleted by user request:', ['path' => $oldImagePath]);
+                        }
+                    }
+                    $room->image = null;
+                    \Log::info('Image set to null');
+                }
+                // Handle image upload if new image is provided
+                elseif ($request->hasFile('image')) {
+                    $image = $request->file('image');
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = $image->storeAs('rooms', $imageName, 'public');
+                    \Log::info('Image uploaded:', ['path' => $imagePath]);
+                    
+                    // Delete old image if it exists
+                    if ($oldImagePath && Storage::disk('public')->exists($oldImagePath)) {
+                        Storage::disk('public')->delete($oldImagePath);
+                        \Log::info('Old image deleted:', ['path' => $oldImagePath]);
+                    }
+                    
+                    $room->image = $imagePath;
+                }
+
                 // Update the room details
                 $room->name = $request->name;
                 $room->capacity = $request->capacity;
                 $room->type_room = $request->type_room;
                 $room->status = $request->status;
                 $room->save();
-        
+
                 // Log the updated room to check the changes
                 \Log::info('Room after update:', $room->toArray());
-                ActivityLogger::logRoom('Room updated', $room,'Room');
-                // If no room ID is generated, throw an exception (this is unlikely for an update but kept for safety)
-                if (!$room->no_room) {
-                    throw new \Exception('Room ID not generated!');
-                }
-        
+                ActivityLogger::logRoom('Room updated', $room,'Room updated');
+    
                 // Update the furniture if available
                 if (!empty($request->furniture)) {
                     \Log::info('Attaching furniture:', $request->furniture);
                     // Detach existing furniture before attaching new ones to avoid duplicates
                     $room->furnitures()->sync($request->furniture);  // `sync` will update the relationship
+                } else {
+                    $room->furnitures()->detach(); // Remove all furniture if none selected
                 }
-        
+
                 // Update the electronic equipment if available
                 if (!empty($request->electronicEquipment)) {
                     \Log::info('Attaching electronics:', $request->electronicEquipment);
                     // Detach existing electronics before attaching new ones
                     $room->electronics()->sync($request->electronicEquipment);  // `sync` will update the relationship
+                } else {
+                    $room->electronics()->detach(); // Remove all electronics if none selected
                 }
             } catch (\Exception $e) {
                 \Log::error('Error updating room:', ['error' => $e->getMessage()]);
+                
+                // Clean up newly uploaded image if update fails
+                if ($request->hasFile('image') && isset($imagePath) && Storage::disk('public')->exists($imagePath)) {
+                    Storage::disk('public')->delete($imagePath);
+                    \Log::info('Cleaned up failed upload:', ['path' => $imagePath]);
+                }
+                
                 throw $e;  // Rethrow the exception
             }
         });
         
-
         return redirect()->route('ppp.room.index')->with('success', 'Room updated successfully.');
+    }
+
+// Helper method to ensure storage link exists
+    public function checkStorageLink()
+    {
+        $linkPath = public_path('storage');
+        $targetPath = storage_path('app/public');
+        
+        if (!is_link($linkPath)) {
+            if (is_dir($linkPath)) {
+                // If there's a directory instead of a symlink, remove it
+                rmdir($linkPath);
+            }
+            
+            // Create the symlink
+            try {
+                symlink($targetPath, $linkPath);
+                \Log::info('Storage link created successfully');
+                return true;
+            } catch (\Exception $e) {
+                \Log::error('Failed to create storage link:', ['error' => $e->getMessage()]);
+                return false;
+            }
+        }
+        
+        return true;
     }
 
 /**
@@ -201,7 +270,7 @@ class RoomPPPController extends Controller
         $room->furnitures()->detach();
         $room->electronics()->detach();
         $room->delete();
-        ActivityLogger::logRoom('Room deleted', $room,'Room');
+        ActivityLogger::logRoom('Room deleted', $room,'Room deleted');
         return redirect()->route('ppp.room.index')->with('success', 'Room deleted successfully.');
     }
     

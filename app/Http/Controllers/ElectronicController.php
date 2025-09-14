@@ -52,7 +52,7 @@ class ElectronicController extends Controller
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
         ]);
-        ActivityLogger::logEquipment('created', $electronic, 'electronics');
+        ActivityLogger::logEquipment('created', $electronic, 'Electronics created');
         return redirect()->route('backend.electronic.index')->with('success', 'Electronic device created successfully.');
     }
     
@@ -82,8 +82,8 @@ class ElectronicController extends Controller
             'status' => $request->status,
             'updated_at' => Carbon::now(),
         ]);
-        ActivityLogger::logEquipment('updated', $electronics, 'electronics');
-        return redirect()->route('backend.electronic.index')->with('success', 'electronic device updated successfully.');
+        ActivityLogger::logEquipment('updated', $electronics, 'Electronics updated');
+        return redirect()->route('backend.electronic.index')->with('success', 'Electronic device updated successfully.');
     }
 
     // Remove the specified electronics from storage
@@ -91,7 +91,7 @@ class ElectronicController extends Controller
     {
         $electronics = electronic::findOrFail($id);
         $electronics->delete();
-        ActivityLogger::logEquipment('deleted', $electronics, 'electronics');
-        return redirect()->route('backend.electronic.index')->with('success', 'electronic device deleted successfully.');
+        ActivityLogger::logEquipment('deleted', $electronics, 'Electronics deleted');
+        return redirect()->route('backend.electronic.index')->with('success', 'Electronic device deleted successfully.');
     }
 }

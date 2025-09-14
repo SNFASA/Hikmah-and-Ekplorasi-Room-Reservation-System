@@ -182,7 +182,7 @@ class BookingController extends Controller
             'status' => 'approved',
         ]);
         // Log the booking creation
-        ActivityLogger::logBooking('created', $booking);
+        ActivityLogger::logBooking('created', $booking, "New booking created");
 
         // Attach students to booking
         $this->attachStudentsToBooking($booking, $students);
@@ -350,7 +350,7 @@ public function update(Request $request, $id)
         ]);
     
         // Log the activity
-        ActivityLogger::logBooking('updated', $booking);
+        ActivityLogger::logBooking('updated', $booking , 'Booking updated');
         // Pass the original student array directly
         $this->attachStudentsToBooking($booking, $students);
 
@@ -361,7 +361,7 @@ public function update(Request $request, $id)
 public function destroy($id){
     $booking = Bookings::findOrFail($id);
     $booking->delete();
-    ActivityLogger::logBooking('deleted', $booking);
+    ActivityLogger::logBooking('deleted', $booking, "Booking deleted by admin");
     return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully.');
 }
 
@@ -607,7 +607,7 @@ public function storeBookingForm(Request $request)
         'status' => 'approved',
     ]);
     // Log the booking creation
-    ActivityLogger::logBooking('created', $booking);
+    ActivityLogger::logBooking('created', $booking, "New booking created");
     // Attach students to booking
     $this->attachStudentsToBooking($booking, $students);
 
@@ -758,7 +758,7 @@ public function myBookings(Request $request)
 public function cancelBooking($id){
     $booking = Bookings::findOrFail($id);
     $booking->delete();
-    ActivityLogger::logBooking('deleted', $booking);
+    ActivityLogger::logBooking('deleted', $booking, "Booking cancelled by user");
     return redirect()->route('home')->with('success', 'Booking deleted successfully.');
 }
 public function calendarAdmin()
@@ -868,7 +868,7 @@ public function Formupdate(Request $request, $id)
     }
 
         $conflictWithBooked = DB::table('bookings')
-            ->where('id', '!=', $booking->id) // ✅ exclude the current booking
+            ->where('id', '!=', $booking->id) 
             ->where('no_room', $request->no_room)
             ->where('booking_date', $request->booking_date)
             ->where(function ($query) use ($request) {
@@ -892,7 +892,7 @@ public function Formupdate(Request $request, $id)
         'phone_number' => $request->phone_number,
         'status' => 'approved',
     ]);
-    ActivityLogger::logBooking('updated', $booking);
+    ActivityLogger::logBooking('updated', $booking, 'Booking updated');
     // Update students
     $students = $request->input('students');
     $this->attachStudentsToBooking($booking, $students);

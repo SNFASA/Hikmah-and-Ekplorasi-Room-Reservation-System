@@ -88,10 +88,10 @@ class MaintenanceController extends Controller
         ActivityLogger::logMaintenance('created', $maintenance, 'Maintenance report created.');
         return redirect()->route('backend.maintenance.index')->with('success', 'Maintenance report created successfully.');
     }
-    // Show the form for editing the specified 
+    // Show the form for editing the specified
     public function edit($id)
     {
-        $maintenances = maintenance::with('reporter')->findOrFail($id);  
+        $maintenances = maintenance::with('reporter')->findOrFail($id);
         $rooms = room::all();
         return view('backend.maintenance.edit', compact('rooms', 'maintenances'));
     }

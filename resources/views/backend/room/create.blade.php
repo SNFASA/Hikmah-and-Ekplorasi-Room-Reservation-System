@@ -55,7 +55,7 @@
 
                 <!-- Card Body -->
                 <div class="card-body bg-light p-4">
-                    <form method="POST" action="{{ route('room.store') }}" id="roomCreateForm">
+                    <form method="POST" action="{{ route('room.store') }}" id="roomCreateForm" enctype="multipart/form-data">
                         @csrf
                         <!-- Step 1: Room Details -->
                         <div class="form-section mb-5 fade-in">
@@ -151,6 +151,76 @@
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Room Image Upload -->
+                            <div class="row g-4 mt-2">
+                                <div class="col-12">
+                                    <div class="card border-0 bg-white shadow-sm rounded-3">
+                                        <div class="card-body p-4">
+                                            <h6 class="fw-bold text-dark mb-3">
+                                                <i class="fas fa-camera me-2 text-primary"></i>
+                                                Room Image <span class="text-danger">*</span>
+                                            </h6>
+                                            
+                                            <div class="image-upload-container">
+                                                <div class="image-upload-area border-2 border-dashed rounded-3 p-4 text-center position-relative @error('image') border-danger @enderror" 
+                                                    id="imageUploadArea"
+                                                    ondrop="dropHandler(event);" 
+                                                    ondragover="dragOverHandler(event);"
+                                                    ondragenter="dragEnterHandler(event);"
+                                                    ondragleave="dragLeaveHandler(event);"
+                                                    onclick="document.getElementById('imageInput').click()">
+                                                    
+                                                    <input type="file" 
+                                                        name="image" 
+                                                        id="imageInput" 
+                                                        class="d-none @error('image') is-invalid @enderror" 
+                                                        accept="image/*" 
+                                                        required
+                                                        value="{{ old('image') }}">
+                                                    
+                                                    <div id="uploadPlaceholder" class="upload-placeholder">
+                                                        <div class="mb-3">
+                                                            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                        </div>
+                                                        <h6 class="fw-bold text-dark mb-2">Drop your room image here</h6>
+                                                        <p class="text-muted mb-3">or click to browse files</p>
+                                                        <button type="button" class="btn btn-outline-primary rounded-pill px-4" 
+                                                                onclick="event.stopPropagation(); document.getElementById('imageInput').click()">
+                                                            <i class="fas fa-folder-open me-2"></i>
+                                                            Choose Image
+                                                        </button>
+                                                        <div class="mt-3">
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-info-circle me-1"></i>
+                                                                Supported formats: JPG, PNG, GIF (Max 5MB)
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div id="imagePreview" class="image-preview d-none">
+                                                        <div class="position-relative d-inline-block">
+                                                            <img id="previewImage" src="" class="img-fluid rounded-3 shadow-sm" style="max-height: 200px;">
+                                                            <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute" 
+                                                                    style="top: -10px; right: -10px;" 
+                                                                    onclick="event.stopPropagation(); removeImage()">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="mt-3">
+                                                            <p class="fw-semibold text-dark mb-1" id="imageName"></p>
+                                                            <small class="text-muted" id="imageSize"></small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                @error('image')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -332,7 +402,7 @@
                         Room Creation Tips
                     </h6>
                     <div class="row g-3">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex align-items-start">
                                 <div class="tip-icon me-3">
                                     <i class="fas fa-info-circle text-white"></i>
@@ -343,7 +413,18 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
+                            <div class="d-flex align-items-start">
+                                <div class="tip-icon me-3">
+                                    <i class="fas fa-camera text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-semibold text-white">Image Upload</div>
+                                    <small class="text-white">JPG, PNG, GIF up to 5MB</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
                             <div class="d-flex align-items-start">
                                 <div class="tip-icon me-3">
                                     <i class="fas fa-plus text-white"></i>
@@ -354,7 +435,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="d-flex align-items-start">
                                 <div class="tip-icon me-3">
                                     <i class="fas fa-save text-white"></i>
@@ -371,13 +452,13 @@
         </div>
     </div>
 </div>
-
 @endsection
+
 @push('scripts')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
-    console.log('Room Create Form initializing...');
+    console.log('Room Create Form with Image Upload initializing...');
     
     // Store original data for reset functionality
     let originalFurnitureOptions = [];
@@ -404,28 +485,153 @@ $(document).ready(function() {
         }
     });
 
-    // Progress tracking function
-    function updateProgress() {
-        let progress = 0;
-        const total = 4; // Total required fields
+    // Image Upload Functions
+$(document).ready(function() {
+    // File input change event listener - THE MISSING PART!
+    $('#imageInput').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            handleImageUpload(file);
+        }
+    });
+    
+    console.log('Image upload component initialized');
+});
 
-        // Check room name
-        if ($('#inputName').val().trim()) progress++;
-        
-        // Check capacity
-        if ($('#capacity').val() && parseInt($('#capacity').val()) > 0) progress++;
-        
-        // Check room type
-        if ($('select[name="type_room"]').val()) progress++;
-        
-        // Check status
-        if ($('select[name="status"]').val()) progress++;
-
-        const percentage = (progress / total) * 100;
-        $('#formProgress').css('width', percentage + '%');
-        
-        console.log('Progress updated:', percentage + '%');
+// Image Upload Functions
+function handleImageUpload(file) {
+    console.log('Handling image upload:', file.name);
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(file.type)) {
+        showNotification('Please select a valid image file (JPG, PNG, GIF)', 'error');
+        return;
     }
+    
+    // Validate file size (5MB = 5242880 bytes)
+    if (file.size > 5242880) {
+        showNotification('Image file size must be less than 5MB', 'error');
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Show preview
+        $('#previewImage').attr('src', e.target.result);
+        $('#imageName').text(file.name);
+        $('#imageSize').text(formatFileSize(file.size));
+        
+        // Hide placeholder, show preview
+        $('#uploadPlaceholder').addClass('d-none');
+        $('#imagePreview').removeClass('d-none');
+        
+        // Update upload area styling
+        $('#imageUploadArea').removeClass('border-dashed').addClass('border-success');
+        
+        showNotification('Image uploaded successfully!', 'success');
+        updateProgress();
+    };
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    console.log('Removing image');
+    
+    // Clear file input
+    $('#imageInput').val('');
+    
+    // Hide preview, show placeholder
+    $('#imagePreview').addClass('d-none');
+    $('#uploadPlaceholder').removeClass('d-none');
+    
+    // Reset upload area styling
+    $('#imageUploadArea').removeClass('border-success').addClass('border-dashed');
+    
+    showNotification('Image removed', 'info');
+    updateProgress();
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Drag and Drop Functions
+window.dragOverHandler = function(ev) {
+    ev.preventDefault();
+    $('#imageUploadArea').addClass('drag-over');
+};
+
+window.dragEnterHandler = function(ev) {
+    ev.preventDefault();
+    $('#imageUploadArea').addClass('drag-over');
+};
+
+window.dragLeaveHandler = function(ev) {
+    ev.preventDefault();
+    $('#imageUploadArea').removeClass('drag-over');
+};
+
+window.dropHandler = function(ev) {
+    ev.preventDefault();
+    $('#imageUploadArea').removeClass('drag-over');
+    
+    const files = ev.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        $('#imageInput')[0].files = files;
+        handleImageUpload(file);
+    }
+};
+
+// Notification function (you can customize this based on your notification system)
+function showNotification(message, type = 'info') {
+    // Using simple alert for now - replace with your Laravel notification system
+    // For example: toastr, sweet alert, or custom notification
+    console.log(`${type.toUpperCase()}: ${message}`);
+    
+    // If you have toastr installed, use this instead:
+    // toastr[type](message);
+    
+    // Or create a simple toast notification
+    const alertClass = {
+        'success': 'alert-success',
+        'error': 'alert-danger',
+        'info': 'alert-info',
+        'warning': 'alert-warning'
+    }[type] || 'alert-info';
+    
+    const toast = `
+        <div class="toast align-items-center text-white ${alertClass.replace('alert', 'bg')} border-0" role="alert" style="position: fixed; top: 20px; right: 20px; z-index: 11;">
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
+    
+    $('body').append(toast);
+    $('.toast').last().toast('show');
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+        $('.toast').last().remove();
+    }, 5000);
+}
+
+// Progress update function (customize based on your progress indicator)
+function updateProgress() {
+    const hasImage = !$('#imagePreview').hasClass('d-none');
+    // You can update a progress bar or step indicator here
+    console.log('Progress updated:', hasImage ? 'Image uploaded' : 'No image');
+}
+
+// Make removeImage function global
+window.removeImage = removeImage;
 
     // Update counters function
     function updateCounters() {
@@ -638,7 +844,7 @@ $(document).ready(function() {
         }, 3000);
     }
 
-    // Form validation function
+    // Form validation function (updated to include image)
     function validateForm() {
         let isValid = true;
         const errors = [];
@@ -659,6 +865,12 @@ $(document).ready(function() {
         // Validate room type
         if (!$('select[name="type_room"]').val()) {
             errors.push('Room type is required');
+            isValid = false;
+        }
+
+        // Validate image upload
+        if ($('#imageInput')[0].files.length === 0) {
+            errors.push('Room image is required');
             isValid = false;
         }
 
@@ -703,12 +915,15 @@ $(document).ready(function() {
         });
     }
 
-    // Reset form function
+    // Reset form function (updated to include image)
     function resetForm() {
         console.log('Resetting form...');
         
         // Reset form fields
         $('#roomCreateForm')[0].reset();
+        
+        // Reset image upload
+        removeImage();
         
         // Clear selected items
         $('#selected-furniture').empty();
@@ -734,6 +949,19 @@ $(document).ready(function() {
     }
 
     // Event Listeners
+    
+    // Image input change event
+    $('#imageInput').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            handleImageUpload(file);
+        }
+    });
+    
+    // Click to upload image
+    $('#imageUploadArea').on('click', function() {
+        $('#imageInput').click();
+    });
     
     // Add furniture button click
     $('#add-selected-furniture').on('click', function(e) {
@@ -796,67 +1024,15 @@ $(document).ready(function() {
     });
 
     // Form field change listeners for progress tracking
-    $('#inputName, #capacity, select[name="type_room"], select[name="status"]').on('input change', function() {
+    $('#inputName, #capacity, select[name="type_room"], select[name="status"], #imageInput').on('input change', function() {
         updateProgress();
     });
-
-    // Keyboard shortcuts
-    $(document).on('keydown', function(e) {
-        // Ctrl+Enter to submit
-        if (e.ctrlKey && e.key === 'Enter') {
-            e.preventDefault();
-            if (validateForm()) {
-                $('#roomCreateForm').submit();
-            }
-        }
-        
-        // Escape to focus on reset
-        if (e.key === 'Escape') {
-            $('#resetBtn').focus();
-        }
-    });
-
-    // Enter key to add selected items
-    $('#furniture-select').on('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            addSelectedFurniture();
-        }
-    });
-
-    $('#electronic-equipment-select').on('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            addSelectedElectronics();
-        }
-    });
-
-    // Add smooth scroll to form sections on focus
-    $('.form-floating input, .form-floating select').on('focus', function() {
-        const section = $(this).closest('.form-section');
-        if (section.length) {
-            section[0].scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-
-    // Animate elements on page load
-    setTimeout(() => {
-        $('.card, .form-section').each(function(index) {
-            const element = $(this);
-            setTimeout(() => {
-                element.addClass('fade-in');
-            }, index * 100);
-        });
-    }, 100);
 
     // Initialize counters, progress, and empty states
     updateCounters();
     updateProgress();
 
-    console.log('Room Create Form initialized successfully');
+    console.log('Room Create Form with Image Upload initialized successfully');
     console.log('Furniture options loaded:', originalFurnitureOptions.length);
     console.log('Electronics options loaded:', originalElectronicsOptions.length);
 });

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\courses;
 use App\Models\department;
 use Illuminate\Http\Request;
-
+use App\Services\ActivityLogger;
 class CourseController extends Controller
 {
     public function __construct()
@@ -36,11 +36,13 @@ class CourseController extends Controller
             'department_id' => 'required|exists:departments,no_department',
         ]);
 
-        Courses::create([
+        $crs = Courses::create([
             'name' => $request->name,
             'department_id' => $request->department_id,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
-        
+        ActivityLogger::logCourse('created', $crs, 'Course created');
         return redirect()->route('backend.course.index')
             ->with('success', 'Course added successfully.');
     }
@@ -64,14 +66,16 @@ class CourseController extends Controller
         $crs->update([
             'name' => $request->name,
             'department_id' => $request->department_id,
+            'updated_at' => now(),
         ]);
-
-        return redirect()->route('backend.course.index')->with('success', 'course updated successfully.');
+        ActivityLogger::logCourse('updated', $crs, 'Course updated');
+        return redirect()->route('backend.course.index')->with('success', 'Course updated successfully.');
     }
     public function destroy($id){
         $crs = courses::findOrFail($id);
         $crs->delete();
-        return redirect()->route('backend.course.index')->with('success', 'course deleted successfully.');
+        ActivityLogger::logCourse('deleted', $crs, "Course deleted by admin");
+        return redirect()->route('backend.course.index')->with('success', 'Course deleted successfully.');
 
     }
 }

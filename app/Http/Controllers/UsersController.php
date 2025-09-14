@@ -50,7 +50,7 @@ class UsersController extends Controller
         \Log::info('Role being inserted: ' . $request->role);
 
         $status = User::create($data);
-        ActivityLogger::logUser('created', $status);
+        ActivityLogger::logUser('created', $status , 'User created');
         if ($status) {
             request()->session()->flash('success', 'Successfully added new User');
         } else {
@@ -97,7 +97,7 @@ class UsersController extends Controller
         }
 
         $status = $users->fill($data)->save();
-        ActivityLogger::logUser('updated', $users);
+        ActivityLogger::logUser('updated', $users , 'User updated');
         if ($status) {
             request()->session()->flash('success', 'Successfully updated user');
         } else {
@@ -112,7 +112,7 @@ class UsersController extends Controller
     {
         $users = User::findOrFail($id);
         $status = $users->delete();
-        ActivityLogger::logUser('deleted', $users);
+        ActivityLogger::logUser('deleted', $users , 'User deleted');
         if ($status) {
             request()->session()->flash('success', 'Student successfully deleted');
         } else {

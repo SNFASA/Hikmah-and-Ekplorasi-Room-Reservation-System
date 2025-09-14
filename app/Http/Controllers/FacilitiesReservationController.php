@@ -219,7 +219,7 @@ class FacilitiesReservationController extends Controller
                     'declaration_accepted' => $request->boolean('declaration_accepted') ? 1 : 0,
                     'status' => $request->status,
                 ]);
-                ActivityLogger::logReservation('created', $reservation);
+                ActivityLogger::logReservation('created', $reservation, 'Reservation created');
                 $createdReservations[] = $reservation;
 
                 // Attach student to reservation if your controller provides it
@@ -534,7 +534,7 @@ class FacilitiesReservationController extends Controller
             
             // Send status update email only if status actually changed
             if ($canEditAdminFields && isset($updateData['status']) && $originalStatus !== $updateData['status']) {
-                ActivityLogger::logReservation('status_changed', $reservation);
+                ActivityLogger::logReservation('status_changed', $reservation, 'Reservation status changed from ' . $originalStatus . ' to ' . $updateData['status']);
                 try {
                     if (class_exists('App\\Http\\Controllers\\EmailController')) {
                         $emailController = new \App\Http\Controllers\EmailController();
@@ -564,7 +564,7 @@ class FacilitiesReservationController extends Controller
         // Logic to delete the specified facility reservation
         $reservation = FasilitesReservation::findOrFail($id);
         $reservation->delete();
-        ActivityLogger::logReservation('deleted', $reservation);
+        ActivityLogger::logReservation('deleted', $reservation, 'Reservation deleted');
         return redirect()->route('backend.reservation.index')->with('success', 'Reservation deleted successfully.');
     }
 }

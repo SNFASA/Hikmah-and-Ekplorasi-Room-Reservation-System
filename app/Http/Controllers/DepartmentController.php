@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\department;
-
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 
 class DepartmentController extends Controller
@@ -31,9 +31,12 @@ class DepartmentController extends Controller
         $request->validate([
             'name' => 'required|String|unique:departments,name|max:255',
         ]);
-        department::create([
+        $dpt = department::create([
             'name' => $request->name,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
+        ActivityLogger::logDepartment('created', $dpt, 'Department created');
         return redirect()->route('backend.department.index')->with('success', 'Department added successfully.');
     }
     public function edit($id)
@@ -52,8 +55,9 @@ class DepartmentController extends Controller
 
         $dpt->update([
             'name' => $request->name,
+            'updated_at' => now(),
         ]);
-
+        ActivityLogger::logDepartment('updated', $dpt, 'Department updated');
         return redirect()->route('backend.department.index')->with('success', 'Department updated successfully.');
     }
     public function destroy($id){

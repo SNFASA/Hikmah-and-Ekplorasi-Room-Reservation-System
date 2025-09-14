@@ -66,7 +66,7 @@ class FurnitureController extends Controller
             'created_at' => carbon::now(),
             'updated_at' => carbon::now(),
         ]);
-        ActivityLogger::logEquipment('created', $furniture, 'furniture');
+        ActivityLogger::logEquipment('created', $furniture, 'Furniture created');
         return redirect()->route('backend.furniture.index')->with('success', 'Furniture created successfully.');
     }
     
@@ -97,7 +97,7 @@ class FurnitureController extends Controller
             'status' => $request->status,
             'updated_at' => carbon::now(),
         ]);
-        ActivityLogger::logEquipment('updated', $furniture, 'furniture');
+        ActivityLogger::logEquipment('updated', $furniture, 'Furniture updated');
         return redirect()->route('backend.furniture.index')->with('success', 'furniture updated successfully.');
     }
 
@@ -106,7 +106,7 @@ class FurnitureController extends Controller
     {
         $furniture = furniture::findOrFail($id);
         $furniture->delete();
-        ActivityLogger::logEquipment('deleted', $furniture, 'furniture');
+        ActivityLogger::logEquipment('deleted', $furniture, 'Furniture deleted');
         return redirect()->route('backend.furniture.index')->with('success', 'furniture deleted successfully.');
     }
 }

@@ -1,4 +1,4 @@
-@extends('ppp.layouts.master')
+@extends('backend.layouts.master')
 @section('title','Room Edit')
 @section('main-content')
 
@@ -36,7 +36,7 @@
                 <div class="card-header bg-gradient-primary text-white p-4 border-0">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <h5 class="card-title mb-0 fw-bold">
+                            <h5 class="card-title text-white mb-0 fw-bold">
                                 <i class="fas fa-cog me-2"></i>
                                 Room Configuration - {{ $room->name }}
                             </h5>
@@ -55,9 +55,9 @@
 
                 <!-- Card Body -->
                 <div class="card-body bg-light p-4">
-                    <form method="POST" action="{{ route('ppp.room.update', $room->no_room) }}" id="roomEditForm">
+                    <form method="POST" action="{{ route('ppp.room.update', $room->no_room) }}" id="roomEditForm" enctype="multipart/form-data">
                         @csrf
-                        @method('PATCH')
+                        @method('PUT')
                         <!-- Step 1: Room Details -->
                         <div class="form-section mb-5 fade-in">
                             <div class="section-header mb-4">
@@ -155,8 +155,150 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Room Image Upload -->
+                            <div class="row g-4 mt-2">
+                                <div class="col-12">
+                                    <div class="card border-0 bg-white shadow-sm rounded-3">
+                                        <div class="card-body p-4">
+                                            <h6 class="fw-bold text-dark mb-3">
+                                                <i class="fas fa-camera me-2 text-primary"></i>
+                                                Room Image
+                                            </h6>
+                                            
+                                            <div class="image-upload-container">
+                                                <div class="image-upload-area border-2 border-dashed rounded-3 p-4 text-center position-relative @error('image') border-danger @enderror"
+                                                    id="imageUploadArea"
+                                                    ondrop="dropHandler(event);"
+                                                    ondragover="dragOverHandler(event);"
+                                                    ondragenter="dragEnterHandler(event);"
+                                                    ondragleave="dragLeaveHandler(event);"
+                                                    onclick="document.getElementById('imageInput').click()">
+                                                    
+                                                    <!-- Fixed: Simplified file input -->
+                                                    <input type="file"
+                                                        name="image"
+                                                        id="imageInput"
+                                                        class="d-none"
+                                                        accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                                                    
+                                                    <!-- Hidden input to handle image removal -->
+                                                    <input type="hidden" name="remove_image" id="removeImageInput" value="0">
+                                                    
+                                                    <!-- Hidden input to store current image for edit mode -->
+                                                    @if(isset($room) && !empty($room->image))
+                                                        <input type="hidden" name="current_image" value="{{ $room->image }}" id="currentImageInput">
+                                                    @endif
+                                                    
+                                                    <div id="uploadPlaceholder" class="upload-placeholder {{ (isset($room) && !empty($room->image)) ? 'd-none' : '' }}">
+                                                        <div class="mb-3">
+                                                            <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                                        </div>
+                                                        <h6 class="fw-bold text-dark mb-2">Drop your room image here</h6>
+                                                        <p class="text-muted mb-3">or click to browse files</p>
+                                                        <button type="button" class="btn btn-outline-primary rounded-pill px-4"
+                                                                onclick="event.stopPropagation(); document.getElementById('imageInput').click()">
+                                                            <i class="fas fa-folder-open me-2"></i>
+                                                            Choose Image
+                                                        </button>
+                                                        <div class="mt-3">
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-info-circle me-1"></i>
+                                                                Supported formats: JPG, PNG, GIF, WebP (Max 5MB)
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div id="imagePreview" class="image-preview {{ (isset($room) && !empty($room->image) && $room->image !== '') ? '' : 'd-none' }}">
+                                                        <div class="position-relative d-inline-block">
+                                                            @php
+                                                                // Determine the correct image source
+                                                                $imageSrc = '';
+                                                                if (isset($room) && !empty($room->image)) {
+                                                                    // First try: Laravel storage URL (most likely correct)
+                                                                    if (file_exists(public_path('storage/' . $room->image))) {
+                                                                        $imageSrc = url('storage/' . $room->image);
+                                                                    }
+                                                                    // Fallback: direct asset path
+                                                                    elseif (file_exists(public_path($room->image))) {
+                                                                        $imageSrc = asset($room->image);
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            
+                                                            <img id="previewImage"
+                                                                src="{{ $imageSrc }}"
+                                                                class="img-fluid rounded-3 shadow-sm"
+                                                                style="max-height: 200px;"
+                                                                alt="Room Image">
+                                                                
+                                                            <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute"
+                                                                    style="top: -10px; right: -10px;"
+                                                                    onclick="event.stopPropagation(); removeImage()">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="mt-3">
+                                                            <p class="fw-semibold text-dark mb-1" id="imageName">
+                                                                {{ (isset($room) && !empty($room->image)) ? basename($room->image) : '' }}
+                                                            </p>
+                                                            <small class="text-muted" id="imageSize">
+                                                                @if(isset($room) && !empty($room->image))
+                                                                    @php
+                                                                        $size = 0;
+                                                                        $possiblePaths = [
+                                                                            public_path('storage/' . $room->image),
+                                                                            public_path($room->image),
+                                                                            public_path('uploads/' . $room->image)
+                                                                        ];
+                                                                        
+                                                                        foreach ($possiblePaths as $path) {
+                                                                            if (file_exists($path)) {
+                                                                                $size = filesize($path);
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    @endphp
+                                                                    {{ $size > 0 ? number_format($size / 1024, 1) . ' KB' : 'Size unknown' }}
+                                                                @endif
+                                                            </small>
+                                                            @if(isset($room) && !empty($room->image))
+                                                                <div class="mt-2" id="imageStatusBadges">
+                                                                    <span class="badge bg-info">Current Image</span>
+                                                                    @if(!empty($imageSrc))
+                                                                        <span class="badge bg-success ms-1">Found ✓</span>
+                                                                    @else
+                                                                        <span class="badge bg-danger ms-1">Not Found ✗</span>
+                                                                    @endif
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                @error('image')
+                                                    <div class="invalid-feedback d-block mt-2">
+                                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                                        {{ $message }}
+                                                    </div>
+                                                @enderror
+                                            </div>
+                                            
+                                            @if(isset($room) && !empty($room->image))
+                                                <div class="mt-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="removeImageCheck">
+                                                        <label class="form-check-label text-danger" for="removeImageCheck">
+                                                            <i class="fas fa-trash me-1"></i>
+                                                            Remove current image (select this if you want to delete the existing image)
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-
                         <!-- Step 2: Furniture Selection -->
                         <div class="form-section mb-5 fade-in">
                             <div class="section-header mb-4">
@@ -315,7 +457,7 @@
                                             <p class="mb-0 text-muted small">Review your changes before updating</p>
                                         </div>
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('ppp.room.index') }}" 
+                                            <a href="{{ route('ppp.room.index') }}"
                                                class="btn btn-outline-danger  btn-lg rounded-pill px-4 shadow-sm">
                                                 <i class="fas fa-arrow-left me-2"></i>
                                                 Back
@@ -643,12 +785,12 @@ $(document).ready(function() {
 
     // Show notification function
     function showNotification(message, type = 'success') {
-        const alertClass = type === 'success' ? 'alert-success' : 
-                          type === 'error' ? 'alert-danger' : 
+        const alertClass = type === 'success' ? 'alert-success' :
+                          type === 'error' ? 'alert-danger' :
                           type === 'warning' ? 'alert-warning' : 'alert-info';
         
-        const icon = type === 'success' ? 'fa-check-circle' : 
-                    type === 'error' ? 'fa-exclamation-triangle' : 
+        const icon = type === 'success' ? 'fa-check-circle' :
+                    type === 'error' ? 'fa-exclamation-triangle' :
                     type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
 
         const alertHtml = `
@@ -884,6 +1026,293 @@ $(document).ready(function() {
     console.log('Room Edit Form initialized successfully');
     console.log('Available furniture options:', originalFurnitureOptions.length);
     console.log('Available electronics options:', originalElectronicsOptions.length);
+});
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing image state
+    initializeExistingImage();
+    
+    // File input change event listener
+    const imageInput = document.getElementById('imageInput');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleImageUpload(file);
+            }
+        });
+    }
+    
+    // Remove image checkbox handler
+    const removeImageCheck = document.getElementById('removeImageCheck');
+    if (removeImageCheck) {
+        removeImageCheck.addEventListener('change', function() {
+            const removeImageInput = document.getElementById('removeImageInput');
+            if (this.checked) {
+                // Set hidden input to indicate image should be removed
+                removeImageInput.value = '1';
+                // Clear file input
+                document.getElementById('imageInput').value = '';
+                // Show placeholder, hide preview
+                document.getElementById('imagePreview').classList.add('d-none');
+                document.getElementById('uploadPlaceholder').classList.remove('d-none');
+                document.getElementById('imageUploadArea').classList.remove('border-success', 'has-existing-image');
+                document.getElementById('imageUploadArea').classList.add('border-dashed');
+                showNotification('Current image will be removed when you save', 'warning');
+            } else {
+                // Reset hidden input
+                removeImageInput.value = '0';
+                // Show existing image again
+                initializeExistingImage();
+                showNotification('Current image will be kept', 'info');
+            }
+        });
+    }
+    
+    console.log('Image upload component initialized');
+});
+
+function initializeExistingImage() {
+    const hasExistingImage = document.getElementById('currentImageInput') !== null;
+    if (hasExistingImage) {
+        document.getElementById('uploadPlaceholder').classList.add('d-none');
+        document.getElementById('imagePreview').classList.remove('d-none');
+        document.getElementById('imageUploadArea').classList.remove('border-dashed');
+        document.getElementById('imageUploadArea').classList.add('border-success', 'has-existing-image');
+        const removeCheck = document.getElementById('removeImageCheck');
+        if (removeCheck) removeCheck.checked = false;
+        const removeInput = document.getElementById('removeImageInput');
+        if (removeInput) removeInput.value = 'false';
+    }
+}
+
+function handleImageUpload(file) {
+    console.log('Handling image upload:', file.name, 'Size:', file.size, 'Type:', file.type);
+    
+    // Reset remove image checkbox and hidden input
+    const removeCheck = document.getElementById('removeImageCheck');
+    const removeInput = document.getElementById('removeImageInput');
+    if (removeCheck) removeCheck.checked = false;
+    if (removeInput) removeInput.value = '0';
+    
+    // Validate file type - be more specific about allowed types
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        showNotification('Please select a valid image file (JPEG, PNG, GIF, WebP). Current type: ' + file.type, 'error');
+        document.getElementById('imageInput').value = '';
+        return;
+    }
+    
+    // Validate file size (5MB = 5242880 bytes)
+    if (file.size > 5242880) {
+        showNotification('Image file size must be less than 5MB. Current size: ' + formatFileSize(file.size), 'error');
+        document.getElementById('imageInput').value = '';
+        return;
+    }
+    
+    // Validate minimum file size (avoid 0 byte files)
+    if (file.size === 0) {
+        showNotification('The selected file appears to be empty', 'error');
+        document.getElementById('imageInput').value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Show preview
+        document.getElementById('previewImage').src = e.target.result;
+        document.getElementById('imageName').textContent = file.name;
+        document.getElementById('imageSize').textContent = formatFileSize(file.size);
+        
+        // Update badges
+        const statusBadges = document.getElementById('imageStatusBadges');
+        if (statusBadges) {
+            statusBadges.innerHTML = '<span class="badge bg-success">New Image Selected ✓</span>';
+        } else {
+            const badgeHtml = '<div class="mt-2" id="imageStatusBadges"><span class="badge bg-success">New Image Selected ✓</span></div>';
+            document.getElementById('imageSize').insertAdjacentHTML('afterend', badgeHtml);
+        }
+        
+        // Hide placeholder, show preview
+        document.getElementById('uploadPlaceholder').classList.add('d-none');
+        document.getElementById('imagePreview').classList.remove('d-none');
+        
+        // Update upload area styling
+        const uploadArea = document.getElementById('imageUploadArea');
+        uploadArea.classList.remove('border-dashed', 'has-existing-image');
+        uploadArea.classList.add('border-success');
+        
+        showNotification('New image selected successfully! (' + formatFileSize(file.size) + ')', 'success');
+    };
+    
+    reader.onerror = function() {
+        showNotification('Error reading the selected file', 'error');
+        document.getElementById('imageInput').value = '';
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    console.log('Removing image');
+    
+    // Clear file input
+    document.getElementById('imageInput').value = '';
+    
+    // Check if there's an existing image
+    const hasExistingImage = document.getElementById('currentImageInput') !== null;
+    
+    if (hasExistingImage) {
+        // Show existing image again
+        initializeExistingImage();
+        showNotification('Reverted to current image', 'info');
+    } else {
+        // Hide preview, show placeholder (for create form)
+        document.getElementById('imagePreview').classList.add('d-none');
+        document.getElementById('uploadPlaceholder').classList.remove('d-none');
+        const uploadArea = document.getElementById('imageUploadArea');
+        uploadArea.classList.remove('border-success', 'has-existing-image');
+        uploadArea.classList.add('border-dashed');
+        showNotification('Image removed', 'info');
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Drag and Drop Functions
+window.dragOverHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.add('drag-over');
+};
+
+window.dragEnterHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.add('drag-over');
+};
+
+window.dragLeaveHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.remove('drag-over');
+};
+
+window.dropHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.remove('drag-over');
+    
+    const files = ev.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        // Set the file to the input element
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('imageInput').files = dataTransfer.files;
+        
+        handleImageUpload(file);
+    }
+};
+
+function showNotification(message, type = 'info') {
+    console.log(`${type.toUpperCase()}: ${message}`);
+    
+    // Create a better notification system
+    const alertClass = type === 'error' ? 'alert-danger' :
+                      type === 'success' ? 'alert-success' :
+                      type === 'warning' ? 'alert-warning' : 'alert-info';
+    
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+
+// Make removeImage function global
+window.removeImage = removeImage;
+document.addEventListener('DOMContentLoaded', function() {
+        const removeImageCheck = document.getElementById('removeImageCheck');
+        const removeImageInput = document.getElementById('removeImageInput');
+        
+        if (removeImageCheck && removeImageInput) {
+            removeImageCheck.addEventListener('change', function() {
+                // Convert boolean to string that PHP expects
+                removeImageInput.value = this.checked ? '1' : '0';
+                console.log('Remove image set to:', removeImageInput.value);
+            });
+        }
+});
+// Add this to fix the remove image checkbox handling
+const removeImageCheck = document.getElementById('removeImageCheck');
+if (removeImageCheck) {
+    removeImageCheck.addEventListener('change', function() {
+        const removeImageInput = document.getElementById('removeImageInput');
+        if (this.checked) {
+            // Set to '1' as string, not boolean true
+            removeImageInput.value = '1';
+            // Clear file input
+            document.getElementById('imageInput').value = '';
+            // Show placeholder, hide preview
+            document.getElementById('imagePreview').classList.add('d-none');
+            document.getElementById('uploadPlaceholder').classList.remove('d-none');
+            document.getElementById('imageUploadArea').classList.remove('border-success', 'has-existing-image');
+            document.getElementById('imageUploadArea').classList.add('border-dashed');
+            showNotification('Current image will be removed when you save', 'warning');
+        } else {
+            // Set to '0' as string, not boolean false
+            removeImageInput.value = '0';
+            // Show existing image again
+            initializeExistingImage();
+            showNotification('Current image will be kept', 'info');
+        }
+    });
+}
+
+// Fix the form submission to include proper debugging
+$('#roomEditForm').on('submit', function(e) {
+    console.log('Form submitted');
+    
+    // Log form data for debugging
+    const formData = new FormData(this);
+    console.log('Form data being submitted:');
+    for (let pair of formData.entries()) {
+        console.log(pair[0] + ': ' + pair[1]);
+    }
+    
+    const btnText = $('#submitBtn .btn-text');
+    const btnSpinner = $('#submitBtn .btn-spinner');
+    
+    // Show loading state
+    btnText.addClass('d-none');
+    btnSpinner.removeClass('d-none');
+    $('#submitBtn').prop('disabled', true);
+    
+    // Basic validation
+    if (!validateForm()) {
+        e.preventDefault();
+        // Reset button state
+        btnText.removeClass('d-none');
+        btnSpinner.addClass('d-none');
+        $('#submitBtn').prop('disabled', false);
+        return;
+    }
+    
+    // Don't prevent default - let form submit normally
+    console.log('Form validation passed, submitting...');
 });
 </script>
 @endpush

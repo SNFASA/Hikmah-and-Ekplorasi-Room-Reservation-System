@@ -4788,3 +4788,101 @@ body.loading * {
     color: #383d41;
     border: 1px solid #d6d8db;
 }
+.image-upload-area {
+    border-color: #dee2e6 !important;
+    background: #f8f9fa;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.image-upload-area:hover {
+    border-color: #0d6efd !important;
+    background: #e7f1ff;
+}
+
+.image-upload-area.drag-over {
+    border-color: #198754 !important;
+    background: #d1e7dd;
+    border-style: solid !important;
+}
+
+.image-upload-area.border-danger {
+    border-color: #dc3545 !important;
+}
+
+.upload-placeholder {
+    pointer-events: none;
+}
+
+.image-preview img {
+    max-width: 100%;
+    object-fit: cover;
+}
+
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.selected-count {
+    background: #198754 !important;
+    color: white !important;
+}
+
+.remove-item {
+    background: none;
+    border: none;
+    color: #dc3545;
+    padding: 5px 8px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.remove-item:hover {
+    background: #dc3545;
+    color: white;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-control-modern {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+.form-control-modern:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
+}
+.image-preview img {
+    border: 3px solid #28a745;
+}
+
+.image-preview .badge {
+    font-size: 0.75rem;
+}

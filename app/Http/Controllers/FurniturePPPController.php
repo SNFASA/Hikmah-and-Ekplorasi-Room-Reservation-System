@@ -51,7 +51,7 @@ class FurniturePPPController extends Controller
             'created_at' => carbon::now(),
             'updated_at' => carbon::now(),
         ]);
-        ActivityLogger::logEquipment('created', $furniture, 'furniture');
+        ActivityLogger::logEquipment('created', $furniture, 'Furniture created');
         return redirect()->route('ppp.furniture.index')->with('success', 'Furniture created successfully.');
     }
     
@@ -82,7 +82,7 @@ class FurniturePPPController extends Controller
             'status' => $request->status,
             'updated_at' => carbon::now(),
         ]);
-        ActivityLogger::logEquipment('updated', $furniture, 'furniture');
+        ActivityLogger::logEquipment('updated', $furniture, 'Furniture updated');
         return redirect()->route('ppp.furniture.index')->with('success', 'furniture updated successfully.');
     }
 
@@ -91,7 +91,7 @@ class FurniturePPPController extends Controller
     {
         $furniture = furniture::findOrFail($id);
         $furniture->delete();
-        ActivityLogger::logEquipment('deleted', $furniture);
+        ActivityLogger::logEquipment('deleted', $furniture, 'Furniture deleted');
         return redirect()->route('ppp.furniture.index')->with('success', 'furniture deleted successfully.');
     }
 

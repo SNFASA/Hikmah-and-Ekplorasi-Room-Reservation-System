@@ -1,2714 +1,375 @@
-@extends('backend.layouts.master')
-@section('title', 'Reservation Edit')
-@section('main-content')
-
-<div class="container-fluid px-4 py-4">
-    <!-- Enhanced Header Section with Progress Indicator -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h2 class="text-primary fw-bold mb-1">
-                        <i class="fas fa-edit me-2"></i>
-                        Edit Reservation
-                    </h2>
-                    <p class="text-muted mb-0">
-                        @if($canEditAll)
-                            Modify reservation details and information
-                        @else
-                            Update reservation status and admin comments
-                        @endif
-                    </p>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <div class="badge bg-{{ $canEditAll ? 'success' : 'warning' }} text-{{ $canEditAll ? 'white' : 'dark' }} px-3 py-2 rounded-pill shadow-sm">
-                        <i class="fas fa-{{ $canEditAll ? 'user-check' : 'user-shield' }} me-1"></i>
-                        {{ $canEditAll ? 'Full Edit' : 'Admin Edit' }}
-                    </div>
-                    <div class="badge bg-light text-dark px-3 py-2 rounded-pill border">
-                        <i class="fas fa-clock me-1"></i>
-                        {{ now()->format('M d, Y') }}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Progress Bar for Full Edit -->
-            @if($canEditAll)
-            @endif
-        </div>
+<!-- Simple Debug Section - Remove this once working -->
+@if(isset($room) && !empty($room->image))
+    <div class="alert alert-info mb-3">
+        <strong>Debug:</strong> Image value = "{{ $room->image }}"<br>
+        <strong>Test URLs:</strong><br>
+        1. /storage/{{ $room->image }} - <a href="{{ asset('storage/' . $room->image) }}" target="_blank">Test Link</a><br>
+        2. /{{ $room->image }} - <a href="{{ asset($room->image) }}" target="_blank">Test Link</a><br>
+        3. /uploads/{{ $room->image }} - <a href="{{ asset('uploads/' . $room->image) }}" target="_blank">Test Link</a>
     </div>
+@endif
 
-    <!-- Enhanced Alert Messages with Icons -->
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
-            <div class="d-flex align-items-center">
-                <div class="alert-icon me-3">
-                    <i class="fas fa-exclamation-triangle fa-lg"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <strong>Error:</strong> {{ session('error') }}
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        </div>
-    @endif
-
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
-            <div class="d-flex align-items-center">
-                <div class="alert-icon me-3">
-                    <i class="fas fa-check-circle fa-lg"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <strong>Success:</strong> {{ session('success') }}
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        </div>
-    @endif
-
-    @if(session('warning'))
-        <div class="alert alert-warning alert-dismissible fade show shadow-sm border-0 rounded-3" role="alert">
-            <div class="d-flex align-items-center">
-                <div class="alert-icon me-3">
-                    <i class="fas fa-exclamation-triangle fa-lg"></i>
-                </div>
-                <div class="flex-grow-1">
-                    <strong>Warning:</strong> {{ session('warning') }}
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        </div>
-    @endif
-
-    <!-- Main Form Card with Enhanced Structure -->
-    <div class="row justify-content-center">
-        <div class="col-xl-10 col-lg-12">
-            <div class="card booking-card shadow-lg border-0 rounded-4 overflow-hidden">
-                <!-- Enhanced Card Header -->
-                <div class="card-header bg-gradient-primary text-white p-4 border-0 position-relative">
-                    <div class="position-absolute top-0 end-0 p-3">
-                        <div class="d-flex gap-2">
-                            <span class="badge bg-white bg-opacity-20 text-black">
-                                <i class="fas fa-calendar me-1"></i>
-                                ID: #{{ $reservation->id }}
-                            </span>
-                            <span class="badge bg-{{ $reservation->status == 'approved' ? 'success' : ($reservation->status == 'pending' ? 'warning' : 'danger') }} text-white">
-                                <i class="fas fa-flag me-1"></i>
-                                {{ ucfirst($reservation->status) }}
-                            </span>
+<!-- Room Image Upload -->
+<div class="row g-4 mt-2">
+    <div class="col-12">
+        <div class="card border-0 bg-white shadow-sm rounded-3">
+            <div class="card-body p-4">
+                <h6 class="fw-bold text-dark mb-3">
+                    <i class="fas fa-camera me-2 text-primary"></i>
+                    Room Image
+                </h6>
+                
+                <div class="image-upload-container">
+                    <div class="image-upload-area border-2 border-dashed rounded-3 p-4 text-center position-relative @error('image') border-danger @enderror" 
+                         id="imageUploadArea"
+                         ondrop="dropHandler(event);" 
+                         ondragover="dragOverHandler(event);"
+                         ondragenter="dragEnterHandler(event);"
+                         ondragleave="dragLeaveHandler(event);"
+                         onclick="document.getElementById('imageInput').click()">
+                        
+                        <!-- Fixed: Simplified file input -->
+                        <input type="file" 
+                               name="image" 
+                               id="imageInput" 
+                               class="d-none" 
+                               accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                        
+                        <!-- Hidden input to handle image removal -->
+                        <input type="hidden" name="remove_image" id="removeImageInput" value="0">
+                        
+                        <!-- Hidden input to store current image for edit mode -->
+                        @if(isset($room) && !empty($room->image))
+                            <input type="hidden" name="current_image" value="{{ $room->image }}" id="currentImageInput">
+                        @endif
+                        
+                        <div id="uploadPlaceholder" class="upload-placeholder {{ (isset($room) && !empty($room->image)) ? 'd-none' : '' }}">
+                            <div class="mb-3">
+                                <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                            </div>
+                            <h6 class="fw-bold text-dark mb-2">Drop your room image here</h6>
+                            <p class="text-muted mb-3">or click to browse files</p>
+                            <button type="button" class="btn btn-outline-primary rounded-pill px-4" 
+                                    onclick="event.stopPropagation(); document.getElementById('imageInput').click()">
+                                <i class="fas fa-folder-open me-2"></i>
+                                Choose Image
+                            </button>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Supported formats: JPG, PNG, GIF, WebP (Max 5MB)
+                                </small>
+                            </div>
+                        </div>
+                        
+                        <div id="imagePreview" class="image-preview {{ (isset($room) && !empty($room->image) && $room->image !== '') ? '' : 'd-none' }}">
+                            <div class="position-relative d-inline-block">
+                                @php
+                                    // Determine the correct image source
+                                    $imageSrc = '';
+                                    if (isset($room) && !empty($room->image)) {
+                                        // First try: Laravel storage URL (most likely correct)
+                                        if (file_exists(public_path('storage/' . $room->image))) {
+                                            $imageSrc = url('storage/' . $room->image);
+                                        }
+                                        // Fallback: direct asset path
+                                        elseif (file_exists(public_path($room->image))) {
+                                            $imageSrc = asset($room->image);
+                                        }
+                                    }
+                                @endphp
+                                
+                                <img id="previewImage" 
+                                     src="{{ $imageSrc }}" 
+                                     class="img-fluid rounded-3 shadow-sm" 
+                                     style="max-height: 200px;"
+                                     alt="Room Image">
+                                     
+                                <button type="button" class="btn btn-sm btn-danger rounded-circle position-absolute" 
+                                        style="top: -10px; right: -10px;" 
+                                        onclick="event.stopPropagation(); removeImage()">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="mt-3">
+                                <p class="fw-semibold text-dark mb-1" id="imageName">
+                                    {{ (isset($room) && !empty($room->image)) ? basename($room->image) : '' }}
+                                </p>
+                                <small class="text-muted" id="imageSize">
+                                    @if(isset($room) && !empty($room->image))
+                                        @php
+                                            $size = 0;
+                                            $possiblePaths = [
+                                                public_path('storage/' . $room->image),
+                                                public_path($room->image),
+                                                public_path('uploads/' . $room->image)
+                                            ];
+                                            
+                                            foreach ($possiblePaths as $path) {
+                                                if (file_exists($path)) {
+                                                    $size = filesize($path);
+                                                    break;
+                                                }
+                                            }
+                                        @endphp
+                                        {{ $size > 0 ? number_format($size / 1024, 1) . ' KB' : 'Size unknown' }}
+                                    @endif
+                                </small>
+                                @if(isset($room) && !empty($room->image))
+                                    <div class="mt-2" id="imageStatusBadges">
+                                        <span class="badge bg-info">Current Image</span>
+                                        @if(!empty($imageSrc))
+                                            <span class="badge bg-success ms-1">Found ✓</span>
+                                        @else
+                                            <span class="badge bg-danger ms-1">Not Found ✗</span>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h5 class="card-title text-white mb-0 fw-bold">
-                                <i class="fas fa-cog me-2"></i>
-                                Reservation Update Configuration
-                            </h5>
-                            <p class="mb-0 mt-2 opacity-90">
-                                @if($canEditAll)
-                                    Complete access to modify all reservation details
-                                @else
-                                    Administrative controls for status and comments management
-                                @endif
-                            </p>
+                    @error('image')
+                        <div class="invalid-feedback d-block mt-2">
+                            <i class="fas fa-exclamation-circle me-1"></i>
+                            {{ $message }}
+                        </div>
+                    @enderror
+                </div>
+                
+                @if(isset($room) && !empty($room->image))
+                    <div class="mt-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="removeImageCheck">
+                            <label class="form-check-label text-danger" for="removeImageCheck">
+                                <i class="fas fa-trash me-1"></i>
+                                Remove current image (select this if you want to delete the existing image)
+                            </label>
                         </div>
                     </div>
-                </div>
-
-                <!-- Enhanced Card Body with Better Spacing -->
-                <div class="card-body bg-light p-0">
-                    <form method="POST" action="{{ route('backend.reservation.update', $reservation->id) }}" 
-                          id="booking-form" enctype="multipart/form-data">
-                        @csrf
-                        @method('PATCH')
-
-                        @if($canEditAll)
-                            <!-- Full Edit Form with Enhanced Sections -->
-                            
-                            <!-- Step 1: Basic Information with Visual Improvements -->
-                            <div class="form-section p-4 border-bottom" data-step="1">
-                                <div class="section-header mb-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="step-indicator bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px; font-weight: bold;">1</div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Basic Information</h6>
-                                            <p class="text-muted mb-0 small">Update the essential details for the reservation</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row g-4">
-                                    <!-- Name with Enhanced Styling -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="inputName"
-                                                type="text"
-                                                name="name"
-                                                class="form-control form-control-lg @error('name') is-invalid @enderror"
-                                                placeholder="Enter full name"
-                                                value="{{ old('name', $reservation->name) }}"
-                                                required
-                                                data-validation="required"
-                                            >
-                                            <label for="inputName">
-                                                <i class="fas fa-user me-2 text-primary"></i>
-                                                Full Name <span class="text-danger">*</span>
-                                            </label>
-                                            @error('name')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Created By with Better Visual -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                type="text"
-                                                class="form-control form-control-lg bg-light"
-                                                value="{{ $reservation->createdBy->no_matriks ?? 'N/A' }} - {{ $reservation->createdBy->name ?? 'System User' }}"
-                                                readonly
-                                                tabindex="-1"
-                                            >
-                                            <label>
-                                                <i class="fas fa-user-check me-2 text-success"></i>
-                                                Created By
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Staff ID/Matric No with Enhanced Validation -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="staff_id_matric_no"
-                                                type="text"
-                                                name="staff_id_matric_no"
-                                                class="form-control form-control-lg @error('staff_id_matric_no') is-invalid @enderror"
-                                                placeholder="Enter matric number"
-                                                value="{{ old('staff_id_matric_no', $reservation->listStudentBooking->no_matriks ?? '') }}"
-                                                maxlength="255"
-                                                required
-                                                data-validation="required"
-                                            >
-                                            <label for="staff_id_matric_no">
-                                                <i class="fas fa-id-card me-2 text-info"></i>
-                                                Staff/Matric Number <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="form-text">
-                                                <div class="d-flex align-items-center">
-                                                    <i class="fas fa-info-circle me-2 text-info"></i>
-                                                    <small>Valid matric number required. New entries will be created automatically if not found.</small>
-                                                </div>
-                                            </div>
-                                            @error('staff_id_matric_no')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Contact Number with Input Masking -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="inputContactNo"
-                                                type="text"
-                                                name="contact_no"
-                                                class="form-control form-control-lg @error('contact_no') is-invalid @enderror"
-                                                placeholder="Enter contact number"
-                                                value="{{ old('contact_no', $reservation->contact_no) }}"
-                                                required
-                                                data-validation="required|phone"
-                                            >
-                                            <label for="inputContactNo">
-                                                <i class="fas fa-phone me-2 text-success"></i>
-                                                Contact Number <span class="text-danger">*</span>
-                                            </label>
-                                            @error('contact_no')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Email with Real-time Validation -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="inputEmail"
-                                                type="email"
-                                                name="email"
-                                                class="form-control form-control-lg @error('email') is-invalid @enderror"
-                                                placeholder="Enter email"
-                                                value="{{ old('email', $reservation->email) }}"
-                                                required
-                                                data-validation="required|email"
-                                            >
-                                            <label for="inputEmail">
-                                                <i class="fas fa-envelope me-2 text-warning"></i>
-                                                Email Address <span class="text-danger">*</span>
-                                            </label>
-                                            @error('email')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Faculty/Department with Search -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <select name="faculty_office_id" id="faculty_office_id" 
-                                                    class="form-control form-control-lg @error('faculty_office_id') is-invalid @enderror" 
-                                                    required data-validation="required">
-                                                <option value="">-- Select Department --</option>
-                                                @foreach($facultie as $faculties)
-                                                    <option value="{{ $faculties->no_facultyOffice }}" 
-                                                            {{ old('faculty_office_id', $reservation->faculty_office_id) == $faculties->no_facultyOffice ? 'selected' : '' }}>
-                                                        {{ $faculties->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="faculty_office_id">
-                                                <i class="fas fa-building me-2 text-secondary"></i>
-                                                Department <span class="text-danger">*</span>
-                                            </label>
-                                            @error('faculty_office_id')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Purpose with Character Counter -->
-                                    <div class="col-md-12">
-                                        <div class="form-floating">
-                                            <textarea
-                                                id="inputPurpose"
-                                                name="purpose_program_name"
-                                                class="form-control form-control-lg @error('purpose_program_name') is-invalid @enderror"
-                                                placeholder="Enter purpose or program name"
-                                                style="height: 120px;"
-                                                required
-                                                data-validation="required"
-                                                maxlength="500"
-                                            >{{ old('purpose_program_name', $reservation->purpose_program_name) }}</textarea>
-                                            <label for="inputPurpose">
-                                                <i class="fas fa-bullseye me-2 text-primary"></i>
-                                                Purpose/Program Name <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="form-text d-flex justify-content-between">
-                                                <small><i class="fas fa-info-circle me-1 text-info"></i>Describe the purpose of your reservation</small>
-                                                <small class="text-muted"><span id="purposeCount">0</span>/500 characters</small>
-                                            </div>
-                                            @error('purpose_program_name')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Step 2: Room Selection with Visual Enhancements -->
-                            <div class="form-section p-4 border-bottom" data-step="2">
-                                <div class="section-header mb-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="step-indicator bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px; font-weight: bold;">2</div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Room Selection</h6>
-                                            <p class="text-muted mb-0 small">Choose the perfect room for your reservation</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row g-4">
-                                    <!-- Room Selection with Enhanced UI -->
-                                    <div class="col-md-12">
-                                        <div class="form-floating">
-                                            <select name="room_id" class="form-control form-control-lg room-select @error('room_id') is-invalid @enderror" 
-                                                    required data-validation="required">
-                                                <option value="">-- Select Room --</option>
-                                                @foreach($rooms as $room)
-                                                    <option value="{{ $room->no_room }}" 
-                                                            {{ old('room_id', $reservation->room_id) == $room->no_room ? 'selected' : '' }}>
-                                                        {{ $room->name }}
-                                                    </option>
-                                                @endforeach
-                                                <option value="other" {{ old('room_id', $reservation->room_id) == null && $reservation->other_room_description ? 'selected' : '' }}>
-                                                    Other (Please Specify)
-                                                </option>
-                                            </select>
-                                            <label>
-                                                <i class="fas fa-door-open me-2 text-info"></i>
-                                                Room Selection <span class="text-danger">*</span>
-                                            </label>
-                                            @error('room_id')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Other Room Description with Animation -->
-                                    <div class="col-md-12 other-room-description" style="display: {{ $reservation->other_room_description ? 'block' : 'none' }};">
-                                        <div class="form-floating">
-                                            <input
-                                                type="text"
-                                                name="other_room_description"
-                                                class="form-control form-control-lg @error('other_room_description') is-invalid @enderror"
-                                                placeholder="Please specify the room"
-                                                value="{{ old('other_room_description', $reservation->other_room_description) }}"
-                                            >
-                                            <label>
-                                                <i class="fas fa-edit me-2 text-warning"></i>
-                                                Specify Room Details <span class="text-danger">*</span>
-                                            </label>
-                                            @error('other_room_description')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Step 3: Schedule Information with Enhanced Date/Time Pickers -->
-                            <div class="form-section p-4 border-bottom" data-step="3">
-                                <div class="section-header mb-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="step-indicator bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px; font-weight: bold;">3</div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Schedule Information</h6>
-                                            <p class="text-muted mb-0 small">Set the date and time for your reservation</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="row g-4">
-                                    <!-- Date Range with Visual Feedback -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="startDate"
-                                                type="date"
-                                                name="start_date"
-                                                class="form-control form-control-lg @error('start_date') is-invalid @enderror"
-                                                value="{{ old('start_date', $reservation->start_date->format('Y-m-d')) }}"
-                                                required
-                                                data-validation="required|future_date"
-                                                min="{{ date('Y-m-d') }}"
-                                            >
-                                            <label for="startDate">
-                                                <i class="fas fa-calendar-alt me-2 text-success"></i>
-                                                Start Date <span class="text-danger">*</span>
-                                            </label>
-                                            @error('start_date')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="endDate"
-                                                type="date"
-                                                name="end_date"
-                                                class="form-control form-control-lg @error('end_date') is-invalid @enderror"
-                                                value="{{ old('end_date', $reservation->end_date->format('Y-m-d')) }}"
-                                                required
-                                                data-validation="required|after_start_date"
-                                                min="{{ date('Y-m-d') }}"
-                                            >
-                                            <label for="endDate">
-                                                <i class="fas fa-calendar-check me-2 text-danger"></i>
-                                                End Date <span class="text-danger">*</span>
-                                            </label>
-                                            @error('end_date')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Time Range with Visual Indicators -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="startTime"
-                                                type="time"
-                                                name="start_time"
-                                                class="form-control form-control-lg @error('start_time') is-invalid @enderror"
-                                                value="{{ old('start_time', substr($reservation->start_time, 0, 5)) }}"
-                                                required
-                                                data-validation="required"
-                                            >
-                                            <label for="startTime">
-                                                <i class="fas fa-clock me-2 text-info"></i>
-                                                Start Time <span class="text-danger">*</span>
-                                            </label>
-                                            @error('start_time')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                id="endTime"
-                                                type="time"
-                                                name="end_time"
-                                                class="form-control form-control-lg @error('end_time') is-invalid @enderror"
-                                                value="{{ old('end_time', substr($reservation->end_time, 0, 5)) }}"
-                                                required
-                                                data-validation="required|after_start_time"
-                                            >
-                                            <label for="endTime">
-                                                <i class="fas fa-clock me-2 text-warning"></i>
-                                                End Time <span class="text-danger">*</span>
-                                            </label>
-                                            @error('end_time')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Duration Display -->
-                                    <div class="col-md-12">
-                                        <div class="alert alert-light border d-none" id="durationDisplay">
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-hourglass-half me-2 text-primary"></i>
-                                                <span class="fw-bold">Duration: </span>
-                                                <span id="durationText" class="ms-2"></span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Step 4: Event Information with Enhanced Dropdowns -->
-                            <div class="form-section p-4 border-bottom" data-step="4">
-                                <div class="section-header mb-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="step-indicator bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px; font-weight: bold;">4</div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Event Information</h6>
-                                            <p class="text-muted mb-0 small">Provide details about your event and participants</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row g-4">
-                                    <!-- Number of Participants with Visual Indicator -->
-                                    <div class="col-md-4">
-                                        <div class="form-floating">
-                                            <input
-                                                id="inputParticipants"
-                                                type="number"
-                                                name="no_of_participants"
-                                                class="form-control form-control-lg @error('no_of_participants') is-invalid @enderror"
-                                                placeholder="Enter number of participants"
-                                                value="{{ old('no_of_participants', $reservation->no_of_participants) }}"
-                                                min="1"
-                                                max="1000"
-                                                required
-                                                data-validation="required|numeric"
-                                            >
-                                            <label for="inputParticipants">
-                                                <i class="fas fa-users me-2 text-primary"></i>
-                                                Participants <span class="text-danger">*</span>
-                                            </label>
-                                            @error('no_of_participants')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Participant Category with Icons -->
-                                    <div class="col-md-4">
-                                        <div class="form-floating">
-                                            <select
-                                                name="participant_category"
-                                                id="participant_category"
-                                                class="form-control form-control-lg @error('participant_category') is-invalid @enderror"
-                                                required
-                                                data-validation="required"
-                                            >
-                                                <option value="">-- Select Category --</option>
-                                                @foreach($participant_category as $category)
-                                                    <option value="{{ $category }}" 
-                                                            {{ old('participant_category', $reservation->participant_category) == $category ? 'selected' : '' }}>
-                                                        {{ $category }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="participant_category">
-                                                <i class="fas fa-user-friends me-2 text-success"></i>
-                                                Category <span class="text-danger">*</span>
-                                            </label>
-                                            @error('participant_category')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Event Type -->
-                                    <div class="col-md-4">
-                                        <div class="form-floating">
-                                            <select
-                                                name="event_type"
-                                                id="event_type"
-                                                class="form-control form-control-lg @error('event_type') is-invalid @enderror"
-                                                required
-                                                data-validation="required"
-                                            >
-                                                <option value="">-- Select Event Type --</option>
-                                                @foreach($event_type as $type)
-                                                    <option value="{{ $type }}" 
-                                                            {{ old('event_type', $reservation->event_type) == $type ? 'selected' : '' }}>
-                                                        {{ $type }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="event_type">
-                                                <i class="fas fa-calendar-day me-2 text-info"></i>
-                                                Event Type <span class="text-danger">*</span>
-                                            </label>
-                                            @error('event_type')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Other Participant Category (conditional with smooth animation) -->
-                                    <div class="col-md-12" id="other-participant-category" 
-                                         style="display: {{ $reservation->participant_category == 'Other' ? 'block' : 'none' }};">
-                                        <div class="form-floating">
-                                            <input
-                                                type="text"
-                                                name="other_participant_category"
-                                                class="form-control form-control-lg @error('other_participant_category') is-invalid @enderror"
-                                                placeholder="Specify other participant category"
-                                                value="{{ old('other_participant_category', $reservation->other_participant_category) }}"
-                                            >
-                                            <label>
-                                                <i class="fas fa-info-circle me-2 text-warning"></i>
-                                                Other Category Details <span class="text-danger">*</span>
-                                            </label>
-                                            @error('other_participant_category')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Step 5: Document Upload with Enhanced Drag & Drop -->
-                            <div class="form-section p-4" data-step="5">
-                                <div class="section-header mb-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="step-indicator bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px; font-weight: bold;">5</div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Document Upload</h6>
-                                            <p class="text-muted mb-0 small">Replace or maintain supporting documents (Optional)</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row g-4">
-                                    <div class="col-md-12">
-                                        <!-- Current File Display with Enhanced UI -->
-                                        @if($reservation->file_path)
-                                            <div class="card border-0 bg-info bg-opacity-10 mb-4">
-                                                <div class="card-body p-3">
-                                                    <div class="d-flex align-items-center justify-content-between">
-                                                        <div class="d-flex align-items-center">
-                                                            <div class="file-icon me-3">
-                                                                <i class="fas fa-file-alt fa-2x text-info"></i>
-                                                            </div>
-                                                            <div>
-                                                                <h6 class="mb-1 fw-bold text-info">Current Document</h6>
-                                                                <p class="mb-1"><strong>{{ $reservation->file_original_name }}</strong></p>
-                                                                <small class="text-muted">
-                                                                    {{ number_format($reservation->file_size / 1024, 2) }} KB • {{ strtoupper($reservation->file_type) }} • 
-                                                                    Uploaded {{ $reservation->created_at->diffForHumans() }}
-                                                                </small>
-                                                            </div>
-                                                        </div>
-                                                        <div class="d-flex gap-2">
-                                                            <a href="{{ Storage::url($reservation->file_path) }}" target="_blank" 
-                                                               class="btn btn-sm btn-outline-info">
-                                                                <i class="fas fa-eye me-1"></i>
-                                                                View
-                                                            </a>
-                                                            <a href="{{ Storage::url($reservation->file_path) }}" download="{{ $reservation->file_original_name }}" 
-                                                               class="btn btn-sm btn-info">
-                                                                <i class="fas fa-download me-1"></i>
-                                                                Download
-                                                            </a>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        <!-- Enhanced Upload Area with Drag & Drop -->
-                                        <div class="upload-area border-2 border-dashed border-primary rounded-3 p-5 text-center position-relative" 
-                                             id="upload-area" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);" ondragleave="dragLeaveHandler(event);">
-                                            <input
-                                                type="file"
-                                                name="document_file"
-                                                id="document_file"
-                                                class="d-none @error('document_file') is-invalid @enderror"
-                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                            >
-                                            <label for="document_file" class="upload-label cursor-pointer w-100" id="upload-label">
-                                                <div class="upload-content">
-                                                    <div class="upload-icon mb-3">
-                                                        <i class="fas fa-cloud-upload-alt fa-4x text-primary"></i>
-                                                    </div>
-                                                    <h5 class="text-primary fw-bold mb-2">
-                                                        @if($reservation->file_path)
-                                                            Replace Current Document
-                                                        @else
-                                                            Upload Supporting Document
-                                                        @endif
-                                                    </h5>
-                                                    <p class="text-muted mb-3">
-                                                        Drag and drop files here or click to browse<br>
-                                                        <small class="text-info">Supported formats: PDF, DOC, DOCX, JPG, PNG (Max: 5MB)</small>
-                                                    </p>
-                                                    <div class="upload-actions">
-                                                        <span class="btn btn-outline-primary btn-lg">
-                                                            <i class="fas fa-folder-open me-2"></i>
-                                                            Choose File
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </label>
-                                            
-                                            <!-- Upload Progress -->
-                                            <div class="upload-progress d-none" id="uploadProgress">
-                                                <div class="progress mb-2" style="height: 8px;">
-                                                    <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
-                                                         role="progressbar" style="width: 0%" id="progressBar"></div>
-                                                </div>
-                                                <small class="text-muted">Uploading... <span id="progressPercent">0%</span></small>
-                                            </div>
-                                        </div>
-                                        
-                                        @error('document_file')
-                                            <div class="invalid-feedback d-block mt-2">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-
-                        @else
-                            <!-- Admin-Only Edit Section with Enhanced Layout -->
-                            
-                            <!-- Current Reservation Details (Read-Only) with Better Organization -->
-                            <div class="form-section p-4 border-bottom">
-                                <div class="section-header mb-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="step-indicator bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px; font-weight: bold;">
-                                            <i class="fas fa-info"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Reservation Overview</h6>
-                                            <p class="text-muted mb-0 small">Current reservation details (Read-Only)</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card border-0 bg-light shadow-sm">
-                                    <div class="card-body p-4">
-                                        <!-- Basic Info Grid -->
-                                        <div class="row g-4">
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-user me-2"></i>Create By
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->createdBy->user->name ?? 'N/A'}}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-user me-2"></i>Full Name
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->name }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-envelope me-2"></i>Email Address
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->email }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-id-card me-2"></i>Matric Number
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->listStudentBooking->no_matriks ?? 'N/A' }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-phone me-2"></i>Contact Number
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->contact_no }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-building me-2"></i>Department
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->facultyOffice->name ?? 'N/A' }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-door-open me-2"></i>Room
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->room->name ?? $reservation->other_room_description ?? 'N/A' }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-calendar me-2"></i>Date Range
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->start_date->format('M d, Y') }} - {{ $reservation->end_date->format('M d, Y') }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-clock me-2"></i>Time Range
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ substr($reservation->start_time, 0, 5) }} - {{ substr($reservation->end_time, 0, 5) }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-bullseye me-2"></i>Purpose/Program Name
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->purpose_program_name }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-users me-2"></i>Participants
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->no_of_participants }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-user-friends me-2"></i>Category
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->participant_category }}</div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="info-item">
-                                                    <label class="form-label text-muted small fw-bold">
-                                                        <i class="fas fa-calendar-day me-2"></i>Event Type
-                                                    </label>
-                                                    <div class="info-value fw-semibold">{{ $reservation->event_type }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Enhanced File Preview Card with Better Layout -->
-                        @if($reservation->file_path)
-                        <div class="form-section p-4 border-bottom">
-                            <div class="section-header mb-4">
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <div class="d-flex align-items-center">
-                                        <div class="step-indicator bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px;">
-                                            <i class="fas fa-file-alt"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Supporting Document</h6>
-                                            <p class="text-muted mb-0 small">Uploaded document preview and download</p>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="togglePreview()">
-                                            <i class="fas fa-eye me-1"></i>
-                                            <span id="previewToggleText">Show Preview</span>
-                                        </button>
-                                        <a href="{{ Storage::url($reservation->file_path) }}" download="{{ $reservation->file_original_name }}" 
-                                           class="btn btn-sm btn-primary">
-                                            <i class="fas fa-download me-1"></i>
-                                            Download
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- File Info Card -->
-                            <div class="card border-0 bg-primary bg-opacity-10 mb-4">
-                                <div class="card-body p-3">
-                                    <div class="row align-items-center g-2">
-                                        <div class="col-md-6">
-                                            <div class="d-flex align-items-center">
-                                                <i class="fas fa-file-alt fa-2x text-primary me-3"></i>
-                                                <div>
-                                                    <h6 class="mb-1 fw-bold text-white">{{ $reservation->file_original_name }}</h6>
-                                                    <small class="text-white">Original filename</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <small class="text-white d-block">File Size</small>
-                                            <span class="fw-bold text-white">{{ number_format($reservation->file_size / 1024, 2) }} KB</span>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <small class="text-white d-block">File Type</small>
-                                            <span class="fw-bold text-white">{{ strtoupper($reservation->file_type) }}</span>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <small class="text-white d-block">Uploaded</small>
-                                            <span class="fw-bold text-white">{{ $reservation->created_at->format('M d, Y') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Enhanced File Preview Container -->
-                            <div class="file-preview-container d-none" id="filePreviewContainer" 
-                                style="height: 600px; border: 2px solid #e9ecef; border-radius: 12px; overflow: hidden; background: #ffffff;">
-                                @php
-                                    $fileExtension = strtolower(pathinfo($reservation->file_original_name, PATHINFO_EXTENSION));
-                                    $fileUrl = Storage::url($reservation->file_path);
-                                @endphp
-                                
-                                @if(in_array($fileExtension, ['pdf']))
-                                    <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-                                        <span class="small text-muted"><i class="fas fa-file-pdf me-1 text-danger"></i>PDF Document</span>
-                                        <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-external-link-alt me-1"></i>Open in New Tab
-                                        </a>
-                                    </div>
-                                    <iframe src="{{ $fileUrl }}" 
-                                            style="width: 100%; height: calc(100% - 45px); border: none; background: #ffffff;" 
-                                            title="PDF Document Preview">
-                                        <p class="p-4 text-center">Your browser does not support PDF preview. 
-                                        <a href="{{ $fileUrl }}" target="_blank" class="btn btn-primary">Click here to view the document</a>
-                                        </p>
-                                    </iframe>
-                                @elseif(in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                                    <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-                                        <span class="small text-muted"><i class="fas fa-image me-1 text-primary"></i>Image File</span>
-                                        <div class="d-flex gap-2">
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleImageZoom(this)">
-                                                <i class="fas fa-search-plus me-1"></i>Zoom
-                                            </button>
-                                            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-external-link-alt me-1"></i>Full Size
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div class="image-preview-container text-center p-3 h-100 d-flex align-items-center justify-content-center" 
-                                        style="overflow: auto; background: #ffffff;">
-                                        <img src="{{ $fileUrl }}" 
-                                            alt="Document Preview" 
-                                            class="img-fluid shadow rounded image-preview-content" 
-                                            id="previewImage"
-                                            style="max-height: calc(100% - 20px); max-width: calc(100% - 20px); object-fit: contain; cursor: zoom-in;"
-                                            onclick="toggleImageZoom(this)">
-                                    </div>
-                                @elseif(in_array($fileExtension, ['txt', 'md']))
-                                    <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-                                        <span class="small text-muted"><i class="fas fa-file-alt me-1 text-info"></i>Text Document</span>
-                                        <span class="small text-muted">Read-only preview</span>
-                                    </div>
-                                    <div class="p-4 h-100" style="overflow-y: auto; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.5; white-space: pre-wrap; background: #ffffff;">
-                                        @php
-                                            try {
-                                                $content = Storage::get($reservation->file_path);
-                                                echo htmlspecialchars($content);
-                                            } catch (Exception $e) {
-                                                echo "Unable to preview this file. Please download to view the contents.";
-                                            }
-                                        @endphp
-                                    </div>
-                                @elseif(in_array($fileExtension, ['doc', 'docx']))
-                                    <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-                                        <span class="small text-muted"><i class="fas fa-file-word me-1 text-primary"></i>Word Document</span>
-                                        <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-external-link-alt me-1"></i>Open in New Tab
-                                        </a>
-                                    </div>
-                                    <div class="document-preview-container h-100" style="background: #ffffff;">
-                                        <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ urlencode(url($fileUrl)) }}" 
-                                                style="width: 100%; height: calc(100% - 45px); border: none; background: #ffffff;" 
-                                                title="Word Document Preview">
-                                            <div class="d-flex align-items-center justify-content-center h-100 text-center">
-                                                <div class="p-4">
-                                                    <i class="fas fa-file-word fa-5x text-primary mb-4"></i>
-                                                    <h5 class="text-muted mb-3">Word Document Preview</h5>
-                                                    <p class="text-muted mb-4">This Word document cannot be previewed inline.<br>
-                                                    Please download the file to view its contents.</p>
-                                                    <a href="{{ $fileUrl }}" download="{{ $reservation->file_original_name }}" 
-                                                    class="btn btn-primary btn-lg">
-                                                        <i class="fas fa-download me-2"></i>
-                                                        Download Document
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </iframe>
-                                    </div>
-                                @else
-                                    <div class="d-flex align-items-center justify-content-center h-100 text-center" style="background: #ffffff;">
-                                        <div class="p-4">
-                                            <i class="fas fa-file-alt fa-5x text-muted mb-4"></i>
-                                            <h5 class="text-muted mb-3">Preview Not Available</h5>
-                                            <p class="text-muted mb-4">This file type ({{ strtoupper($fileExtension) }}) cannot be previewed inline.<br>
-                                            Please download the file to view its contents.</p>
-                                            <a href="{{ $fileUrl }}" download="{{ $reservation->file_original_name }}" 
-                                            class="btn btn-primary btn-lg">
-                                                <i class="fas fa-download me-2"></i>
-                                                Download File
-                                            </a>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        @endif
-
-                        <!-- Enhanced Admin Status and Comment Section -->
-                        @if($canEditAdminFields)
-                            <div class="form-section p-4">
-                                <div class="section-header mb-4">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <div class="step-indicator bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
-                                             style="width: 40px; height: 40px; font-weight: bold;">
-                                            <i class="fas fa-user-shield"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="text-primary fw-bold mb-1">Administrative Controls</h6>
-                                            <p class="text-muted mb-0 small">Update reservation status and add administrative comments</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="row g-4">
-                                    <!-- Status with Enhanced Visual Feedback -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <select
-                                                name="status"
-                                                id="status"
-                                                class="form-control form-control-lg @error('status') is-invalid @enderror"
-                                                required
-                                                data-validation="required"
-                                            >
-                                                @foreach($status_options as $status)
-                                                    <option value="{{ $status }}" 
-                                                            {{ old('status', $reservation->status) == $status ? 'selected' : '' }}
-                                                            data-color="{{ $status == 'approved' ? 'success' : ($status == 'pending' ? 'warning' : 'danger') }}">
-                                                        {{ ucfirst($status) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="status">
-                                                <i class="fas fa-flag me-2 text-primary"></i>
-                                                New Status <span class="text-primary">*</span>
-                                            </label>
-                                            @error('status')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Current Status Display with Badge -->
-                                    <div class="col-md-6">
-                                        <div class="form-floating">
-                                            <input
-                                                type="text"
-                                                class="form-control form-control-lg bg-light"
-                                                value="{{ ucfirst($reservation->status) }}"
-                                                readonly
-                                                tabindex="-1"
-                                            >
-                                            <label>
-                                                <i class="fas fa-info-circle me-2 text-primary"></i>
-                                                Current Status
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <!-- Admin Comment with Rich Text Features -->
-                                    <div class="col-md-12">
-                                        <div class="form-floating">
-                                            <textarea
-                                                id="admin_comment"
-                                                name="admin_comment"
-                                                class="form-control form-control-lg @error('admin_comment') is-invalid @enderror"
-                                                placeholder="Enter administrative comment or feedback (optional)"
-                                                style="height: 140px;"
-                                                maxlength="1000"
-                                            >{{ old('admin_comment', $reservation->admin_comment) }}</textarea>
-                                            <label for="admin_comment">
-                                                <i class="fas fa-comment-alt me-2 text-primary"></i>
-                                                Administrative Comment
-                                            </label>
-                                            <div class="form-text d-flex justify-content-between">
-                                                <small><i class="fas fa-info-circle me-1 text-info"></i>Add notes, feedback, or instructions for the user</small>
-                                                <small class="text-muted"><span id="commentCount">0</span>/1000 characters</small>
-                                            </div>
-                                            @error('admin_comment')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <!-- Enhanced Admin Update History -->
-                                    @if($reservation->admin_updated_by || $reservation->admin_updated_at)
-                                        <div class="col-md-12">
-                                            <div class="card border-0 bg-warning bg-opacity-10">
-                                                <div class="card-body p-3">
-                                                    <h6 class="card-title text-warning fw-bold mb-3">
-                                                        <i class="fas fa-history me-2"></i>
-                                                        Administrative Update History
-                                                    </h6>
-                                                    <div class="row g-3">
-                                                        @if($reservation->admin_updated_by)
-                                                            <div class="col-md-6">
-                                                                <div class="d-flex align-items-center">
-                                                                    <i class="fas fa-user me-2 text-warning"></i>
-                                                                    <div>
-                                                                        <small class="text-muted d-block">Last Updated By</small>
-                                                                        <strong>{{ $reservation->adminUpdatedBy->name ?? 'Unknown Admin' }}</strong>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @endif
-                                                        @if($reservation->admin_updated_at)
-                                                            <div class="col-md-6">
-                                                                <div class="d-flex align-items-center">
-                                                                    <i class="fas fa-clock me-2 text-warning"></i>
-                                                                    <div>
-                                                                        <small class="text-muted d-block">Last Updated On</small>
-                                                                        <strong>{{ $reservation->admin_updated_at->format('M d, Y H:i') }}</strong>
-                                                                        <small class="text-muted">({{ $reservation->admin_updated_at->diffForHumans() }})</small>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        @endif
-
-                        <!-- Enhanced Action Buttons with Better Visual Hierarchy -->
-                        <div class="row bg-white border-top">
-                            <div class="container-fluid p-4">
-                                <div class="row align-items-center">
-                                    <div class="col-md-8">
-                                        <div class="form-summary">
-                                            <h5 class="mb-2 fw-bold text-dark">
-                                                <i class="fas fa-check-circle me-2 text-success"></i>
-                                                Ready to Update Reservation?
-                                            </h5>
-                                            <p class="mb-0 text-muted">
-                                                @if($canEditAll)
-                                                    Please review all changes carefully before submitting your updates
-                                                @else
-                                                    Review the status change and administrative comments before updating
-                                                @endif
-                                            </p>
-                                            <!-- Form Validation Summary -->
-                                            <div class="validation-summary mt-2 d-none" id="validationSummary">
-                                                <small class="text-danger">
-                                                    <i class="fas fa-exclamation-triangle me-1"></i>
-                                                    Please complete all required fields before submitting
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 text-md-end">
-                                        <div class="d-flex gap-2 justify-content-end">
-                                            <a href="{{ route('backend.reservation.index') }}"
-                                               class="btn btn-outline-danger btn-lg rounded-pill px-4 shadow-sm">
-                                                <i class="fas fa-arrow-left me-2"></i>
-                                                Cancel
-                                            </a>
-                                            <button class="btn btn-success btn-lg rounded-pill px-4 shadow-sm"
-                                                    type="submit"
-                                                    id="submitBtn">
-                                                <span class="btn-text">
-                                                    <i class="fas fa-save me-2"></i>
-                                                    Update Reservation
-                                                </span>
-                                                <span class="btn-spinner d-none">
-                                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                                    Updating...
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Enhanced Quick Info Card with Better Design -->
-    <div class="row justify-content-center mt-4">
-        <div class="col-xl-10 col-lg-12">
-            <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-primary">
-                <div class="card-body p-4 text-white">
-                    <div class="row align-items-center">
-                        <div class="col-md-2 text-center">
-                            <div class="access-icon">
-                                <i class="fas fa-{{ $canEditAll ? 'user-check' : 'user-shield' }} fa-3x opacity-75"></i>
-                            </div>
-                        </div>
-                        <div class="col-md-10">
-                            <h5 class="text-white fw-bold mb-3">
-                                <i class="fas fa-info-circle me-2"></i>
-                                {{ $canEditAll ? 'Full Edit Access Granted' : 'Administrative Access Mode' }}
-                            </h5>
-                            <div class="row g-4">
-                                @if($canEditAll)
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-start">
-                                            <div class="feature-icon me-3 mt-1">
-                                                <i class="fas fa-user-check text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-white">Owner Privileges</div>
-                                                <small class="text-white opacity-75">Complete control over all reservation details</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-start">
-                                            <div class="feature-icon me-3 mt-1">
-                                                <i class="fas fa-edit text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-white">Full Modification</div>
-                                                <small class="text-white opacity-75">Edit dates, times, room assignments, and all details</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-start">
-                                            <div class="feature-icon me-3 mt-1">
-                                                <i class="fas fa-cloud-upload-alt text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-white">Document Management</div>
-                                                <small class="text-white opacity-75">Upload, replace, or modify supporting documents</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @else
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-start">
-                                            <div class="feature-icon me-3 mt-1">
-                                                <i class="fas fa-user-shield text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-white">Administrator Mode</div>
-                                                <small class="text-white opacity-75">Status updates and comment management only</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-start">
-                                            <div class="feature-icon me-3 mt-1">
-                                                <i class="fas fa-flag text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-white">Status Control</div>
-                                                <small class="text-white opacity-75">Approve, reject, or cancel reservation requests</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="d-flex align-items-start">
-                                            <div class="feature-icon me-3 mt-1">
-                                                <i class="fas fa-comment-alt text-white"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-semibold text-white">Administrative Notes</div>
-                                                <small class="text-white opacity-75">Add feedback, instructions, and administrative comments</small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endif
             </div>
         </div>
     </div>
 </div>
 
-@endsection
-
-@push('styles')
-<style>
-/* Enhanced Form Styling */
-.form-control-lg {
-    border-radius: 12px;
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-    padding: 1rem 1.5rem;
-}
-
-.form-control-lg:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-    transform: translateY(-1px);
-}
-
-.form-floating > label {
-    font-weight: 600;
-    color: #6c757d;
-}
-
-.step-indicator {
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.step-indicator.active {
-    background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
-    transform: scale(1.1);
-}
-
-/* Enhanced Upload Area */
-.upload-area {
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.upload-area:hover {
-    border-color: #0d6efd !important;
-    background: rgba(13, 110, 253, 0.02);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.15);
-}
-
-.upload-area.dragover {
-    border-color: #198754 !important;
-    background: rgba(25, 135, 84, 0.1);
-    transform: scale(1.02);
-}
-
-/* Enhanced Button Styling */
-.btn-lg {
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    border-radius: 50px;
-    transition: all 0.3s ease;
-}
-
-.btn-lg:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-/* Progress Bar Enhancements */
-.progress {
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    transition: width 0.6s ease;
-}
-
-/* Info Item Styling */
-.info-item {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f1f3f4;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-value {
-    font-size: 1.1em;
-    color: #2c3e50;
-    margin-top: 0.25rem;
-}
-
-/* File Preview Enhancements */
-.file-preview-container {
-    transition: all 0.3s ease;
-}
-
-.file-preview-container.show {
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-    }
-    to {
-        opacity: 1;
-        max-height: 600px;
-    }
-}
-
-/* Form Section Animations */
-.form-section {
-    opacity: 0;
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-.form-section:nth-child(1) { animation-delay: 0.1s; }
-.form-section:nth-child(2) { animation-delay: 0.2s; }
-.form-section:nth-child(3) { animation-delay: 0.3s; }
-.form-section:nth-child(4) { animation-delay: 0.4s; }
-.form-section:nth-child(5) { animation-delay: 0.5s; }
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Enhanced Alert Styling */
-.alert {
-    border: none;
-    border-left: 4px solid;
-    border-radius: 12px;
-}
-
-.alert-success {
-    border-left-color: #198754;
-    background: linear-gradient(90deg, rgba(25, 135, 84, 0.1), rgba(25, 135, 84, 0.05));
-}
-
-.alert-danger {
-    border-left-color: #dc3545;
-    background: linear-gradient(90deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
-}
-
-.alert-warning {
-    border-left-color: #fd7e14;
-    background: linear-gradient(90deg, rgba(253, 126, 20, 0.1), rgba(253, 126, 20, 0.05));
-}
-
-.alert-info {
-    border-left-color: #0dcaf0;
-    background: linear-gradient(90deg, rgba(13, 202, 240, 0.1), rgba(13, 202, 240, 0.05));
-}
-
-/* Notification Styling */
-.notification-alert {
-    border-radius: 12px;
-    border: none;
-    backdrop-filter: blur(10px);
-    animation: slideInRight 0.3s ease;
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Form Validation Visual Feedback */
-.form-control.is-valid {
-    border-color: #198754;
-    background-image: none;
-}
-
-.form-control.is-invalid {
-    border-color: #dc3545;
-    background-image: none;
-}
-
-.was-validated .form-control:valid {
-    background-image: none;
-}
-
-.was-validated .form-control:invalid {
-    background-image: none;
-}
-
-/* Loading State */
-.loading {
-    position: relative;
-    pointer-events: none;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: inherit;
-    z-index: 1;
-}
-
-/* Responsive Enhancements */
-@media (max-width: 768px) {
-    .step-indicator {
-        width: 35px;
-        height: 35px;
-        font-size: 0.9rem;
-    }
-    
-    .btn-lg {
-        padding: 0.6rem 1.5rem;
-        font-size: 0.95rem;
-    }
-    
-    .form-control-lg {
-        font-size: 1rem;
-    }
-}
-</style>
-@endpush
-
-@push('scripts')
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-$(document).ready(function() {
-    console.log('Enhanced Reservation Edit Form initializing...');
-
-    // Enhanced Progress Tracking for Full Edit Mode
-    @if($canEditAll)
-    function updateProgress() {
-        const totalFields = $('[data-validation]').length;
-        let completedFields = 0;
-        
-        $('[data-validation]').each(function() {
-            if ($(this).val() && $(this).val().trim() !== '') {
-                completedFields++;
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize existing image state
+    initializeExistingImage();
+    
+    // File input change event listener
+    const imageInput = document.getElementById('imageInput');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleImageUpload(file);
             }
         });
-        
-        const progressPercent = Math.round((completedFields / totalFields) * 100);
-        $('#formProgress').css('width', progressPercent + '%');
-        $('#progressText').text(progressPercent + '% Complete');
-        
-        // Update step indicators
-        $('.step-indicator').removeClass('active');
-        const activeStep = Math.ceil(progressPercent / 20);
-        $(`.step-indicator:nth-child(-n+${activeStep})`).addClass('active');
     }
-
-    // Real-time progress tracking
-    $('[data-validation]').on('input change', updateProgress);
-    updateProgress(); // Initial calculation
-    @endif
-
-    // Enhanced Character Counters
-    $('#inputPurpose').on('input', function() {
-        const length = $(this).val().length;
-        $('#purposeCount').text(length);
-        
-        if (length > 450) {
-            $('#purposeCount').addClass('text-danger');
-        } else if (length > 400) {
-            $('#purposeCount').addClass('text-warning').removeClass('text-danger');
-        } else {
-            $('#purposeCount').removeClass('text-warning text-danger');
-        }
-    });
-
-    $('#admin_comment').on('input', function() {
-        const length = $(this).val().length;
-        $('#commentCount').text(length);
-        
-        if (length > 900) {
-            $('#commentCount').addClass('text-danger');
-        } else if (length > 800) {
-            $('#commentCount').addClass('text-warning').removeClass('text-danger');
-        } else {
-            $('#commentCount').removeClass('text-warning text-danger');
-        }
-    });
-
-    // Initialize character counters
-    $('#inputPurpose').trigger('input');
-    $('#admin_comment').trigger('input');
-
-    @if($canEditAll)
-    // Enhanced Room Selection with Animation
-    $(document).on('change', '.room-select', function() {
-        const otherDescContainer = $('.other-room-description');
-        const otherDescInput = otherDescContainer.find('input');
-        
-        if ($(this).val() === 'other') {
-            otherDescContainer.slideDown(300);
-            otherDescInput.attr('required', true);
-            showNotification('Please specify the room details', 'info');
-        } else {
-            otherDescContainer.slideUp(300);
-            otherDescInput.attr('required', false);
-            otherDescInput.val('');
-        }
-        updateProgress();
-    });
-
-    // Enhanced Participant Category Handling
-    $('#participant_category').on('change', function() {
-        const otherContainer = $('#other-participant-category');
-        const otherInput = otherContainer.find('input');
-        
-        if ($(this).val() === 'Other') {
-            otherContainer.slideDown(300);
-            otherInput.attr('required', true);
-            showNotification('Please specify the participant category', 'info');
-        } else {
-            otherContainer.slideUp(300);
-            otherInput.attr('required', false);
-            otherInput.val('');
-        }
-        updateProgress();
-    });
-
-    // Enhanced Date and Time Validation
-    function validateDateTime() {
-        const startDate = $('#startDate').val();
-        const endDate = $('#endDate').val();
-        const startTime = $('#startTime').val();
-        const endTime = $('#endTime').val();
-        
-        if (startDate && endDate) {
-            if (startDate > endDate) {
-                showNotification('End date must be after start date', 'error');
-                $('#endDate').val('').focus();
-                return false;
-            }
-            
-            // Calculate and display duration
-            if (startTime && endTime) {
-                const start = new Date(startDate + 'T' + startTime);
-                const end = new Date(endDate + 'T' + endTime);
-                
-                if (start >= end) {
-                    showNotification('End date and time must be after start date and time', 'error');
-                    return false;
-                }
-                
-                const diffMs = end - start;
-                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                
-                $('#durationText').text(`${diffHours} hours and ${diffMins} minutes`);
-                $('#durationDisplay').removeClass('d-none');
-            }
-        }
-        return true;
-    }
-
-    $('#startDate, #endDate, #startTime, #endTime').on('change', validateDateTime);
-
-    // Enhanced File Upload with Drag & Drop
-    let dragCounter = 0;
-
-    window.dragOverHandler = function(ev) {
-        ev.preventDefault();
-        dragCounter++;
-        $('#upload-area').addClass('dragover');
-    };
-
-    window.dragLeaveHandler = function(ev) {
-        ev.preventDefault();
-        dragCounter--;
-        if (dragCounter <= 0) {
-            $('#upload-area').removeClass('dragover');
-            dragCounter = 0;
-        }
-    };
-
-    window.dropHandler = function(ev) {
-        ev.preventDefault();
-        dragCounter = 0;
-        $('#upload-area').removeClass('dragover');
-        
-        const files = ev.dataTransfer.files;
-        if (files.length > 0) {
-            const fileInput = $('#document_file')[0];
-            fileInput.files = files;
-            $(fileInput).trigger('change');
-        }
-    };
-
-    $('#document_file').on('change', function() {
-        const file = this.files[0];
-        if (file) {
-            // Validate file size
-            if (file.size > 5 * 1024 * 1024) {
-                showNotification('File size must be less than 5MB', 'error');
-                $(this).val('');
-                return;
-            }
-            
-            // Validate file type
-            const allowedTypes = ['application/pdf', 'application/msword', 
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 
-                'image/jpeg', 'image/jpg', 'image/png'];
-            
-            if (!allowedTypes.includes(file.type)) {
-                showNotification('Please upload a valid file type (PDF, DOC, DOCX, JPG, PNG)', 'error');
-                $(this).val('');
-                return;
-            }
-            
-            // Update UI with file information
-            updateUploadDisplay(file);
-            showNotification(`File selected: ${file.name}`, 'success');
-        }
-    });
-
-    function updateUploadDisplay(file) {
-        const uploadLabel = $('#upload-label .upload-content');
-        const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
-        
-        uploadLabel.html(`
-            <div class="upload-icon mb-3">
-                <i class="fas fa-check-circle fa-4x text-success"></i>
-            </div>
-            <h5 class="text-success fw-bold mb-2">New File Selected!</h5>
-            <div class="file-details p-3 bg-success bg-opacity-10 rounded mb-3">
-                <h6 class="mb-2">${file.name}</h6>
-                <div class="row text-center">
-                    <div class="col-4">
-                        <small class="text-muted d-block">Size</small>
-                        <strong>${sizeInMB} MB</strong>
-                    </div>
-                    <div class="col-4">
-                        <small class="text-muted d-block">Type</small>
-                        <strong>${file.type.split('/')[1].toUpperCase()}</strong>
-                    </div>
-                    <div class="col-4">
-                        <small class="text-muted d-block">Status</small>
-                        <strong class="text-success">Ready</strong>
-                    </div>
-                </div>
-            </div>
-            <p class="text-muted mb-3">
-                <small class="text-info">This file will replace the current document when you save</small>
-            </p>
-            <div class="upload-actions d-flex gap-2 justify-content-center">
-                <button type="button" class="btn btn-outline-success" onclick="$('#document_file').click()">
-                    <i class="fas fa-exchange-alt me-1"></i>
-                    Choose Different File
-                </button>
-                <button type="button" class="btn btn-outline-secondary" onclick="resetFileSelection()">
-                    <i class="fas fa-times me-1"></i>
-                    Remove
-                </button>
-            </div>
-        `);
-    }
-
-    window.resetFileSelection = function() {
-        $('#document_file').val('');
-        $('#upload-label .upload-content').html(`
-            <div class="upload-icon mb-3">
-                <i class="fas fa-cloud-upload-alt fa-4x text-primary"></i>
-            </div>
-            <h5 class="text-primary fw-bold mb-2">
-                ${$('#filePreviewContainer').length ? 'Replace Current Document' : 'Upload Supporting Document'}
-            </h5>
-            <p class="text-muted mb-3">
-                Drag and drop files here or click to browse<br>
-                <small class="text-info">Supported formats: PDF, DOC, DOCX, JPG, PNG (Max: 5MB)</small>
-            </p>
-            <div class="upload-actions">
-                <span class="btn btn-outline-primary btn-lg">
-                    <i class="fas fa-folder-open me-2"></i>
-                    Choose File
-                </span>
-            </div>
-        `);
-        showNotification('File selection cleared', 'info');
-    };
-    @endif
-
-    // Enhanced File Preview Toggle
-// Enhanced Image Zoom Functionality
-function toggleImageZoom(element) {
-    const img = document.getElementById('previewImage');
-    const container = img.closest('.image-preview-container');
     
-    if (img.classList.contains('zoomed')) {
-        // Zoom out
-        img.classList.remove('zoomed');
-        container.classList.remove('zoomed');
-        img.style.cursor = 'zoom-in';
-        
-        // Reset scroll position
-        container.scrollTop = 0;
-        container.scrollLeft = 0;
-        
-        // Update button text
-        const button = container.parentElement.querySelector('button');
-        if (button) {
-            button.innerHTML = '<i class="fas fa-search-plus me-1"></i>Zoom';
-        }
-    } else {
-        // Zoom in
-        img.classList.add('zoomed');
-        container.classList.add('zoomed');
-        img.style.cursor = 'zoom-out';
-        
-        // Update button text
-        const button = container.parentElement.querySelector('button');
-        if (button) {
-            button.innerHTML = '<i class="fas fa-search-minus me-1"></i>Zoom Out';
-        }
+    // Remove image checkbox handler
+    const removeImageCheck = document.getElementById('removeImageCheck');
+    if (removeImageCheck) {
+        removeImageCheck.addEventListener('change', function() {
+            const removeImageInput = document.getElementById('removeImageInput');
+            if (this.checked) {
+                // Set hidden input to indicate image should be removed
+                removeImageInput.value = '1';
+                // Clear file input
+                document.getElementById('imageInput').value = '';
+                // Show placeholder, hide preview
+                document.getElementById('imagePreview').classList.add('d-none');
+                document.getElementById('uploadPlaceholder').classList.remove('d-none');
+                document.getElementById('imageUploadArea').classList.remove('border-success', 'has-existing-image');
+                document.getElementById('imageUploadArea').classList.add('border-dashed');
+                showNotification('Current image will be removed when you save', 'warning');
+            } else {
+                // Reset hidden input
+                removeImageInput.value = '0';
+                // Show existing image again
+                initializeExistingImage();
+                showNotification('Current image will be kept', 'info');
+            }
+        });
+    }
+    
+    console.log('Image upload component initialized');
+});
+
+function initializeExistingImage() {
+    const hasExistingImage = document.getElementById('currentImageInput') !== null;
+    if (hasExistingImage) {
+        document.getElementById('uploadPlaceholder').classList.add('d-none');
+        document.getElementById('imagePreview').classList.remove('d-none');
+        document.getElementById('imageUploadArea').classList.remove('border-dashed');
+        document.getElementById('imageUploadArea').classList.add('border-success', 'has-existing-image');
+        const removeCheck = document.getElementById('removeImageCheck');
+        if (removeCheck) removeCheck.checked = false;
+        const removeInput = document.getElementById('removeImageInput');
+        if (removeInput) removeInput.value = 'false';
     }
 }
 
-// Enhanced File Preview Toggle with White Background
-window.togglePreview = function() {
-    const container = $('#filePreviewContainer');
-    const toggleText = $('#previewToggleText');
+function handleImageUpload(file) {
+    console.log('Handling image upload:', file.name, 'Size:', file.size, 'Type:', file.type);
     
-    if (container.hasClass('d-none')) {
-        // Show preview with white background
-        container.removeClass('d-none').addClass('show');
-        container.css('background', '#ffffff');
-        toggleText.text('Hide Preview');
+    // Reset remove image checkbox and hidden input
+    const removeCheck = document.getElementById('removeImageCheck');
+    const removeInput = document.getElementById('removeImageInput');
+    if (removeCheck) removeCheck.checked = false;
+    if (removeInput) removeInput.value = '0';
+    
+    // Validate file type - be more specific about allowed types
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+        showNotification('Please select a valid image file (JPEG, PNG, GIF, WebP). Current type: ' + file.type, 'error');
+        document.getElementById('imageInput').value = '';
+        return;
+    }
+    
+    // Validate file size (5MB = 5242880 bytes)
+    if (file.size > 5242880) {
+        showNotification('Image file size must be less than 5MB. Current size: ' + formatFileSize(file.size), 'error');
+        document.getElementById('imageInput').value = '';
+        return;
+    }
+    
+    // Validate minimum file size (avoid 0 byte files)
+    if (file.size === 0) {
+        showNotification('The selected file appears to be empty', 'error');
+        document.getElementById('imageInput').value = '';
+        return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        // Show preview
+        document.getElementById('previewImage').src = e.target.result;
+        document.getElementById('imageName').textContent = file.name;
+        document.getElementById('imageSize').textContent = formatFileSize(file.size);
         
-        // Ensure all child elements have white background
-        container.find('iframe, .image-preview-container, .document-preview-container').css('background', '#ffffff');
+        // Update badges
+        const statusBadges = document.getElementById('imageStatusBadges');
+        if (statusBadges) {
+            statusBadges.innerHTML = '<span class="badge bg-success">New Image Selected ✓</span>';
+        } else {
+            const badgeHtml = '<div class="mt-2" id="imageStatusBadges"><span class="badge bg-success">New Image Selected ✓</span></div>';
+            document.getElementById('imageSize').insertAdjacentHTML('afterend', badgeHtml);
+        }
         
-        showNotification('Document preview opened', 'info');
+        // Hide placeholder, show preview
+        document.getElementById('uploadPlaceholder').classList.add('d-none');
+        document.getElementById('imagePreview').classList.remove('d-none');
         
-        // Scroll to preview container
-        $('html, body').animate({
-            scrollTop: container.offset().top - 20
-        }, 500);
+        // Update upload area styling
+        const uploadArea = document.getElementById('imageUploadArea');
+        uploadArea.classList.remove('border-dashed', 'has-existing-image');
+        uploadArea.classList.add('border-success');
+        
+        showNotification('New image selected successfully! (' + formatFileSize(file.size) + ')', 'success');
+    };
+    
+    reader.onerror = function() {
+        showNotification('Error reading the selected file', 'error');
+        document.getElementById('imageInput').value = '';
+    };
+    
+    reader.readAsDataURL(file);
+}
+
+function removeImage() {
+    console.log('Removing image');
+    
+    // Clear file input
+    document.getElementById('imageInput').value = '';
+    
+    // Check if there's an existing image
+    const hasExistingImage = document.getElementById('currentImageInput') !== null;
+    
+    if (hasExistingImage) {
+        // Show existing image again
+        initializeExistingImage();
+        showNotification('Reverted to current image', 'info');
     } else {
-        // Hide preview
-        container.addClass('d-none').removeClass('show');
-        toggleText.text('Show Preview');
+        // Hide preview, show placeholder (for create form)
+        document.getElementById('imagePreview').classList.add('d-none');
+        document.getElementById('uploadPlaceholder').classList.remove('d-none');
+        const uploadArea = document.getElementById('imageUploadArea');
+        uploadArea.classList.remove('border-success', 'has-existing-image');
+        uploadArea.classList.add('border-dashed');
+        showNotification('Image removed', 'info');
+    }
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+// Drag and Drop Functions
+window.dragOverHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.add('drag-over');
+};
+
+window.dragEnterHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.add('drag-over');
+};
+
+window.dragLeaveHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.remove('drag-over');
+};
+
+window.dropHandler = function(ev) {
+    ev.preventDefault();
+    document.getElementById('imageUploadArea').classList.remove('drag-over');
+    
+    const files = ev.dataTransfer.files;
+    if (files.length > 0) {
+        const file = files[0];
+        // Set the file to the input element
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        document.getElementById('imageInput').files = dataTransfer.files;
+        
+        handleImageUpload(file);
     }
 };
 
-// Auto-resize iframe content for better fit
-$(document).ready(function() {
-    // Wait for iframe to load
-    $('iframe').on('load', function() {
-        try {
-            // Ensure iframe fills the container properly
-            $(this).css({
-                'width': '100%',
-                'height': 'calc(100% - 45px)',
-                'background': '#ffffff'
-            });
-        } catch (e) {
-            console.log('Cross-origin iframe content - cannot access');
-        }
-    });
+function showNotification(message, type = 'info') {
+    console.log(`${type.toUpperCase()}: ${message}`);
     
-    // Handle image loading for proper sizing
-    $('.image-preview-content').on('load', function() {
-        const img = $(this);
-        const container = img.closest('.image-preview-container');
-        
-        // Calculate optimal size to fill container while maintaining aspect ratio
-        const containerWidth = container.width() - 40; // 20px padding each side
-        const containerHeight = container.height() - 40; // 20px padding top/bottom
-        
-        const imgWidth = this.naturalWidth;
-        const imgHeight = this.naturalHeight;
-        
-        const aspectRatio = imgWidth / imgHeight;
-        const containerAspectRatio = containerWidth / containerHeight;
-        
-        if (aspectRatio > containerAspectRatio) {
-            // Image is wider - fit to width
-            img.css({
-                'max-width': containerWidth + 'px',
-                'max-height': 'none',
-                'height': 'auto'
-            });
-        } else {
-            // Image is taller - fit to height
-            img.css({
-                'max-height': containerHeight + 'px',
-                'max-width': 'none',
-                'width': 'auto'
-            });
-        }
-    });
+    // Create a better notification system
+    const alertClass = type === 'error' ? 'alert-danger' : 
+                      type === 'success' ? 'alert-success' : 
+                      type === 'warning' ? 'alert-warning' : 'alert-info';
     
-    // Handle window resize
-    $(window).on('resize', function() {
-        if (!$('#filePreviewContainer').hasClass('d-none')) {
-            $('.image-preview-content').trigger('load');
+    const notification = document.createElement('div');
+    notification.className = `alert ${alertClass} alert-dismissible fade show position-fixed`;
+    notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    notification.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
         }
-    });
-});
+    }, 5000);
+}
 
-    @if($canEditAdminFields)
-    // Enhanced Admin Status Change
-    $('#status').on('change', function() {
-        const newStatus = $(this).val();
-        const currentStatus = '{{ $reservation->status }}';
-        
-        if (newStatus !== currentStatus) {
-            const statusMessages = {
-                'approved': { text: 'Reservation will be APPROVED', type: 'success' },
-                'rejected': { text: 'Reservation will be REJECTED', type: 'danger' },
-                'cancelled': { text: 'Reservation will be CANCELLED', type: 'secondary' },
-                'pending': { text: 'Reservation will be set to PENDING', type: 'warning' }
-            };
-            
-            const message = statusMessages[newStatus];
-            if (message) {
-                showNotification(message.text, message.type);
-            }
-        }
-    });
-    @endif
-
-    // Enhanced Form Validation
-    function validateForm() {
-        let isValid = true;
-        const errors = [];
-        
-        $('[data-validation]').each(function() {
-            const field = $(this);
-            const rules = field.data('validation').split('|');
-            const value = field.val();
-            const fieldName = field.attr('name') || field.attr('id');
-            
-            rules.forEach(rule => {
-                switch(rule) {
-                    case 'required':
-                        if (!value || value.trim() === '') {
-                            isValid = false;
-                            field.addClass('is-invalid');
-                            errors.push(`${fieldName} is required`);
-                        } else {
-                            field.removeClass('is-invalid').addClass('is-valid');
-                        }
-                        break;
-                    case 'email':
-                        if (value && !isValidEmail(value)) {
-                            isValid = false;
-                            field.addClass('is-invalid');
-                            errors.push(`${fieldName} must be a valid email`);
-                        }
-                        break;
-                    case 'phone':
-                        if (value && !isValidPhone(value)) {
-                            isValid = false;
-                            field.addClass('is-invalid');
-                            errors.push(`${fieldName} must be a valid phone number`);
-                        }
-                        break;
-                    case 'numeric':
-                        if (value && isNaN(value)) {
-                            isValid = false;
-                            field.addClass('is-invalid');
-                            errors.push(`${fieldName} must be a number`);
-                        }
-                        break;
-                }
-            });
-        });
-        
-        if (!isValid) {
-            $('#validationSummary').removeClass('d-none');
-        } else {
-            $('#validationSummary').addClass('d-none');
-        }
-        
-        return isValid;
-    }
-
-    function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function isValidPhone(phone) {
-        return /^[\+]?[1-9][\d]{0,15}$/.test(phone.replace(/[\s\-\(\)]/g, ''));
-    }
-
-    // Real-time validation
-    $('[data-validation]').on('blur', validateForm);
-
-    // Enhanced Form Submission
-    $('#booking-form').on('submit', function(e) {
-        if (!validateForm()) {
-            e.preventDefault();
-            showNotification('Please correct all validation errors before submitting', 'error');
-            return false;
-        }
-        
-        // Show loading state
-        const btnText = $('#submitBtn .btn-text');
-        const btnSpinner = $('#submitBtn .btn-spinner');
-        
-        btnText.addClass('d-none');
-        btnSpinner.removeClass('d-none');
-        $('#submitBtn').prop('disabled', true);
-        
-        // Add loading class to form
-        $('#booking-form').addClass('loading');
-        
-        showNotification('Processing your reservation update...', 'info');
-        
-        // Simulate file upload progress if new file selected
-        if ($('#document_file').val()) {
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress >= 90) {
-                    clearInterval(interval);
-                    progress = 90;
-                }
-                
-                if ($('#uploadProgress').length === 0) {
-                    $('#upload-area').append(`
-                        <div class="upload-progress position-absolute bottom-0 start-0 end-0 p-2 bg-white border-top" id="uploadProgress">
-                            <div class="progress mb-1" style="height: 6px;">
-                                <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
-                                     role="progressbar" style="width: ${progress}%" id="progressBar"></div>
-                            </div>
-                            <small class="text-muted">Uploading... <span id="progressPercent">${Math.round(progress)}%</span></small>
-                        </div>
-                    `);
-                } else {
-                    $('#progressBar').css('width', progress + '%');
-                    $('#progressPercent').text(Math.round(progress) + '%');
-                }
-            }, 200);
-        }
-    });
-
-    // Enhanced Notification System
-    function showNotification(message, type = 'success') {
-        const alertClasses = {
-            'success': 'alert-success',
-            'error': 'alert-danger',
-            'danger': 'alert-danger',
-            'warning': 'alert-warning',
-            'info': 'alert-info',
-            'secondary': 'alert-secondary'
-        };
-        
-        const icons = {
-            'success': 'fa-check-circle',
-            'error': 'fa-exclamation-triangle',
-            'danger': 'fa-exclamation-triangle',
-            'warning': 'fa-exclamation-triangle',
-            'info': 'fa-info-circle',
-            'secondary': 'fa-pause-circle'
-        };
-
-        const alertClass = alertClasses[type] || 'alert-primary';
-        const icon = icons[type] || 'fa-bell';
-
-        const alertHtml = `
-            <div class="alert ${alertClass} alert-dismissible fade show notification-alert position-fixed shadow-lg"
-                 style="top: 20px; right: 20px; z-index: 1060; min-width: 350px; max-width: 500px;" role="alert">
-                <div class="d-flex align-items-center">
-                    <div class="alert-icon me-3">
-                        <i class="fas ${icon} fa-lg"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        ${message}
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            </div>
-        `;
-
-        // Remove existing notifications of same type
-        $(`.notification-alert .fas.${icon}`).closest('.notification-alert').remove();
-
-        // Add new notification
-        $('body').append(alertHtml);
-
-        // Auto-remove based on type
-        const autoRemoveTime = (type === 'error' || type === 'danger') ? 6000 : 4000;
-        setTimeout(() => {
-            $(`.notification-alert .fas.${icon}`).closest('.notification-alert').fadeOut(400, function() {
-                $(this).remove();
-            });
-        }, autoRemoveTime);
-    }
-
-    // Initialize tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-
-    // Enhanced keyboard shortcuts
-    $(document).on('keydown', function(e) {
-        // Ctrl/Cmd + S to save
-        if ((e.ctrlKey || e.metaKey) && e.which === 83) {
-            e.preventDefault();
-            if (!$('#submitBtn').prop('disabled')) {
-                $('#submitBtn').click();
-            }
-        }
-        
-        // Escape to close modals/notifications
-        if (e.which === 27) {
-            $('.modal').modal('hide');
-            $('.notification-alert .btn-close').click();
-        }
-    });
-
-    // Smooth scrolling to validation errors
-    function scrollToFirstError() {
-        const firstError = $('.is-invalid').first();
-        if (firstError.length) {
-            $('html, body').animate({
-                scrollTop: firstError.offset().top - 100
-            }, 500);
-            firstError.focus();
-        }
-    }
-
-    // Add scroll to error functionality
-    $(document).on('click', '#validationSummary', scrollToFirstError);
-
-    console.log('Enhanced Reservation Edit Form initialized successfully with advanced features');
-});
+// Make removeImage function global
+window.removeImage = removeImage;
 </script>
-@endpush
-@push('styles')
-<style>
-/* Enhanced File Preview Styling */
-.file-preview-container {
-    transition: all 0.3s ease;
-    background: #ffffff !important;
-}
 
-.file-preview-container.show {
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-        background: #ffffff;
-    }
-    to {
-        opacity: 1;
-        max-height: 600px;
-        background: #ffffff;
-    }
-}
-
-/* Image Preview Enhancements */
-.image-preview-container {
-    background: #ffffff !important;
-}
-
-.image-preview-content {
-    transition: all 0.3s ease;
-}
-
-.image-preview-content.zoomed {
-    max-height: none !important;
-    max-width: none !important;
-    height: auto;
-    width: auto;
-    cursor: zoom-out;
-}
-
-.image-preview-container.zoomed {
-    overflow: auto;
-    cursor: grab;
-}
-
-.image-preview-container.zoomed:active {
-    cursor: grabbing;
-}
-
-/* PDF Preview Enhancements */
-iframe {
-    background: #ffffff !important;
-}
-
-/* Document Preview Container */
-.document-preview-container {
-    background: #ffffff !important;
-}
-</style>
-@endpush
-
-
-
-
-
-
-
-
-
-
-
-
-
-                    <div class="file-preview-container" id="filePreviewContainer" style="height: 600px; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
-                        @php
-                            $fileExtension = strtolower(pathinfo($reservation->file_original_name, PATHINFO_EXTENSION));
-                            $fileUrl = Storage::url($reservation->file_path);
-                        @endphp
-                        
-                        @if(in_array($fileExtension, ['pdf']))
-                            <iframe src="{{ $fileUrl }}" 
-                                    style="width: 100%; height: 100%; border: none;" 
-                                    title="Document Preview">
-                                <p>Your browser does not support iframes. 
-                                   <a href="{{ $fileUrl }}" target="_blank">Click here to view the document</a>
-                                </p>
-                            </iframe>
-                        @elseif(in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                            <div class="text-center p-4" style="height: 100%; overflow-y: auto;">
-                                <img src="{{ $fileUrl }}" 
-                                     alt="Document Preview" 
-                                     class="img-fluid" 
-                                     style="max-height: 100%; object-fit: contain;">
-                            </div>
-                        @elseif(in_array($fileExtension, ['txt', 'md']))
-                            <div class="p-4" style="height: 100%; overflow-y: auto; background: #f8f9fa; font-family: monospace; white-space: pre-wrap;">
-                                @php
-                                    try {
-                                        $content = Storage::get($reservation->file_path);
-                                        echo htmlspecialchars($content);
-                                    } catch (Exception $e) {
-                                        echo "Unable to preview this file. Please download to view.";
-                                    }
-                                @endphp
-                            </div>
-                        @else
-                            <div class="d-flex align-items-center justify-content-center h-100 text-center">
-                                <div>
-                                    <i class="fas fa-file-alt fa-5x text-muted mb-3"></i>
-                                    <h5 class="text-muted">Preview not available</h5>
-                                    <p class="text-muted">This file type cannot be previewed inline.<br>
-                                       Please download the file to view its contents.</p>
-                                    <a href="{{ $fileUrl }}" download="{{ $reservation->file_original_name }}" class="btn btn-primary">
-                                        <i class="fas fa-download me-2"></i>
-                                        Download File
-                                    </a>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-
-
-
-
-
-
-
-
-
-                        // Enhanced File Preview Toggle
-    // Enhanced Image Zoom Functionality
-    window.toggleImageZoom = function(element) {
-    const img = document.getElementById('previewImage');
-    if (!img) return;
-    
-    const container = img.closest('.image-preview-container');
-    
-    if (img.classList.contains('zoomed')) {
-        // Zoom out
-        img.classList.remove('zoomed');
-        container.classList.remove('zoomed');
-        img.style.cursor = 'zoom-in';
-        img.style.maxWidth = 'calc(100% - 20px)';
-        img.style.maxHeight = 'calc(100% - 20px)';
-        
-        // Reset scroll position
-        container.scrollTop = 0;
-        container.scrollLeft = 0;
-        
-        // Update button text if exists
-        const button = container.parentElement.querySelector('button');
-        if (button && button.innerHTML.includes('Zoom Out')) {
-            button.innerHTML = '<i class="fas fa-search-plus me-1"></i>Zoom';
-        }
-    } else {
-        // Zoom in
-        img.classList.add('zoomed');
-        container.classList.add('zoomed');
-        img.style.cursor = 'zoom-out';
-        img.style.maxWidth = 'none';
-        img.style.maxHeight = 'none';
-        img.style.width = 'auto';
-        img.style.height = 'auto';
-        
-        // Update button text if exists
-        const button = container.parentElement.querySelector('button');
-        if (button) {
-            button.innerHTML = '<i class="fas fa-search-minus me-1"></i>Zoom Out';
-        }
-    }
-};
-    // Enhanced File Preview Toggle with White Background
-    window.togglePreview = function() {
-    const container = $('#filePreviewContainer');
-    const toggleText = $('#previewToggleText');
-    
-    if (container.hasClass('d-none')) {
-        // Show preview with white background
-        container.removeClass('d-none').addClass('show');
-        container.css('background', '#ffffff');
-        toggleText.text('Hide Preview');
-        
-        // Ensure all child elements have white background
-        container.find('iframe, .image-preview-container, .document-preview-container').css('background', '#ffffff');
-        
-        showNotification('Document preview opened', 'info');
-        
-        // Scroll to preview container smoothly
-        setTimeout(function() {
-            $('html, body').animate({
-                scrollTop: container.offset().top - 100
-            }, 500);
-        }, 100);
-    } else {
-        // Hide preview
-        container.addClass('d-none').removeClass('show');
-        toggleText.text('Show Preview');
-        showNotification('Document preview closed', 'info');
-    }
-};
-    // Auto-resize iframe content for better fit
-    $(document).ready(function() {
-    // Wait for iframe to load
-    $('iframe').on('load', function() {
-        try {
-            // Ensure iframe fills the container properly
-            $(this).css({
-                'width': '100%',
-                'height': 'calc(100% - 45px)',
-                'background': '#ffffff'
-            });
-        } catch (e) {
-            console.log('Cross-origin iframe content - cannot access');
-        }
-    });
-    
-    // Handle image loading for proper sizing
-    $('.image-preview-content').on('load', function() {
-        const img = $(this);
-        const container = img.closest('.image-preview-container');
-        
-        // Calculate optimal size to fill container while maintaining aspect ratio
-        const containerWidth = container.width() - 40; // 20px padding each side
-        const containerHeight = container.height() - 40; // 20px padding top/bottom
-        
-        const imgWidth = this.naturalWidth;
-        const imgHeight = this.naturalHeight;
-        
-        const aspectRatio = imgWidth / imgHeight;
-        const containerAspectRatio = containerWidth / containerHeight;
-        
-        if (aspectRatio > containerAspectRatio) {
-            // Image is wider - fit to width
-            img.css({
-                'max-width': containerWidth + 'px',
-                'max-height': 'none',
-                'height': 'auto'
-            });
-        } else {
-            // Image is taller - fit to height
-            img.css({
-                'max-height': containerHeight + 'px',
-                'max-width': 'none',
-                'width': 'auto'
-            });
-        }
-    });
-    
-    // Handle window resize
-    $(window).on('resize', function() {
-        if (!$('#filePreviewContainer').hasClass('d-none')) {
-            $('.image-preview-content').trigger('load');
-        }
-    });
-});
-
-
-
-
-
-
-
-
-
-
-@push('styles')
-<style>
-/* Enhanced Form Styling */
-.form-control-lg {
-    border-radius: 12px;
-    border: 2px solid #e9ecef;
-    transition: all 0.3s ease;
-    padding: 1rem 1.5rem;
-}
-
-.form-control-lg:focus {
-    border-color: #0d6efd;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
-    transform: translateY(-1px);
-}
-
-.form-floating > label {
-    font-weight: 600;
-    color: #6c757d;
-}
-
-.step-indicator {
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-}
-
-.step-indicator.active {
-    background: linear-gradient(135deg, #0d6efd, #0a58ca) !important;
-    transform: scale(1.1);
-}
-
-/* Enhanced Upload Area */
-.upload-area {
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
-
-.upload-area:hover {
-    border-color: #0d6efd !important;
-    background: rgba(13, 110, 253, 0.02);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(13, 110, 253, 0.15);
-}
-
-.upload-area.dragover {
-    border-color: #198754 !important;
-    background: rgba(25, 135, 84, 0.1);
-    transform: scale(1.02);
-}
-
-/* Enhanced Button Styling */
-.btn-lg {
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    border-radius: 50px;
-    transition: all 0.3s ease;
-}
-
-.btn-lg:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-/* Progress Bar Enhancements */
-.progress {
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.progress-bar {
-    transition: width 0.6s ease;
-}
-
-/* Info Item Styling */
-.info-item {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid #f1f3f4;
-}
-
-.info-item:last-child {
-    border-bottom: none;
-}
-
-.info-value {
-    font-size: 1.1em;
-    color: #2c3e50;
-    margin-top: 0.25rem;
-}
-
-/* File Preview Enhancements */
-.file-preview-container {
-    transition: all 0.3s ease;
-}
-
-.file-preview-container.show {
-    animation: slideDown 0.3s ease;
-}
-/* Enhanced Image Preview Zoom */
-.image-preview-content.zoomed {
-    max-height: none !important;
-    max-width: none !important;
-    transform: scale(1.5);
-    transform-origin: center;
-    transition: transform 0.3s ease;
-}
-
-.image-preview-container.zoomed {
-    overflow: auto !important;
-    cursor: grab;
-}
-
-.image-preview-container.zoomed:active {
-    cursor: grabbing;
-}
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-    }
-    to {
-        opacity: 1;
-        max-height: 600px;
-    }
-}
-
-/* Form Section Animations */
-.form-section {
-    opacity: 0;
-    animation: fadeInUp 0.6s ease forwards;
-}
-
-.form-section:nth-child(1) { animation-delay: 0.1s; }
-.form-section:nth-child(2) { animation-delay: 0.2s; }
-.form-section:nth-child(3) { animation-delay: 0.3s; }
-.form-section:nth-child(4) { animation-delay: 0.4s; }
-.form-section:nth-child(5) { animation-delay: 0.5s; }
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Enhanced Alert Styling */
-.alert {
-    border: none;
-    border-left: 4px solid;
-    border-radius: 12px;
-}
-
-.alert-success {
-    border-left-color: #198754;
-    background: linear-gradient(90deg, rgba(25, 135, 84, 0.1), rgba(25, 135, 84, 0.05));
-}
-
-.alert-danger {
-    border-left-color: #dc3545;
-    background: linear-gradient(90deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
-}
-
-.alert-warning {
-    border-left-color: #fd7e14;
-    background: linear-gradient(90deg, rgba(253, 126, 20, 0.1), rgba(253, 126, 20, 0.05));
-}
-
-.alert-info {
-    border-left-color: #0dcaf0;
-    background: linear-gradient(90deg, rgba(13, 202, 240, 0.1), rgba(13, 202, 240, 0.05));
-}
-
-/* Notification Styling */
-.notification-alert {
-    border-radius: 12px;
-    border: none;
-    backdrop-filter: blur(10px);
-    animation: slideInRight 0.3s ease;
-}
-
-@keyframes slideInRight {
-    from {
-        opacity: 0;
-        transform: translateX(100%);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-/* Form Validation Visual Feedback */
-.form-control.is-valid {
-    border-color: #198754;
-    background-image: none;
-}
-
-.form-control.is-invalid {
-    border-color: #dc3545;
-    background-image: none;
-}
-
-.was-validated .form-control:valid {
-    background-image: none;
-}
-
-.was-validated .form-control:invalid {
-    background-image: none;
-}
-
-/* Loading State */
-.loading {
-    position: relative;
-    pointer-events: none;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: inherit;
-    z-index: 1;
-}
-
-/* Responsive Enhancements */
-@media (max-width: 768px) {
-    .step-indicator {
-        width: 35px;
-        height: 35px;
-        font-size: 0.9rem;
-    }
-    
-    .btn-lg {
-        padding: 0.6rem 1.5rem;
-        font-size: 0.95rem;
-    }
-    
-    .form-control-lg {
-        font-size: 1rem;
-    }
-    /* Enhanced File Preview Styling */
-.file-preview-container {
-    transition: all 0.3s ease;
-    background: #ffffff !important;
-}
-
-.file-preview-container.show {
-    animation: slideDown 0.3s ease;
-}
-
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-        background: #ffffff;
-    }
-    to {
-        opacity: 1;
-        max-height: 600px;
-        background: #ffffff;
-    }
-}
-
-}
-</style>
-@endpush
-
-
-
-
-
-
-
-
-                        <div class="row  ">
-                            <div class="card border-0 bg-white shadow-sm rounded-3">
-                                <div class="card-body p-8">
-                                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
-                                        <div class="form-summary">
-                                            <h6 class="mb-1 fw-bold text-dark">Ready to Update Reswrvation?</h6>
-                                            <p class="mb-0 text-muted small">Review your changes before updating the reservation</p>
-                                        </div>
-                                        <div class="d-flex gap-2">
-                                            <a href="{{ route('backend.reservation.index') }}"
-                                               class="btn btn-outline-danger btn-lg rounded-pill px-4 shadow-sm">
-                                                <i class="fas fa-arrow-left me-2"></i>
-                                                Back
-                                            </a>
-                                            <button type="reset"
-                                                    class="btn btn-outline-warning btn-lg rounded-pill px-4 shadow-sm"
-                                                    id="resetBtn">
-                                                <i class="fas fa-undo-alt me-2"></i>
-                                                Reset
-                                            </button>
-                                            <button class="btn btn-success btn-lg rounded-pill px-4 shadow-sm"
-                                                    type="submit"
-                                                    id="submitBtn">
-                                                <span class="btn-text">
-                                                    <i class="fas fa-save me-2"></i>
-                                                    Update Reservation
-                                                </span>
-                                                <span class="btn-spinner d-none">
-                                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                                    Updating...
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
