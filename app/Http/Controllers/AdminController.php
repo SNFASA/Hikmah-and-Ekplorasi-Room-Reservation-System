@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\User;
 use App\Models\Admin;
 use Carbon\Carbon;
+use App\Models\ActivityLog;
 
 class AdminController extends Controller
 {
@@ -23,7 +24,8 @@ class AdminController extends Controller
      *
      * 
      */
-    public function index() {
+    public function index() 
+    {
         // Data for pie chart
         $data = User::select(
                 \DB::raw("COUNT(*) as count"), 
@@ -34,13 +36,13 @@ class AdminController extends Controller
             ->groupBy('day_name', 'day')
             ->orderBy('day')
             ->get();
-    
+
         $array[] = ['Name', 'Number'];
         foreach($data as $key => $value) {
             $array[++$key] = [$value->day_name, $value->count];
         }
-    
-        // Data for $users (example logic, adjust according to your model structure)
+
+        // Data for users chart
         $users = User::select(
             \DB::raw("COUNT(*) as count"), 
             \DB::raw("DAYNAME(created_at) as day_name"), 
@@ -50,15 +52,42 @@ class AdminController extends Controller
         ->groupBy('day_name', 'day')
         ->orderBy('day')
         ->get();
-    
+
         $usersArray[] = ['Day', 'Registered Users'];
         foreach($users as $key => $value) {
             $usersArray[++$key] = [$value->day_name, $value->count];
         }
-    
+
+        // Get recent activities for dashboard
+        $activities = ActivityLog::with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Get activity statistics
+        $activityStats = [
+            'today' => ActivityLog::whereDate('created_at', today())->count(),
+            'week' => ActivityLog::whereBetween('created_at', [
+                now()->startOfWeek(),
+                now()->endOfWeek()
+            ])->count(),
+            'total' => ActivityLog::count(),
+            'failed' => ActivityLog::where('status', 'failed')->whereDate('created_at', today())->count()
+        ];
+
+        // Get activity breakdown by type for the last 7 days
+        $activityTypes = ActivityLog::selectRaw('activity_type, COUNT(*) as count')
+            ->whereDate('created_at', '>=', now()->subDays(7))
+            ->groupBy('activity_type')
+            ->orderBy('count', 'desc')
+            ->get();
+
         return view('backend.index', [
             'admin' => json_encode($array),
-            'users' => json_encode($usersArray), // Pass the users data
+            'users' => json_encode($usersArray),
+            'activities' => $activities,
+            'activityStats' => $activityStats,
+            'activityTypes' => $activityTypes
         ]);
     }
     

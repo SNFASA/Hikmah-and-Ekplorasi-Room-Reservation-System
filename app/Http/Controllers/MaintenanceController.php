@@ -7,7 +7,7 @@ use App\Models\electronic;
 use App\Models\maintenance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use App\Services\ActivityLogger;
 class MaintenanceController extends Controller
 {
     public function __construct()
@@ -70,7 +70,7 @@ class MaintenanceController extends Controller
             return redirect()->back()->withErrors(['item_text' => 'Item name is required for "Other".']);
         }
         try {
-            Maintenance::create([
+            $maintenance = Maintenance::create([
             'title' => $request->title,
             'description' => $request->description,
             'itemType' => $request->itemType,
@@ -85,7 +85,7 @@ class MaintenanceController extends Controller
             \Log::error('Gagal simpan maintenance: ' . $e->getMessage());
             return back()->withErrors(['msg' => 'Simpan gagal: ' . $e->getMessage()]);
         }
-    
+        ActivityLogger::logMaintenance('created', $maintenance, 'Maintenance report created.');
         return redirect()->route('backend.maintenance.index')->with('success', 'Maintenance report created successfully.');
     }
     // Show the form for editing the specified 
@@ -126,7 +126,7 @@ class MaintenanceController extends Controller
             'status' => $request->status,
             'reported_by' => auth()->id(),
         ]);
-
+        ActivityLogger::logMaintenance('updated', $maintenances, 'Maintenance report updated.');
         return redirect()->route('backend.maintenance.index')->with('success', 'Report updated successfully.');
     }
     // Remove the specified from storage
@@ -134,7 +134,7 @@ class MaintenanceController extends Controller
     {
         $maintenance = maintenance::findOrFail($id);
         $maintenance->delete();
-
+        ActivityLogger::logMaintenance('deleted', $maintenance, 'Maintenance report deleted.');
         return redirect()->route('backend.maintenance.index')->with('success', 'Report deleted successfully.');
     }
     public function getItems(Request $request)

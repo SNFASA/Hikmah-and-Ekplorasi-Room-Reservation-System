@@ -1,280 +1,85 @@
-<!-- Enhanced File Preview Container with Fixed Display Issues -->
-<div class="file-preview-container d-none" id="filePreviewContainer" 
-     style="height: 600px; border: 2px solid #e9ecef; border-radius: 12px; overflow: hidden; background: #ffffff;">
-    @php
-        $fileExtension = strtolower(pathinfo($reservation->file_original_name, PATHINFO_EXTENSION));
-        $fileUrl = Storage::url($reservation->file_path);
-    @endphp
-    
-    @if(in_array($fileExtension, ['pdf']))
-        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-            <span class="small text-muted"><i class="fas fa-file-pdf me-1 text-danger"></i>PDF Document</span>
-            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                <i class="fas fa-external-link-alt me-1"></i>Open in New Tab
-            </a>
-        </div>
-        <iframe src="{{ $fileUrl }}" 
-                style="width: 100%; height: calc(100% - 45px); border: none; background: #ffffff;" 
-                title="PDF Document Preview">
-            <p class="p-4 text-center">Your browser does not support PDF preview. 
-            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-primary">Click here to view the document</a>
-            </p>
-        </iframe>
-    @elseif(in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-            <span class="small text-muted"><i class="fas fa-image me-1 text-primary"></i>Image File</span>
-            <div class="d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="toggleImageZoom(this)">
-                    <i class="fas fa-search-plus me-1"></i>Zoom
-                </button>
-                <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-external-link-alt me-1"></i>Full Size
-                </a>
-            </div>
-        </div>
-        <div class="image-preview-container text-center p-3 h-100 d-flex align-items-center justify-content-center" 
-             style="overflow: auto; background: #ffffff;">
-            <img src="{{ $fileUrl }}" 
-                alt="Document Preview" 
-                class="img-fluid shadow rounded image-preview-content" 
-                id="previewImage"
-                style="max-height: calc(100% - 20px); max-width: calc(100% - 20px); object-fit: contain; cursor: zoom-in;"
-                onclick="toggleImageZoom(this)">
-        </div>
-    @elseif(in_array($fileExtension, ['txt', 'md']))
-        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-            <span class="small text-muted"><i class="fas fa-file-alt me-1 text-info"></i>Text Document</span>
-            <span class="small text-muted">Read-only preview</span>
-        </div>
-        <div class="p-4 h-100" style="overflow-y: auto; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.5; white-space: pre-wrap; background: #ffffff;">
-            @php
-                try {
-                    $content = Storage::get($reservation->file_path);
-                    echo htmlspecialchars($content);
-                } catch (Exception $e) {
-                    echo "Unable to preview this file. Please download to view the contents.";
-                }
-            @endphp
-        </div>
-    @elseif(in_array($fileExtension, ['doc', 'docx']))
-        <div class="d-flex justify-content-between align-items-center bg-white p-2 border-bottom">
-            <span class="small text-muted"><i class="fas fa-file-word me-1 text-primary"></i>Word Document</span>
-            <a href="{{ $fileUrl }}" target="_blank" class="btn btn-sm btn-outline-primary">
-                <i class="fas fa-external-link-alt me-1"></i>Open in New Tab
-            </a>
-        </div>
-        <div class="document-preview-container h-100" style="background: #ffffff;">
-            <iframe src="https://view.officeapps.live.com/op/embed.aspx?src={{ urlencode(url($fileUrl)) }}" 
-                    style="width: 100%; height: calc(100% - 45px); border: none; background: #ffffff;" 
-                    title="Word Document Preview">
-                <div class="d-flex align-items-center justify-content-center h-100 text-center">
-                    <div class="p-4">
-                        <i class="fas fa-file-word fa-5x text-primary mb-4"></i>
-                        <h5 class="text-muted mb-3">Word Document Preview</h5>
-                        <p class="text-muted mb-4">This Word document cannot be previewed inline.<br>
-                        Please download the file to view its contents.</p>
-                        <a href="{{ $fileUrl }}" download="{{ $reservation->file_original_name }}" 
-                           class="btn btn-primary btn-lg">
-                            <i class="fas fa-download me-2"></i>
-                            Download Document
-                        </a>
-                    </div>
-                </div>
-            </iframe>
-        </div>
-    @else
-        <div class="d-flex align-items-center justify-content-center h-100 text-center" style="background: #ffffff;">
-            <div class="p-4">
-                <i class="fas fa-file-alt fa-5x text-muted mb-4"></i>
-                <h5 class="text-muted mb-3">Preview Not Available</h5>
-                <p class="text-muted mb-4">This file type ({{ strtoupper($fileExtension) }}) cannot be previewed inline.<br>
-                Please download the file to view its contents.</p>
-                <a href="{{ $fileUrl }}" download="{{ $reservation->file_original_name }}" 
-                   class="btn btn-primary btn-lg">
-                    <i class="fas fa-download me-2"></i>
-                    Download File
-                </a>
-            </div>
-        </div>
-    @endif
-</div>
+<?php
 
-<style>
-/* Enhanced File Preview Styling */
-.file-preview-container {
-    transition: all 0.3s ease;
-    background: #ffffff !important;
-}
+namespace App\Http\Controllers;
 
-.file-preview-container.show {
-    animation: slideDown 0.3s ease;
-}
+use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\ActivityLog;
+use Carbon\Carbon;
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-        background: #ffffff;
-    }
-    to {
-        opacity: 1;
-        max-height: 600px;
-        background: #ffffff;
+class AdminController extends Controller
+{
+    public function index() 
+    {
+        // Data for pie chart
+        $data = User::select(
+                \DB::raw("COUNT(*) as count"), 
+                \DB::raw("DAYNAME(created_at) as day_name"), 
+                \DB::raw("DAY(created_at) as day")
+            )
+            ->where('created_at', '>', Carbon::today()->subDays(6)) 
+            ->groupBy('day_name', 'day')
+            ->orderBy('day')
+            ->get();
+
+        $array[] = ['Name', 'Number'];
+        foreach($data as $key => $value) {
+            $array[++$key] = [$value->day_name, $value->count];
+        }
+
+        // Data for users chart
+        $users = User::select(
+            \DB::raw("COUNT(*) as count"), 
+            \DB::raw("DAYNAME(created_at) as day_name"), 
+            \DB::raw("DAY(created_at) as day")
+        )
+        ->where('created_at', '>', Carbon::today()->subDays(6))
+        ->groupBy('day_name', 'day')
+        ->orderBy('day')
+        ->get();
+
+        $usersArray[] = ['Day', 'Registered Users'];
+        foreach($users as $key => $value) {
+            $usersArray[++$key] = [$value->day_name, $value->count];
+        }
+
+        // Get recent activities for dashboard
+        $activities = ActivityLog::with('user')
+            ->orderBy('created_at', 'desc')
+            ->limit(10)
+            ->get();
+
+        // Get activity statistics
+        $activityStats = [
+            'today' => ActivityLog::whereDate('created_at', today())->count(),
+            'week' => ActivityLog::whereBetween('created_at', [
+                now()->startOfWeek(),
+                now()->endOfWeek()
+            ])->count(),
+            'total' => ActivityLog::count(),
+            'failed' => ActivityLog::where('status', 'failed')->whereDate('created_at', today())->count()
+        ];
+
+        // Get activity breakdown by type for the last 7 days
+        $activityTypes = ActivityLog::selectRaw('activity_type, COUNT(*) as count')
+            ->whereDate('created_at', '>=', now()->subDays(7))
+            ->groupBy('activity_type')
+            ->orderBy('count', 'desc')
+            ->get();
+
+        return view('backend.index', [
+            'admin' => json_encode($array),
+            'users' => json_encode($usersArray),
+            'activities' => $activities,
+            'activityStats' => $activityStats,
+            'activityTypes' => $activityTypes
+        ]);
     }
 }
 
-/* Image Preview Enhancements */
-.image-preview-container {
-    background: #ffffff !important;
-}
 
-.image-preview-content {
-    transition: all 0.3s ease;
-}
 
-.image-preview-content.zoomed {
-    max-height: none !important;
-    max-width: none !important;
-    height: auto;
-    width: auto;
-    cursor: zoom-out;
-}
 
-.image-preview-container.zoomed {
-    overflow: auto;
-    cursor: grab;
-}
 
-.image-preview-container.zoomed:active {
-    cursor: grabbing;
-}
 
-/* PDF Preview Enhancements */
-iframe {
-    background: #ffffff !important;
-}
-
-/* Document Preview Container */
-.document-preview-container {
-    background: #ffffff !important;
-}
-</style>
-
-<script>
-// Enhanced Image Zoom Functionality
-function toggleImageZoom(element) {
-    const img = document.getElementById('previewImage');
-    const container = img.closest('.image-preview-container');
-    
-    if (img.classList.contains('zoomed')) {
-        // Zoom out
-        img.classList.remove('zoomed');
-        container.classList.remove('zoomed');
-        img.style.cursor = 'zoom-in';
-        
-        // Reset scroll position
-        container.scrollTop = 0;
-        container.scrollLeft = 0;
-        
-        // Update button text
-        const button = container.parentElement.querySelector('button');
-        if (button) {
-            button.innerHTML = '<i class="fas fa-search-plus me-1"></i>Zoom';
-        }
-    } else {
-        // Zoom in
-        img.classList.add('zoomed');
-        container.classList.add('zoomed');
-        img.style.cursor = 'zoom-out';
-        
-        // Update button text
-        const button = container.parentElement.querySelector('button');
-        if (button) {
-            button.innerHTML = '<i class="fas fa-search-minus me-1"></i>Zoom Out';
-        }
-    }
-}
-
-// Enhanced File Preview Toggle with White Background
-window.togglePreview = function() {
-    const container = $('#filePreviewContainer');
-    const toggleText = $('#previewToggleText');
-    
-    if (container.hasClass('d-none')) {
-        // Show preview with white background
-        container.removeClass('d-none').addClass('show');
-        container.css('background', '#ffffff');
-        toggleText.text('Hide Preview');
-        
-        // Ensure all child elements have white background
-        container.find('iframe, .image-preview-container, .document-preview-container').css('background', '#ffffff');
-        
-        showNotification('Document preview opened', 'info');
-        
-        // Scroll to preview container
-        $('html, body').animate({
-            scrollTop: container.offset().top - 20
-        }, 500);
-    } else {
-        // Hide preview
-        container.addClass('d-none').removeClass('show');
-        toggleText.text('Show Preview');
-    }
-};
-
-// Auto-resize iframe content for better fit
-$(document).ready(function() {
-    // Wait for iframe to load
-    $('iframe').on('load', function() {
-        try {
-            // Ensure iframe fills the container properly
-            $(this).css({
-                'width': '100%',
-                'height': 'calc(100% - 45px)',
-                'background': '#ffffff'
-            });
-        } catch (e) {
-            console.log('Cross-origin iframe content - cannot access');
-        }
-    });
-    
-    // Handle image loading for proper sizing
-    $('.image-preview-content').on('load', function() {
-        const img = $(this);
-        const container = img.closest('.image-preview-container');
-        
-        // Calculate optimal size to fill container while maintaining aspect ratio
-        const containerWidth = container.width() - 40; // 20px padding each side
-        const containerHeight = container.height() - 40; // 20px padding top/bottom
-        
-        const imgWidth = this.naturalWidth;
-        const imgHeight = this.naturalHeight;
-        
-        const aspectRatio = imgWidth / imgHeight;
-        const containerAspectRatio = containerWidth / containerHeight;
-        
-        if (aspectRatio > containerAspectRatio) {
-            // Image is wider - fit to width
-            img.css({
-                'max-width': containerWidth + 'px',
-                'max-height': 'none',
-                'height': 'auto'
-            });
-        } else {
-            // Image is taller - fit to height
-            img.css({
-                'max-height': containerHeight + 'px',
-                'max-width': 'none',
-                'width': 'auto'
-            });
-        }
-    });
-    
-    // Handle window resize
-    $(window).on('resize', function() {
-        if (!$('#filePreviewContainer').hasClass('d-none')) {
-            $('.image-preview-content').trigger('load');
-        }
-    });
-});
-</script>
+Error: Failed to update reservation. SQLSTATE[01000]: Warning: 1265 Data truncated for column 'status' at row 1 (Connection: mysql, SQL: insert into `activity_logs` (`activity_type`, `action`, `description`, `model_type`, `model_id`, `user_id`, `user_name`, `ip_address`, `old_values`, `new_values`, `status`, `severity`, `updated_at`, `created_at`) values (reservation, status_changed, Facility reservation status changed to Approved for Auditorium Al-Jazari Aras 3, App\Models\FasilitesReservation, 15, 204, afifi, 127.0.0.1, ?, ?, Approved, info, 2025-09-14 12:42:47, 2025-09-14 12:42:47))

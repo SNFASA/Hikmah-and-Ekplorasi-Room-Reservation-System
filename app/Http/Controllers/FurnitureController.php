@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 use App\Models\furniture;
 use App\Models\CategoryEquipment;
 use Illuminate\Http\Request;
-
+use Carbon\Carbon;
+use App\Services\ActivityLogger;
 class FurnitureController extends Controller
 {
 
@@ -58,12 +59,14 @@ class FurnitureController extends Controller
             'status' => 'required|string|max:255',
         ]);
         
-        furniture::create([
+        $furniture = furniture::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
             'status' => $request->status,
+            'created_at' => carbon::now(),
+            'updated_at' => carbon::now(),
         ]);
-    
+        ActivityLogger::logEquipment('created', $furniture, 'furniture');
         return redirect()->route('backend.furniture.index')->with('success', 'Furniture created successfully.');
     }
     
@@ -92,8 +95,9 @@ class FurnitureController extends Controller
             'name' => $request->name,
             'category_id' => $request->category_id,
             'status' => $request->status,
+            'updated_at' => carbon::now(),
         ]);
-
+        ActivityLogger::logEquipment('updated', $furniture, 'furniture');
         return redirect()->route('backend.furniture.index')->with('success', 'furniture updated successfully.');
     }
 
@@ -102,7 +106,7 @@ class FurnitureController extends Controller
     {
         $furniture = furniture::findOrFail($id);
         $furniture->delete();
-
+        ActivityLogger::logEquipment('deleted', $furniture, 'furniture');
         return redirect()->route('backend.furniture.index')->with('success', 'furniture deleted successfully.');
     }
 }

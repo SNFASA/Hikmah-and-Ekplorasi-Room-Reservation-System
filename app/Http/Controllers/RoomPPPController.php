@@ -9,7 +9,7 @@ use App\Models\TypeRooms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-
+use App\Services\ActivityLogger;
 class RoomPPPController extends Controller
 {
     /**
@@ -153,7 +153,7 @@ class RoomPPPController extends Controller
         
                 // Log the updated room to check the changes
                 \Log::info('Room after update:', $room->toArray());
-        
+                ActivityLogger::logRoom('Room updated', $room,'Room');
                 // If no room ID is generated, throw an exception (this is unlikely for an update but kept for safety)
                 if (!$room->no_room) {
                     throw new \Exception('Room ID not generated!');
@@ -200,9 +200,8 @@ class RoomPPPController extends Controller
         // Detach related furniture and electronics
         $room->furnitures()->detach();
         $room->electronics()->detach();
-
         $room->delete();
-
+        ActivityLogger::logRoom('Room deleted', $room,'Room');
         return redirect()->route('ppp.room.index')->with('success', 'Room deleted successfully.');
     }
     

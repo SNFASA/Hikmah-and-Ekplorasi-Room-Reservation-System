@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use App\Services\ActivityLogger;
 class UsersController extends Controller
 {
     // Display a listing of users
@@ -50,7 +50,7 @@ class UsersController extends Controller
         \Log::info('Role being inserted: ' . $request->role);
 
         $status = User::create($data);
-
+        ActivityLogger::logUser('created', $status);
         if ($status) {
             request()->session()->flash('success', 'Successfully added new User');
         } else {
@@ -97,7 +97,7 @@ class UsersController extends Controller
         }
 
         $status = $users->fill($data)->save();
-
+        ActivityLogger::logUser('updated', $users);
         if ($status) {
             request()->session()->flash('success', 'Successfully updated user');
         } else {
@@ -112,7 +112,7 @@ class UsersController extends Controller
     {
         $users = User::findOrFail($id);
         $status = $users->delete();
-
+        ActivityLogger::logUser('deleted', $users);
         if ($status) {
             request()->session()->flash('success', 'Student successfully deleted');
         } else {

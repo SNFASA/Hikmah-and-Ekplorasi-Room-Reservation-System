@@ -170,36 +170,25 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="px-4 py-3">
-                                        <i class="fas fa-book text-primary me-2"></i>
-                                        New booking created for Conference Room A
-                                    </td>
-                                    <td><span class="badge badge-primary">Booking</span></td>
-                                    <td>John Doe</td>
-                                    <td class="text-muted">2 mins ago</td>
-                                    <td><span class="badge badge-success">Completed</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">
-                                        <i class="fas fa-desktop text-success me-2"></i>
-                                        Projector maintenance scheduled
-                                    </td>
-                                    <td><span class="badge badge-success">Electronics</span></td>
-                                    <td>Admin</td>
-                                    <td class="text-muted">15 mins ago</td>
-                                    <td><span class="badge badge-warning">Pending</span></td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">
-                                        <i class="fas fa-chair text-info me-2"></i>
-                                        New furniture added to inventory
-                                    </td>
-                                    <td><span class="badge badge-info">Furniture</span></td>
-                                    <td>Jane Smith</td>
-                                    <td class="text-muted">1 hour ago</td>
-                                    <td><span class="badge badge-success">Completed</span></td>
-                                </tr>
+                                @forelse($activities ?? [] as $activity)
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <i class="{{ $activity->icon }} text-primary me-2"></i>
+                                            {{ $activity->description }}
+                                        </td>
+                                        <td>{!! $activity->type_badge !!}</td>
+                                        <td>{{ $activity->user_name }}</td>
+                                        <td class="text-muted">{{ $activity->time_ago }}</td>
+                                        <td>{!! $activity->status_badge !!}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center py-4 text-muted">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            No recent activities found
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

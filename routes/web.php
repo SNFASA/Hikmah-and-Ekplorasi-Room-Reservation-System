@@ -30,7 +30,7 @@ use App\Http\Controllers\FacultyOfficeController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\FacilitiesReservationController;
-
+use App\Http\Controllers\ActivityController;
 
 // Authentication Routes
 Auth::routes(['register' => true]);
@@ -305,7 +305,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('backend.index');
     //  Route::get('/home', [FrontendController::class, 'home'])->name('home');
     Route::get('/', [AdminController::class, 'index'])->name('admin');
-    
+    // API route for activities (if you need dynamic loading)
+    Route::get('/api/activities', [AdminController::class, 'getRecentActivities'])->name('api.activities');
     // File Manager
     Route::get('/file-manager', function () {
         return view('backend.layouts.file-manager');

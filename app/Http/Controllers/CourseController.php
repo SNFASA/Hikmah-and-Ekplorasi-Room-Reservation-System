@@ -40,7 +40,7 @@ class CourseController extends Controller
             'name' => $request->name,
             'department_id' => $request->department_id,
         ]);
-
+        
         return redirect()->route('backend.course.index')
             ->with('success', 'Course added successfully.');
     }

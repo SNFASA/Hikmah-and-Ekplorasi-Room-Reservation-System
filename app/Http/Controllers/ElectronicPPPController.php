@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\CategoryEquipment;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-
+use App\Services\ActivityLogger;
 class ElectronicPPPController extends Controller
 {
     // Constructor with middleware to restrict access to admins and PPP users
@@ -45,12 +45,14 @@ class ElectronicPPPController extends Controller
             'status' => 'required|string|max:255',
         ]);
     
-        Electronic::create([  // Correct model name is Electronic
+        $electronic = Electronic::create([  // Correct model name is Electronic
             'name' => $request->name,
             'category_id' => $request->category_id,
             'status' => $request->status,
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
-    
+        ActivityLogger::logEquipment('created', $electronic, 'electronics');
         return redirect()->route('ppp.electronic.index')->with('success', 'Electronic device created successfully.');
     }
     
@@ -78,8 +80,9 @@ class ElectronicPPPController extends Controller
             'name' => $request->name,
             'category_id' => $request->category_id,
             'status' => $request->status,
+            'updated_at' => Carbon::now(),
         ]);
-
+        ActivityLogger::logEquipment('updated', $electronics, 'electronics');
         return redirect()->route('ppp.electronic.index')->with('success', 'electronic device updated successfully.');
     }
 
@@ -88,7 +91,7 @@ class ElectronicPPPController extends Controller
     {
         $electronics = electronic::findOrFail($id);
         $electronics->delete();
-
+        ActivityLogger::logEquipment('deleted', $electronics, 'electronics');
         return redirect()->route('ppp.electronic.index')->with('success', 'electronic device deleted successfully.');
     }
 }

@@ -20,7 +20,7 @@ use App\Notifications\StatusNotification;
 use App\Notifications\NewBookingNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Jobs\SendBookingReminderMail;
-
+use App\Services\ActivityLogger;
 
 
 class BookingController extends Controller
@@ -181,6 +181,8 @@ class BookingController extends Controller
             'phone_number' => $request->phone_number,
             'status' => 'approved',
         ]);
+        // Log the booking creation
+        ActivityLogger::logBooking('created', $booking);
 
         // Attach students to booking
         $this->attachStudentsToBooking($booking, $students);
@@ -281,7 +283,7 @@ public function edit($id)
 public function update(Request $request, $id)
     {
         $booking = Bookings::findOrFail($id);
-
+        $oldValues = $booking->toArray();
         $request->validate([
             'booking_date' => 'required|date',
             'booking_time_start' => 'required|date_format:H:i',
@@ -347,6 +349,8 @@ public function update(Request $request, $id)
             'status' => 'approved',
         ]);
     
+        // Log the activity
+        ActivityLogger::logBooking('updated', $booking);
         // Pass the original student array directly
         $this->attachStudentsToBooking($booking, $students);
 
@@ -354,36 +358,12 @@ public function update(Request $request, $id)
         return redirect()->route('bookings.index')->with('success', 'Booking updated successfully.');
 }
 
-        /**
-         * Remove the specified booking from storage.
-         *
-         * 
-         * 
-         */
-        public function destroy($id)
-        {
-            \Log::info('Delete request received for schedule ID: ' . $id);
-            
-            if (!auth()->check()) {
-                \Log::error('User not authenticated');
-                return redirect()->route('login');
-            }
-            
-            try {
-                $schedule = Schedule::findOrFail($id);
-                \Log::info('Schedule found: ' . json_encode($schedule));
-                
-                $schedule->delete();
-                \Log::info('Schedule deleted successfully');
-                
-                return redirect()->route('schedule.index')
-                    ->with('success', 'Schedule deleted successfully');
-            } catch (\Exception $e) {
-                \Log::error('Error deleting schedule: ' . $e->getMessage());
-                return redirect()->route('schedule.index')
-                    ->with('error', 'Error deleting schedule: ' . $e->getMessage());
-            }
-        }
+public function destroy($id){
+    $booking = Bookings::findOrFail($id);
+    $booking->delete();
+    ActivityLogger::logBooking('deleted', $booking);
+    return redirect()->route('bookings.index')->with('success', 'Booking deleted successfully.');
+}
 
         /**
          * Attach students to a booking.
@@ -626,7 +606,8 @@ public function storeBookingForm(Request $request)
         'phone_number' => $request->phone_number,
         'status' => 'approved',
     ]);
-
+    // Log the booking creation
+    ActivityLogger::logBooking('created', $booking);
     // Attach students to booking
     $this->attachStudentsToBooking($booking, $students);
 
@@ -775,10 +756,10 @@ public function myBookings(Request $request)
          return view('frontend.pages.Mybooking', ['bookingDetails' => $groupedBookings]);
 }
 public function cancelBooking($id){
-        $booking = Bookings::findOrFail($id);
-        $booking->delete();
-
-        return redirect()->route('home')->with('success', 'Booking deleted successfully.');
+    $booking = Bookings::findOrFail($id);
+    $booking->delete();
+    ActivityLogger::logBooking('deleted', $booking);
+    return redirect()->route('home')->with('success', 'Booking deleted successfully.');
 }
 public function calendarAdmin()
 {
@@ -854,7 +835,7 @@ public function Formupdate(Request $request, $id)
 {
     // Retrieve the booking by ID
     $booking = Bookings::findOrFail($id);
-
+    $oldValues = $booking->toArray();
     // Format the time inputs
         $request->merge([
             'booking_time_start' => Carbon::parse($request->input('booking_time_start'))->format('H:i'),
@@ -911,7 +892,7 @@ public function Formupdate(Request $request, $id)
         'phone_number' => $request->phone_number,
         'status' => 'approved',
     ]);
-
+    ActivityLogger::logBooking('updated', $booking);
     // Update students
     $students = $request->input('students');
     $this->attachStudentsToBooking($booking, $students);
@@ -931,4 +912,5 @@ public function show($id)
     return view('backend.booking.show', compact('booking'));
 }
 }
+
 

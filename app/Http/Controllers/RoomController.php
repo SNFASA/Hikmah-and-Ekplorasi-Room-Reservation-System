@@ -9,7 +9,7 @@ use App\Models\TypeRooms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
-
+use App\Services\ActivityLogger;
 class RoomController extends Controller
 {
     /**
@@ -83,7 +83,7 @@ class RoomController extends Controller
         
                 // Log the saved room and check the ID
                 \Log::info('Room after save:', $room->toArray());
-        
+                ActivityLogger::logRoom('Room created', $room,'Room');
                 // If no room ID is generated, throw an exception
                 if (!$room->no_room) {
                     throw new \Exception('Room ID not generated!');
@@ -106,7 +106,6 @@ class RoomController extends Controller
             }
         });
         
-    
         return redirect()->route('room.index')->with('success', 'Room created successfully!');
     }
     
@@ -151,7 +150,7 @@ class RoomController extends Controller
         
                 // Log the updated room to check the changes
                 \Log::info('Room after update:', $room->toArray());
-        
+                ActivityLogger::logRoom('Room updated', $room,'Room');
                 // If no room ID is generated, throw an exception (this is unlikely for an update but kept for safety)
                 if (!$room->no_room) {
                     throw new \Exception('Room ID not generated!');
@@ -200,9 +199,8 @@ class RoomController extends Controller
         // Detach related furniture and electronics
         $room->furnitures()->detach();
         $room->electronics()->detach();
-
         $room->delete();
-
+        ActivityLogger::logRoom('Room deleted', $room,'Room');
         return redirect()->route('backend.room.index')->with('success', 'Room deleted successfully.');
     }
     

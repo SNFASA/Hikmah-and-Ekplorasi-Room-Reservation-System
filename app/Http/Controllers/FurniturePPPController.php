@@ -5,7 +5,8 @@ use App\Models\furniture;
 use App\Models\CategoryEquipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Carbon\Carbon;
+use App\Services\ActivityLogger;
 class FurniturePPPController extends Controller
 {
 
@@ -43,12 +44,14 @@ class FurniturePPPController extends Controller
             'status' => 'required|string|max:255',
         ]);
         
-        furniture::create([
+        $furniture = furniture::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
             'status' => $request->status,
+            'created_at' => carbon::now(),
+            'updated_at' => carbon::now(),
         ]);
-    
+        ActivityLogger::logEquipment('created', $furniture, 'furniture');
         return redirect()->route('ppp.furniture.index')->with('success', 'Furniture created successfully.');
     }
     
@@ -77,8 +80,9 @@ class FurniturePPPController extends Controller
             'name' => $request->name,
             'category_id' => $request->category_id,
             'status' => $request->status,
+            'updated_at' => carbon::now(),
         ]);
-
+        ActivityLogger::logEquipment('updated', $furniture, 'furniture');
         return redirect()->route('ppp.furniture.index')->with('success', 'furniture updated successfully.');
     }
 
@@ -87,7 +91,7 @@ class FurniturePPPController extends Controller
     {
         $furniture = furniture::findOrFail($id);
         $furniture->delete();
-
+        ActivityLogger::logEquipment('deleted', $furniture);
         return redirect()->route('ppp.furniture.index')->with('success', 'furniture deleted successfully.');
     }
 

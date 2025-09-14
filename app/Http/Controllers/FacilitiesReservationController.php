@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use App\Jobs\ReservationEmail;
 use Illuminate\Support\Facades\Hash;
+use App\Services\ActivityLogger;
 
 class FacilitiesReservationController extends Controller
 {
@@ -218,7 +219,7 @@ class FacilitiesReservationController extends Controller
                     'declaration_accepted' => $request->boolean('declaration_accepted') ? 1 : 0,
                     'status' => $request->status,
                 ]);
-
+                ActivityLogger::logReservation('created', $reservation);
                 $createdReservations[] = $reservation;
 
                 // Attach student to reservation if your controller provides it
@@ -319,7 +320,6 @@ class FacilitiesReservationController extends Controller
             'admin_updated_by' => auth()->id(),
             'admin_updated_at' => now(),
         ]);
-
         // Send status update email only if status actually changed
         if ($oldStatus !== $request->status) {
             $emailController = new \App\Http\Controllers\EmailController();
@@ -530,11 +530,11 @@ class FacilitiesReservationController extends Controller
                 
                 $reservation->update($updateData);
             }
-            
             DB::commit();
             
             // Send status update email only if status actually changed
             if ($canEditAdminFields && isset($updateData['status']) && $originalStatus !== $updateData['status']) {
+                ActivityLogger::logReservation('status_changed', $reservation);
                 try {
                     if (class_exists('App\\Http\\Controllers\\EmailController')) {
                         $emailController = new \App\Http\Controllers\EmailController();
@@ -564,6 +564,7 @@ class FacilitiesReservationController extends Controller
         // Logic to delete the specified facility reservation
         $reservation = FasilitesReservation::findOrFail($id);
         $reservation->delete();
+        ActivityLogger::logReservation('deleted', $reservation);
         return redirect()->route('backend.reservation.index')->with('success', 'Reservation deleted successfully.');
     }
 }
