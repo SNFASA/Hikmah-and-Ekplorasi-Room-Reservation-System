@@ -7253,7 +7253,13 @@ a.bg-dark:hover {
 .mx-5 {
     margin-right: 3rem!important
 }
-
+.mx-6 {
+  margin-left: 4rem !important;  /* 64px */
+  margin-right: 4rem !important;
+}.mx-7 {
+  margin-left: 5rem !important;  /* 80px */
+  margin-right: 5rem !important;
+}
 .mb-5,
 .my-5 {
     margin-bottom: 3rem!important

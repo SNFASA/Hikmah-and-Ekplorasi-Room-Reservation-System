@@ -1,5 +1,5 @@
 @extends('ppp.layouts.master')
-@section('title','LibraRoom Reservation system ')
+@section('title','PTTA Reservation system ')
 @section('main-content')
 
 <!-- Main Container with Enhanced Styling -->

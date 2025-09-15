@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title','LibraRoom Reservation System')
+@section('title','PTTA Reservation System')
 @section('main-content')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- Main Container with Enhanced Styling -->

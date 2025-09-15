@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\bookings;
 use App\Rules\MatchOldPassword;
-use Hash;
+use Illuminate\Support\Facades\Hash;
+use illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\RedirectResponse;
@@ -148,21 +149,57 @@ class HomeController extends Controller
         }
         return redirect()->back();
     }
-    public function changePassword(){
+/**
+     * Show the change password form
+     */
+    public function changePassword()
+    {
         return view('frontend.layouts.userPasswordChange');
     }
+
+    /**
+     * Handle password change request
+     */
     public function changPasswordStore(Request $request)
     {
+        // Validate the request - FIXED to match your form fields
         $request->validate([
-            'current_password' => ['required', new MatchOldPassword],
-            'new_password' => ['required'],
-            'new_confirm_password' => ['same:new_password'],
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:8'],
+            'new_confirm_password' => ['required', 'same:new_password'],
+        ], [
+            'current_password.required' => 'Current password is required.',
+            'new_password.required' => 'New password is required.',
+            'new_password.min' => 'New password must be at least 8 characters long.',
+            'new_confirm_password.required' => 'Password confirmation is required.',
+            'new_confirm_password.same' => 'Password confirmation must match the new password.',
         ]);
-   
-        User::find(auth()->user()->id)->update(['password'=> Hash::make($request->new_password)]);
-   
-        return redirect()->route('user')->with('success','Password successfully changed');
-    }
 
-    
+        $user = auth()->user();
+
+        // Check if current password is correct
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Current password is incorrect'])
+                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        }
+
+        // Check if new password is different from current password
+        if (Hash::check($request->new_password, $user->password)) {
+            return back()->withErrors(['new_password' => 'New password must be different from your current password.'])
+                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        }
+
+        try {
+            // Update the password
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return redirect()->route('user-profile')
+                           ->with('success', 'Password changed successfully!');
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['general' => 'An error occurred while changing your password. Please try again.'])
+                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        }
+    }
 }

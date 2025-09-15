@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title','LibraRoom Reservation System || All Notifications')
+@section('title','PTTA Reservation System || All Notifications')
 @section('main-content')
 
 <!-- Main Container with Enhanced Styling -->

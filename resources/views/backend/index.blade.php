@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title','LibraRoom Reservation system')
+@section('title','PTTA Reservation system')
 @section('main-content')
 <div class="container-fluid" style="font-family: 'Inter', 'Nunito', sans-serif; background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%); min-height: 100vh;">
     @include('backend.layouts.notification')
@@ -13,7 +13,7 @@
                     <h1 class="h2 mb-2 text-white font-weight-bold">
                         <i class="fas fa-tachometer-alt me-2"></i>Dashboard Overview
                     </h1>
-                    <p class="text-white-50 mb-0">Welcome back! Here's what's happening with your LibraRoom system today.</p>
+                    <p class="text-white-50 mb-0">Welcome back! Here's what's happening with your PTTA system today.</p>
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@
     <script type="module" src="{{ mix('/js/app.js') }}"></script>
     <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
     <script src="{{ asset('js/notifications.js') }}" defer></script>
-    <title>LibraRoom Reservation System|| DASHBOARD</title>
+    <title>PTTA Reservation System|| DASHBOARD</title>
   
     <!-- Custom fonts for this template-->
     

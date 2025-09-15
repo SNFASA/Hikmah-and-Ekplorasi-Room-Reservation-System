@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Rules;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 

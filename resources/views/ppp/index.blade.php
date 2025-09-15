@@ -1,5 +1,5 @@
 @extends('ppp.layouts.master')
-@section('title','LibraRoom Reservation system')
+@section('title','PTTA Reservation system')
 @section('main-content')
 <div class="container-fluid" style="font-family: 'Inter', 'Nunito', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); min-height: 100vh;">
     @include('ppp.layouts.notification')
@@ -11,7 +11,7 @@
                 <div class="welcome-content">
                     <h1 class="dashboard-title mb-2">
                         <i class="fas fa-tachometer-alt text-white me-3"></i>
-                        LibraRoom Dashboard
+                        PTTA Dashboard
                     </h1>
                     <p class="dashboard-subtitle text-white mb-0">
                         Welcome back! Here's what's happening with your facility management today.

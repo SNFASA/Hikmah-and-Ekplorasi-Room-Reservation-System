@@ -1,5 +1,5 @@
 @extends('backend.layouts.master')
-@section('title','LibraRoom Reservation System')
+@section('title','PTTA Reservation System')
 @section('main-content')
 
 <div class="container-fluid px-4 py-4">

@@ -16,14 +16,14 @@
             </div>
         </div>
     </div>
-    <!-- End Breadcrumbs -->          
+    <!-- End Breadcrumbs -->
     <!-- Start Checkout -->
     <section class="shop checkout section">
         <div class="container">
             <form class="form" method="POST" action="{{ route('booking.update', $booking->id) }}?no_room={{ $room->no_room }}">
-                @csrf 
-                    @method('PUT')        
-                    <div class="row"> 
+                @csrf
+                    @method('PUT')
+                    <div class="row">
                         <div class="col-lg-8 col-12">
                             <div class="checkout-form">
                                 <h2>Make Your Update Booking Here</h2>
@@ -98,10 +98,10 @@
                                 <div class="single-widget">
                                     <h2>Room Details</h2>
                                         <div class="content">
-                                            @if ($room->type_room === 'EKSPLORASI')
-                                                <img src="{{ asset('images/OIP 2.jpeg') }}" class="card-img-top" alt="Room Image">
+                                            @if ($room->image)
+                                                <img src="{{ asset('storage/' . $room->image) }}" class="card-img-top" alt="Room Image">
                                             @else
-                                                <img src="{{ asset('images/OIP.jpeg') }}" class="card-img-top" alt="Room Image">
+                                                <img src="{{ asset('images/ruang terbuka.jpg') }}" class="card-img-top" alt="No Image Available">
                                             @endif
                                             <ul>
                                                 <li class="order_subtotal" data-price="">Room

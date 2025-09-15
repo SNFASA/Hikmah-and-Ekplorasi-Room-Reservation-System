@@ -31,6 +31,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\AdminReservationController;
 use App\Http\Controllers\FacilitiesReservationController;
 use App\Http\Controllers\ActivityController;
+use Illuminate\Support\Facades\Broadcast;
 
 // Authentication Routes
 Auth::routes(['register' => true]);
@@ -55,7 +56,7 @@ Route::get('login/{provider}/callback/', [LoginController::class, 'Callback'])->
 // Cache Clear
 Route::get('cache-clear', function () {
     Artisan::call('optimize:clear');
-    request()->session()->flash('success', 'Successfully cache cleared.');
+    session()->flash('success', 'Successfully cache cleared.');
     return redirect()->back();
 })->name('cache.clear');
 
@@ -395,14 +396,12 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/user', [HomeController::class, 'index'])->name('user');
     Route::get('user/',[HomeController::class, 'index'])->name('user.index');
+    // Change Password Routes (Using HomeController)
     Route::get('change-password', [HomeController::class, 'changePassword'])->name('user.change.password.form');
     Route::post('change-password', [HomeController::class, 'changPasswordStore'])->name('change.password');
+    // Profile Routes
     Route::get('/profile', [FrontendController::class, 'profile'])->name('user-profile');
     Route::post('/profile/{id}', [FrontendController::class, 'profileUpdate'])->name('user-profile-update');
-
-    // Change Password Routes
-    Route::get('change-password', [FrontendController::class, 'changePassword'])->name('user.change.password.form');
-    Route::post('change-password', [FrontendController::class, 'changPasswordStore'])->name('change.password');
 });
 
 
@@ -428,23 +427,7 @@ Route::put('booking/{id}', [BookingController::class, 'Formupdate'])->name('book
 // email ( not uses)
 Route::get('/emails/send/{booking}', [EmailController::class, 'sendBookingEmail'])->name('emails.send');
 Route::get('/emails/send-reservation/{reservation}', [EmailController::class, 'sendReservationEmail'])->name('emails.reservation');
-
-// Add this to your routes/web.php file
-
-// Admin routes (protected by admin middleware)
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    
-    // Existing reservation routes
-    Route::get('reservations', [AdminReservationController::class, 'index'])->name('reservations.index');
-    Route::get('reservations/{id}', [AdminReservationController::class, 'show'])->name('reservations.show');
-    
-    // New status update route
-    Route::patch('reservations/{id}/status', [AdminReservationController::class, 'updateStatus'])->name('reservations.updateStatus');
-    
-});
 //Feedback Routes
-
-
 Route::middleware(['auth'])->group(function () {
     Route::get('/feedback', [FeedbackController::class, 'index'])->name('backend.feedback.index');
     Route::get('/feedback/create', [FeedbackController::class, 'create'])->name('frontend.pages.feedbackcreate');

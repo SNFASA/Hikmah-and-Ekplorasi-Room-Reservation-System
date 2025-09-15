@@ -1,5 +1,5 @@
 @extends('frontend.layouts.master')
-@section('title','LibraRoom Reservation System')
+@section('title','PTTA Reservation System')
 @section('main-content')
 
 <div class="container mt-5">

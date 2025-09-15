@@ -19,9 +19,9 @@
     </li>
 
     <hr class="sidebar-divider border-light">
-    <!-- LibraRoom -->
+    <!-- PTTA -->
     <div class="sidebar-heading text-light px-3 small text-uppercase">
-        LibraRoom
+        PTTA
     </div>
     <!-- Room -->
     <li class="nav-item">

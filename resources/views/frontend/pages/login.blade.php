@@ -1,6 +1,6 @@
 @extends('frontend.layouts.master')
 
-@section('title','LibraRoom Reservation || Login Page')
+@section('title','PTTA Reservation || Login Page')
 
 @section('main-content')
     <!-- Breadcrumbs -->

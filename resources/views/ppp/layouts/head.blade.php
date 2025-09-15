@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>LibraRoom Reservation System|| DASHBOARD</title>
+    <title>PTTA Reservation System|| DASHBOARD</title>
   
     <!-- Custom fonts for this template-->
     

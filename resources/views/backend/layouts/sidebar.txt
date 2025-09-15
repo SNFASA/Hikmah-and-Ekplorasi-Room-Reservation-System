@@ -3,83 +3,62 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\ActivityLog;
-use Carbon\Carbon;
 
-class AdminController extends Controller
+class HomeController extends Controller
 {
-    public function index() 
+    /**
+     * Show the change password form
+     */
+    public function changePassword()
     {
-        // Data for pie chart
-        $data = User::select(
-                \DB::raw("COUNT(*) as count"), 
-                \DB::raw("DAYNAME(created_at) as day_name"), 
-                \DB::raw("DAY(created_at) as day")
-            )
-            ->where('created_at', '>', Carbon::today()->subDays(6)) 
-            ->groupBy('day_name', 'day')
-            ->orderBy('day')
-            ->get();
+        return view('frontend.layouts.userPasswordChange');
+    }
 
-        $array[] = ['Name', 'Number'];
-        foreach($data as $key => $value) {
-            $array[++$key] = [$value->day_name, $value->count];
-        }
-
-        // Data for users chart
-        $users = User::select(
-            \DB::raw("COUNT(*) as count"), 
-            \DB::raw("DAYNAME(created_at) as day_name"), 
-            \DB::raw("DAY(created_at) as day")
-        )
-        ->where('created_at', '>', Carbon::today()->subDays(6))
-        ->groupBy('day_name', 'day')
-        ->orderBy('day')
-        ->get();
-
-        $usersArray[] = ['Day', 'Registered Users'];
-        foreach($users as $key => $value) {
-            $usersArray[++$key] = [$value->day_name, $value->count];
-        }
-
-        // Get recent activities for dashboard
-        $activities = ActivityLog::with('user')
-            ->orderBy('created_at', 'desc')
-            ->limit(10)
-            ->get();
-
-        // Get activity statistics
-        $activityStats = [
-            'today' => ActivityLog::whereDate('created_at', today())->count(),
-            'week' => ActivityLog::whereBetween('created_at', [
-                now()->startOfWeek(),
-                now()->endOfWeek()
-            ])->count(),
-            'total' => ActivityLog::count(),
-            'failed' => ActivityLog::where('status', 'failed')->whereDate('created_at', today())->count()
-        ];
-
-        // Get activity breakdown by type for the last 7 days
-        $activityTypes = ActivityLog::selectRaw('activity_type, COUNT(*) as count')
-            ->whereDate('created_at', '>=', now()->subDays(7))
-            ->groupBy('activity_type')
-            ->orderBy('count', 'desc')
-            ->get();
-
-        return view('backend.index', [
-            'admin' => json_encode($array),
-            'users' => json_encode($usersArray),
-            'activities' => $activities,
-            'activityStats' => $activityStats,
-            'activityTypes' => $activityTypes
+    /**
+     * Handle password change request
+     */
+    public function changPasswordStore(Request $request)
+    {
+        // Validate the request - FIXED to match your form fields
+        $request->validate([
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:8'],
+            'new_confirm_password' => ['required', 'same:new_password'],
+        ], [
+            'current_password.required' => 'Current password is required.',
+            'new_password.required' => 'New password is required.',
+            'new_password.min' => 'New password must be at least 8 characters long.',
+            'new_confirm_password.required' => 'Password confirmation is required.',
+            'new_confirm_password.same' => 'Password confirmation must match the new password.',
         ]);
+
+        $user = auth()->user();
+
+        // Check if current password is correct
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Current password is incorrect'])
+                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        }
+
+        // Check if new password is different from current password
+        if (Hash::check($request->new_password, $user->password)) {
+            return back()->withErrors(['new_password' => 'New password must be different from your current password.'])
+                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        }
+
+        try {
+            // Update the password
+            $user->password = Hash::make($request->new_password);
+            $user->save();
+
+            return redirect()->route('user-profile')
+                           ->with('success', 'Password changed successfully!');
+
+        } catch (\Exception $e) {
+            return back()->withErrors(['general' => 'An error occurred while changing your password. Please try again.'])
+                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        }
     }
 }
-
-
-
-
-
-
-Error: Failed to update reservation. SQLSTATE[01000]: Warning: 1265 Data truncated for column 'status' at row 1 (Connection: mysql, SQL: insert into `activity_logs` (`activity_type`, `action`, `description`, `model_type`, `model_id`, `user_id`, `user_name`, `ip_address`, `old_values`, `new_values`, `status`, `severity`, `updated_at`, `created_at`) values (reservation, status_changed, Facility reservation status changed to Approved for Auditorium Al-Jazari Aras 3, App\Models\FasilitesReservation, 15, 204, afifi, 127.0.0.1, ?, ?, Approved, info, 2025-09-14 12:42:47, 2025-09-14 12:42:47))

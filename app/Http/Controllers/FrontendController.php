@@ -213,26 +213,4 @@ class FrontendController extends Controller
         return redirect()->route('user-profile')->with('success', 'Profile updated successfully');
     }
     
-    public function changePassword() {
-        return view('frontend.layouts.userPasswordChange');
-    }
-    
-    public function changPasswordStore(Request $request) {
-        // Validate and change password logic
-        $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|confirmed|min:8',
-        ]);
-    
-        $user = auth()->user();
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect']);
-        }
-    
-        $user->update(['password' => Hash::make($request->password)]);
-    
-        return redirect()->route('user-profile')->with('success', 'Password changed successfully');
-    }
-
-
 }

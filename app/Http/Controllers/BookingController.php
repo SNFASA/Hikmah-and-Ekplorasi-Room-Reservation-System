@@ -681,7 +681,7 @@ public function calendar()
             'booking_date as start',
             DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
             DB::raw("CONCAT('Booked: ', rooms.name) as title"),
-            DB::raw("'#28a745' as color") // Green for booked events
+           
         )
         ->get();
 
@@ -691,7 +691,7 @@ public function calendar()
             'invalid_date as start',
             DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
             DB::raw("CONCAT('Invalid: ', rooms.name) as title"),
-            DB::raw("'#dc3545' as color") // Red for invalid events
+            
         )
         ->get();
 

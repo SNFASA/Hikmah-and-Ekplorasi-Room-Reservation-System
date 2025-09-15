@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>LibraRoom Reservation || Login Page</title>
+  <title>PTTA Reservation || Login Page</title>
   @include('backend.layouts.head')
 
 </head>

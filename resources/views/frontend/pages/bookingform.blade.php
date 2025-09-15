@@ -102,10 +102,10 @@
                                 <div class="single-widget">
                                     <h2>Room Details</h2>
                                         <div class="content">
-                                            @if ($room->type_room === 'EKSPLORASI')
-                                                <img src="{{ asset('images/OIP 2.jpeg') }}" class="card-img-top" alt="Room Image">
+                                            @if ($room->image)
+                                                <img src="{{ asset('storage/' . $room->image) }}" class="card-img-top" alt="Room Image">
                                             @else
-                                                <img src="{{ asset('images/OIP.jpeg') }}" class="card-img-top" alt="Room Image">
+                                                <img src="{{ asset('images/ruang terbuka.jpg') }}" class="card-img-top" alt="No Image Available">
                                             @endif
                                             <ul>
                                                 <li class="order_subtotal" data-price="">Room
