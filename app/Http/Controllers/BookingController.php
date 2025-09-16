@@ -465,26 +465,45 @@ public function showFilterForm()
  * @return \Illuminate\Http\RedirectResponse Redirects to the home route with query parameters.
  */
 
-    public function filterAvailableRooms(Request $request)
-    {
-        $validated = $request->validate([
-            'type_room' => 'nullable|string',
-            'date' => 'nullable|date',
-            'start_time' => 'nullable|date_format:H:i',
-            'end_time' => 'nullable|date_format:H:i',
-            'furniture_category' => 'nullable|array',
-            'furniture_category.*' => 'nullable|String',
-            'electronic_category' => 'nullable|array',
-            'electronic_category.*' => 'nullable|String',
-        ]);
+public function filterAvailableRooms(Request $request)
+{
+    $type_room = $request->input('type_room');
     
-        // Pass the request data as query parameters when redirecting back to the home route
-        return redirect()->route('home', $request->all());
+    // Get the room type name if a specific room type is selected
+    $roomTypeName = 'All';
+    if ($type_room && $type_room !== 'All') {
+        $roomType = \App\Models\TypeRooms::find($type_room);
+        $roomTypeName = $roomType ? $roomType->name : 'All';
     }
     
-    
+    // Base validation rules
+    $rules = [
+        'type_room' => 'nullable|string',
+        'start_time' => 'nullable|date_format:H:i',
+        'end_time' => 'nullable|date_format:H:i',
+        'furniture_category' => 'nullable|array',
+        'furniture_category.*' => 'nullable|string',
+        'electronic_category' => 'nullable|array',
+        'electronic_category.*' => 'nullable|string',
+    ];
 
-   
+    // Conditional validation based on room type name
+    if ($roomTypeName == 'Courses, Meeting & Seminar') {
+        $rules['start_date'] = 'nullable|date';
+        $rules['end_date'] = 'nullable|date|after_or_equal:start_date';
+    } elseif (in_array($roomTypeName, ['HIKMAH', 'EKSPLORASI'])) {
+        $rules['date'] = 'nullable|date';
+    } else { // For "All" room types
+        $rules['date'] = 'nullable|date';
+        $rules['start_date'] = 'nullable|date';
+        $rules['end_date'] = 'nullable|date|after_or_equal:start_date';
+    }
+
+    $validated = $request->validate($rules);
+
+    // Pass the request data as query parameters when redirecting back to the home route
+    return redirect()->route('home', $request->all());
+}
 /**
  * Display the booking form for a specific room.
  *
@@ -674,31 +693,48 @@ public function storeBookingForm(Request $request)
  */
 
 public function calendar()
-     {
-        $bookings = DB::table('bookings')
-        ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
+{
+    // Get bookings from bookings table
+    $bookings = DB::table('bookings as b')
+        ->join('rooms as r', 'b.no_room', '=', 'r.no_room')
         ->select(
-            'booking_date as start',
-            DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
-            DB::raw("CONCAT('Booked: ', rooms.name) as title"),
-           
+            DB::raw("CONCAT(b.booking_date, 'T', b.booking_time_start) as start"),
+            DB::raw("CONCAT(b.booking_date, 'T', b.booking_time_end) as end"),
+            DB::raw("CONCAT('Booked: ', r.name) as title"),
+            DB::raw("purpose as description"),
+            DB::raw("'booking' as type")
         )
         ->get();
 
-    $invalidSchedules = DB::table('schedule_booking')
-        ->join('rooms', 'schedule_booking.roomid', '=', 'rooms.no_room')
+    // Get facility reservations
+    $facilityReservations = DB::table('facility_reservation as fr')
+        ->join('rooms as r', 'fr.room_id', '=', 'r.no_room')
         ->select(
-            'invalid_date as start',
-            DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
-            DB::raw("CONCAT('Invalid: ', rooms.name) as title"),
-            
+            DB::raw("CONCAT(fr.start_date, 'T', fr.start_time) as start"),
+            DB::raw("CONCAT(fr.end_date, 'T', fr.end_time) as end"),
+            DB::raw("CONCAT('Reserved: ', r.name) as title"),
+            DB::raw("fr.purpose_program_name as description"),
+            DB::raw("'facility' as type")
+        )
+        ->whereIn('fr.status', ['pending', 'approved']) // Clean alias reference
+        ->get();
+
+    // Get invalid schedules
+    $invalidSchedules = DB::table('schedule_booking as sb')
+        ->join('rooms as r', 'sb.roomid', '=', 'r.no_room')
+        ->select(
+            DB::raw("CONCAT(sb.invalid_date, 'T', sb.invalid_time_start) as start"),
+            DB::raw("CONCAT(sb.invalid_date, 'T', sb.invalid_time_end) as end"),
+            DB::raw("CONCAT('Blocked: ', r.name) as title"),
+            DB::raw("'#dc3545' as backgroundColor"),
+            DB::raw("'blocked' as type")
         )
         ->get();
 
-    // Merge events
-    $events = $bookings->merge($invalidSchedules);
+    // Merge all events
+    $events = $bookings->merge($facilityReservations)->merge($invalidSchedules);
      
-         return view('frontend.pages.calendarBooking', ['events' => $events]);
+    return view('frontend.pages.calendarBooking', ['events' => $events]);
 }
 
      //My. booking 
@@ -763,28 +799,46 @@ public function cancelBooking($id){
 }
 public function calendarAdmin()
 {
-    $bookings = DB::table('bookings')
-        ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
+    // Get bookings from bookings table
+    $bookings = DB::table('bookings as b')
+        ->join('rooms as r', 'b.no_room', '=', 'r.no_room')
         ->select(
-            'booking_date as start',
-            DB::raw("CONCAT(booking_date, ' ', booking_time_end) as end"),
-            DB::raw("CONCAT('Booked: ', rooms.name) as title"),
-            DB::raw("'#28a745' as color") // Green for booked events
+            DB::raw("CONCAT(b.booking_date, 'T', b.booking_time_start) as start"),
+            DB::raw("CONCAT(b.booking_date, 'T', b.booking_time_end) as end"),
+            DB::raw("CONCAT('Booked: ', r.name) as title"),
+            DB::raw("purpose as description"),
+            DB::raw("'booking' as type")
         )
         ->get();
 
-    $invalidSchedules = DB::table('schedule_booking')
-        ->join('rooms', 'schedule_booking.roomid', '=', 'rooms.no_room')
+    // Get facility reservations
+    $facilityReservations = DB::table('facility_reservation as fr')
+        ->join('rooms as r', 'fr.room_id', '=', 'r.no_room')
         ->select(
-            'invalid_date as start',
-            DB::raw("CONCAT(invalid_date, ' ', invalid_time_end) as end"),
-            DB::raw("CONCAT('Invalid: ', rooms.name) as title"),
-            DB::raw("'#dc3545' as color") // Red for invalid events
+            DB::raw("CONCAT(fr.start_date, 'T', fr.start_time) as start"),
+            DB::raw("CONCAT(fr.end_date, 'T', fr.end_time) as end"),
+            DB::raw("CONCAT('Reserved: ', r.name) as title"),
+            DB::raw("fr.purpose_program_name as description"),
+            DB::raw("'facility' as type")
+        )
+        ->whereIn('fr.status', ['pending', 'approved']) // Clean alias reference
+        ->get();
+
+    // Get invalid schedules
+    $invalidSchedules = DB::table('schedule_booking as sb')
+        ->join('rooms as r', 'sb.roomid', '=', 'r.no_room')
+        ->select(
+            DB::raw("CONCAT(sb.invalid_date, 'T', sb.invalid_time_start) as start"),
+            DB::raw("CONCAT(sb.invalid_date, 'T', sb.invalid_time_end) as end"),
+            DB::raw("CONCAT('Blocked: ', r.name) as title"),
+            DB::raw("'#dc3545' as backgroundColor"),
+            DB::raw("'blocked' as type")
         )
         ->get();
 
-    // Merge events
-    $events = $bookings->merge($invalidSchedules);
+    // Merge all events
+    $events = $bookings->merge($facilityReservations)->merge($invalidSchedules);
+     
 
     return view('backend.schedule.calender', ['events' => $events]);
 }
@@ -912,5 +966,4 @@ public function show($id)
     return view('backend.booking.show', compact('booking'));
 }
 }
-
 

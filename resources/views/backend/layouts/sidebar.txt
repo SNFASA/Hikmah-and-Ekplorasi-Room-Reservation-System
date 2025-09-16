@@ -1,64 +1,251 @@
 <?php
 
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
+// ========================================
+// HomeController.php
+// ========================================
 
 class HomeController extends Controller
 {
     /**
-     * Show the change password form
+     * Display the home page with room availability and filters.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\View\View
      */
-    public function changePassword()
+    public function index(Request $request)
     {
-        return view('frontend.layouts.userPasswordChange');
+        $type_room = $request->input('type_room', 'All');
+        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get();
+        
+        // Standard room fields
+        $date = $request->input('date');
+        $start_time = $request->input('start_time');
+        $end_time = $request->input('end_time');
+        
+        // Meeting room fields
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $meeting_start_time = $request->input('meeting_start_time');
+        $meeting_end_time = $request->input('meeting_end_time');
+        $participant_category = $request->input('participant_category');
+        
+        $furniture_category = $request->input('furniture_category', []);
+        $electronic_category = $request->input('electronic_category', []);
+
+        // Build rooms query
+        $rooms = room::query()
+            ->where('status', 'valid')
+            ->when($type_room !== 'All', function ($query) use ($type_room) {
+                $query->where('type_room', $type_room);
+            })
+            ->when(!empty($furniture_category), function ($query) use ($furniture_category) {
+                $query->whereHas('furnitures', function ($q) use ($furniture_category) {
+                    $q->whereIn('category_id', $furniture_category);
+                });
+            })
+            ->when(!empty($electronic_category), function ($query) use ($electronic_category) {
+                $query->whereHas('electronics', function ($q) use ($electronic_category) {
+                    $q->whereIn('category_id', $electronic_category);
+                });
+            })
+            ->get();
+
+        $furnitureCategories = CategoryEquipment::whereHas('furniture')->orderBy('name')->get();
+        $electronicCategories = CategoryEquipment::whereHas('electronics')->orderBy('name')->get();
+
+        return view('frontend.index', compact(
+            'rooms', 'furnitureCategories', 'electronicCategories',
+            'type_rooms', 'type_room', 'date', 'start_time', 'end_time',
+            'start_date', 'end_date', 'meeting_start_time', 'meeting_end_time',
+            'participant_category', 'furniture_category', 'electronic_category'
+        ));
+    }
+}
+
+// ========================================
+// BookingController.php
+// ========================================
+
+class BookingController extends Controller
+{
+    /**
+     * Filter available rooms based on provided criteria.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function filterAvailableRooms(Request $request)
+    {
+        $validated = $request->validate([
+            'type_room' => 'nullable|string',
+            'date' => 'nullable|date|after_or_equal:today',
+            'start_time' => 'nullable|date_format:H:i',
+            'end_time' => 'nullable|date_format:H:i',
+            'start_date' => 'nullable|date|after_or_equal:today',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'meeting_start_time' => 'nullable|date_format:H:i',
+            'meeting_end_time' => 'nullable|date_format:H:i',
+            'participant_category' => 'nullable|string|in:Staff,VVIP,Public,Student,Other',
+            'furniture_category' => 'nullable|array',
+            'furniture_category.*' => 'nullable|string',
+            'electronic_category' => 'nullable|array',
+            'electronic_category.*' => 'nullable|string',
+        ]);
+
+        // Get room types to determine if it's a meeting type
+        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get();
+        $isMeetingType = $this->isMeetingRoomType($validated['type_room'] ?? null, $type_rooms);
+        
+        // Validate time inputs based on room type
+        if ($isMeetingType) {
+            if (($validated['meeting_start_time'] ?? null) && ($validated['meeting_end_time'] ?? null)) {
+                if (($validated['start_date'] ?? null) === ($validated['end_date'] ?? null) && 
+                    $validated['meeting_start_time'] >= $validated['meeting_end_time']) {
+                    return redirect()->back()->with('error', 'End time must be after start time for same day bookings.');
+                }
+            }
+        } else {
+            if (($validated['start_time'] ?? null) && ($validated['end_time'] ?? null) && 
+                $validated['start_time'] >= $validated['end_time']) {
+                return redirect()->back()->with('error', 'End time must be after start time.');
+            }
+        }
+
+        // Filter rooms for availability
+        $rooms = room::query()
+            ->where('status', 'valid')
+            ->when(($validated['type_room'] ?? 'All') !== 'All', function ($query) use ($validated) {
+                $query->where('type_room', $validated['type_room']);
+            })
+            ->when(!empty($validated['furniture_category'] ?? []), function ($query) use ($validated) {
+                $query->whereHas('furnitures', function ($q) use ($validated) {
+                    $q->whereIn('category_id', $validated['furniture_category']);
+                });
+            })
+            ->when(!empty($validated['electronic_category'] ?? []), function ($query) use ($validated) {
+                $query->whereHas('electronics', function ($q) use ($validated) {
+                    $q->whereIn('category_id', $validated['electronic_category']);
+                });
+            });
+
+        // Apply availability filtering based on room type
+        if ($isMeetingType && 
+            ($validated['start_date'] ?? null) && 
+            ($validated['end_date'] ?? null) && 
+            ($validated['meeting_start_time'] ?? null) && 
+            ($validated['meeting_end_time'] ?? null)) {
+            
+            $rooms = $this->filterMeetingRoomAvailability(
+                $rooms, 
+                $validated['start_date'], 
+                $validated['end_date'], 
+                $validated['meeting_start_time'], 
+                $validated['meeting_end_time']
+            );
+        } elseif (!$isMeetingType && 
+                  ($validated['date'] ?? null) && 
+                  ($validated['start_time'] ?? null) && 
+                  ($validated['end_time'] ?? null)) {
+            
+            $rooms = $this->filterStandardRoomAvailability(
+                $rooms, 
+                $validated['date'], 
+                $validated['start_time'], 
+                $validated['end_time']
+            );
+        }
+        
+        $validated['rooms'] = $rooms->get();
+
+        // Pass the validated data as query parameters when redirecting back to the home route
+        return redirect()->route('home', $validated);
     }
 
     /**
-     * Handle password change request
+     * Check if the selected room type is a meeting/seminar type
+     *
+     * @param string|null $type_room_id
+     * @param \Illuminate\Database\Eloquent\Collection $type_rooms
+     * @return bool
      */
-    public function changPasswordStore(Request $request)
+    private function isMeetingRoomType($type_room_id, $type_rooms)
     {
-        // Validate the request - FIXED to match your form fields
-        $request->validate([
-            'current_password' => ['required', 'string'],
-            'new_password' => ['required', 'string', 'min:8'],
-            'new_confirm_password' => ['required', 'same:new_password'],
-        ], [
-            'current_password.required' => 'Current password is required.',
-            'new_password.required' => 'New password is required.',
-            'new_password.min' => 'New password must be at least 8 characters long.',
-            'new_confirm_password.required' => 'Password confirmation is required.',
-            'new_confirm_password.same' => 'Password confirmation must match the new password.',
-        ]);
-
-        $user = auth()->user();
-
-        // Check if current password is correct
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Current password is incorrect'])
-                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        if (!$type_room_id || $type_room_id === 'All') {
+            return false;
         }
-
-        // Check if new password is different from current password
-        if (Hash::check($request->new_password, $user->password)) {
-            return back()->withErrors(['new_password' => 'New password must be different from your current password.'])
-                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
+        
+        $selectedType = $type_rooms->where('id', $type_room_id)->first();
+        
+        if (!$selectedType) {
+            return false;
         }
+        
+        $roomTypeName = strtolower($selectedType->name);
+        
+        // Based on your room types: HIKMAH, EKPLORASI, Courses, Meeting & Seminar
+        return str_contains($roomTypeName, 'course') || 
+               str_contains($roomTypeName, 'meeting') || 
+               str_contains($roomTypeName, 'seminar');
+    }
 
-        try {
-            // Update the password
-            $user->password = Hash::make($request->new_password);
-            $user->save();
+    /**
+     * Filter rooms based on standard availability (single day)
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $roomsQuery
+     * @param string $date
+     * @param string $start_time
+     * @param string $end_time
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function filterStandardRoomAvailability($roomsQuery, $date, $start_time, $end_time)
+    {
+        return $roomsQuery->whereNotExists(function ($query) use ($date, $start_time, $end_time) {
+            // Check for conflicts with unavailable times
+            $query->select(DB::raw(1))
+                  ->from('schedule_booking')
+                  ->whereRaw('schedule_booking.roomid = rooms.no_room')
+                  ->where('invalid_date', $date)
+                  ->where('invalid_time_start', '<', $end_time)
+                  ->where('invalid_time_end', '>', $start_time);
+        })->whereNotExists(function ($query) use ($date, $start_time, $end_time) {
+            // Check for conflicts with existing bookings
+            $query->select(DB::raw(1))
+                  ->from('bookings')
+                  ->whereRaw('bookings.no_room = rooms.no_room')
+                  ->where('booking_date', $date)
+                  ->where('booking_time_start', '<', $end_time)
+                  ->where('booking_time_end', '>', $start_time);
+        });
+    }
 
-            return redirect()->route('user-profile')
-                           ->with('success', 'Password changed successfully!');
-
-        } catch (\Exception $e) {
-            return back()->withErrors(['general' => 'An error occurred while changing your password. Please try again.'])
-                        ->withInput($request->except(['current_password', 'new_password', 'new_confirm_password']));
-        }
+    /**
+     * Filter rooms based on meeting availability (potentially multiple days)
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $roomsQuery
+     * @param string $start_date
+     * @param string $end_date
+     * @param string $start_time
+     * @param string $end_time
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function filterMeetingRoomAvailability($roomsQuery, $start_date, $end_date, $start_time, $end_time)
+    {
+        return $roomsQuery->whereNotExists(function ($query) use ($start_date, $end_date, $start_time, $end_time) {
+            // Check for conflicts with unavailable times across the date range
+            $query->select(DB::raw(1))
+                  ->from('schedule_booking')
+                  ->whereRaw('schedule_booking.roomid = rooms.no_room')
+                  ->whereBetween('invalid_date', [$start_date, $end_date])
+                  ->where('invalid_time_start', '<', $end_time)
+                  ->where('invalid_time_end', '>', $start_time);
+        })->whereNotExists(function ($query) use ($start_date, $end_date, $start_time, $end_time) {
+            // Check for conflicts with existing bookings across the date range
+            $query->select(DB::raw(1))
+                  ->from('bookings')
+                  ->whereRaw('bookings.no_room = rooms.no_room')
+                  ->whereBetween('booking_date', [$start_date, $end_date])
+                  ->where('booking_time_start', '<', $end_time)
+                  ->where('booking_time_end', '>', $start_time);
+        });
     }
 }

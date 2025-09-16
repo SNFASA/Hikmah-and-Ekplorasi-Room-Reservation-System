@@ -1,242 +1,375 @@
 @extends('frontend.layouts.master')
 @section('title','Checkout Room')
 @section('main-content')
-    <!-- Breadcrumbs -->
-    <div class="breadcrumbs">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="bread-inner">
-                        <ul class="bread-list">
-                            <li><a href="{{route('home')}}">Home<i class="ti-arrow-right"></i></a></li>
-                            <li class="active"><a href="javascript:void(0)">Checkout</a></li>
-                        </ul>
-                    </div>
-                </div>
+    
+    <!-- Start Modern Checkout -->
+    <div class="modern-booking-container">
+        <div class="booking-header">
+            <div class="container">
+                <h2 class="booking-title">
+                    <i class="fas fa-calendar-check me-3"></i>
+                    Room Booking Checkout
+                </h2>
+                <p class="booking-subtitle">Complete your room reservation details</p>
             </div>
         </div>
-    </div>
-    <!-- End Breadcrumbs -->
-    <!-- Start Checkout -->
-    <section class="shop checkout section">
-        <div class="container">
-                <form class="form" method="POST" action="{{route('bookingformStore', ['id' => $room->no_room])}}">
-                    @csrf
-                    <div class="row">
 
-                        <div class="col-lg-8 col-12">
-                            <div class="checkout-form">
-                                <h2>Make Your Checkout Here</h2>
-                                <p>Please register in booking to checkout more quickly</p>
+        <div class="container py-5">
+            <form class="modern-booking-form" method="POST" action="{{route('bookingformStore', ['id' => $room->no_room])}}">
+                @csrf
+                <div class="row g-4">
+                    <!-- Booking Form Section -->
+                    <div class="col-lg-8 col-12">
+                        <div class="booking-form-card">
+                            <div class="form-card-header">
+                                <h4 class="form-card-title">
+                                    <i class="fas fa-edit me-2"></i>
+                                    Booking Information
+                                </h4>
+                                <p class="form-card-subtitle">Please fill in the required booking details</p>
+                            </div>
+                            
+                            <div class="form-card-body">
                                 <input type="hidden" name="no_room" value="{{ $room->no_room }}">
-                                <!-- Form -->
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Propose<span>*</span></label>
-                                            <input type="text" name="purpose" placeholder="proposes booking"  value="{{old('purpose')}}" required>
-                                            @error('purpose')
-                                                <span class='text-danger'>{{$message}}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Phone number<span>*</span></label>
-                                            <input type="text" name="phone_number" placeholder="011 12345678" value="{{old('phone_number')}}" required>
-                                            @error('phone_number')
-                                                <span class='text-danger'>{{$message}}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Start Time<span>*</span></label>
-                                            <input type="time" name="booking_time_start" placeholder="" value="{{old('booking_time_start',$start_time)}}" required disabled>
-                                            <input type = "hidden" name="booking_time_start" value="{{$start_time}}" >
-                                            @error('booking_time_start')
-                                            <span class='text-danger'>{{$message}}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>End Time<span>*</span></label>
-                                            <input type="time" name="booking_time_end" placeholder="" value="{{old('booking_time_end', $end_time)}}" required disabled>
-                                            <input type = "hidden" name="booking_time_end" value="{{$end_time}}" >
-                                           @error('booking_time_end')
-                                                <span class='text-danger'>{{$message}}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div class="form-group">
-                                            <label>Date <span>*</span></label>
-                                            <input type="date" name="booking_date" placeholder="" required value="{{old('booking_date', $date)}}" disabled>
-                                            <input type = "hidden" name="booking_date" value="{{$date}}" >
-                                            @error('booking_date')
-                                                <span class='text-danger'>{{$message}}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-6 col-md-6 col-12">
-                                        <div id="students-list" class="form-group">
-                                            <div class="form-group">
-                                                <label class="col-form-label">No Matriks:<span>*</span></label>
-                                                <input type="text" name="students[0][no_matriks]" required class="form-control">
                                 
-                                                <label for="name[]" class="col-form-label"> Name:<span>*</span></label>
-                                                <input type="text" name="students[0][name]" required class="form-control">
-                                            </div>
-                                          </div>
-                                          <button type="button" id="add-student"class="btn btn-primary" style="margin:10px 0 10px 0">Add Student</button>
+                                <div class="row g-3">
+                                    <!-- Purpose Field -->
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="modern-form-group">
+                                            <label class="modern-form-label">
+                                                <i class="fas fa-bullseye me-2"></i>
+                                                Purpose <span class="required-asterisk">*</span>
+                                            </label>
+                                            <input type="text" name="purpose" class="modern-form-control" 
+                                                   placeholder="Enter booking purpose" 
+                                                   value="{{old('purpose')}}" required>
+                                            @error('purpose')
+                                                <div class="modern-error-message">
+                                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                                    {{$message}}
+                                                </div>
+                                            @enderror
+                                        </div>
                                     </div>
                                     
-                                </div>
-                                <!--/ End Form -->
-                            </div>
-                        </div>
-                        <div class="col-lg-4 col-12">
-                            <div class="order-details">
-                                <!-- Order Widget -->
-                                <div class="single-widget">
-                                    <h2>Room Details</h2>
-                                        <div class="content">
-                                            @if ($room->image)
-                                                <img src="{{ asset('storage/' . $room->image) }}" class="card-img-top" alt="Room Image">
-                                            @else
-                                                <img src="{{ asset('images/ruang terbuka.jpg') }}" class="card-img-top" alt="No Image Available">
-                                            @endif
-                                            <ul>
-                                                <li class="order_subtotal" data-price="">Room
-                                                    <span class="shipping">{{$room->name}}</span>
-                                                </li>
-                                                <li class="shipping">Capacity<span>{{$room->capacity}} Guest</span></li>
-                                                <li class="shipping">Furniture<span>{{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}</span></li>
-                                                <li class="shipping">Electronic<span> {{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}</span> <br>Equipment</li>
-                                            </ul>
+                                    <!-- Phone Number Field -->
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="modern-form-group">
+                                            <label class="modern-form-label">
+                                                <i class="fas fa-phone me-2"></i>
+                                                Phone Number <span class="required-asterisk">*</span>
+                                            </label>
+                                            <input type="text" name="phone_number" class="modern-form-control" 
+                                                   placeholder="011 12345678" 
+                                                   value="{{old('phone_number')}}" required>
+                                            @error('phone_number')
+                                                <div class="modern-error-message">
+                                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                                    {{$message}}
+                                                </div>
+                                            @enderror
                                         </div>
-                                </div>
-                                <!--/ End Order Widget -->
-                                <!-- Button Widget -->
-                                <div class="single-widget get-button">
-                                    <div class="content">
-                                        <div class="button">
-                                            <button type="submit" class="btn btn-primary">proceed to checkout</button>
+                                    </div>
+                                    
+                                    <!-- Start Time Field -->
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="modern-form-group">
+                                            <label class="modern-form-label">
+                                                <i class="fas fa-play-circle me-2"></i>
+                                                Start Time <span class="required-asterisk">*</span>
+                                            </label>
+                                            <input type="time" name="booking_time_start" class="modern-form-control disabled-field" 
+                                                   value="{{old('booking_time_start',$start_time)}}" required disabled>
+                                            <input type="hidden" name="booking_time_start" value="{{$start_time}}">
+                                            @error('booking_time_start')
+                                                <div class="modern-error-message">
+                                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                                    {{$message}}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- End Time Field -->
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="modern-form-group">
+                                            <label class="modern-form-label">
+                                                <i class="fas fa-stop-circle me-2"></i>
+                                                End Time <span class="required-asterisk">*</span>
+                                            </label>
+                                            <input type="time" name="booking_time_end" class="modern-form-control disabled-field" 
+                                                   value="{{old('booking_time_end', $end_time)}}" required disabled>
+                                            <input type="hidden" name="booking_time_end" value="{{$end_time}}">
+                                            @error('booking_time_end')
+                                                <div class="modern-error-message">
+                                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                                    {{$message}}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Date Field -->
+                                    <div class="col-lg-6 col-md-6 col-12">
+                                        <div class="modern-form-group">
+                                            <label class="modern-form-label">
+                                                <i class="fas fa-calendar-alt me-2"></i>
+                                                Booking Date <span class="required-asterisk">*</span>
+                                            </label>
+                                            <input type="date" name="booking_date" class="modern-form-control disabled-field" 
+                                                   required value="{{old('booking_date', $date)}}" disabled>
+                                            <input type="hidden" name="booking_date" value="{{$date}}">
+                                            @error('booking_date')
+                                                <div class="modern-error-message">
+                                                    <i class="fas fa-exclamation-circle me-1"></i>
+                                                    {{$message}}
+                                                </div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Students Section -->
+                                    <div class="col-12">
+                                        <div class="students-section-card">
+                                            <h5 class="students-section-title">
+                                                <i class="fas fa-users me-2"></i>
+                                                Student Information
+                                            </h5>
+                                            <p class="students-section-subtitle">Add student details (minimum 4, maximum 10 students)</p>
+                                            
+                                            <div id="students-list" class="students-list">
+                                                <div class="student-entry-card">
+                                                    <div class="student-entry-header">
+                                                        <h6 class="student-number">Student 1</h6>
+                                                        <button type="button" class="remove-student-btn" onclick="removeStudent(this)" style="display: none;">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                    <div class="row g-3">
+                                                        <div class="col-md-6">
+                                                            <div class="modern-form-group">
+                                                                <label class="modern-form-label">
+                                                                    <i class="fas fa-id-card me-2"></i>
+                                                                    Matric Number <span class="required-asterisk">*</span>
+                                                                </label>
+                                                                <input type="text" name="students[0][no_matriks]" required class="modern-form-control" placeholder="Enter matric number">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="modern-form-group">
+                                                                <label class="modern-form-label">
+                                                                    <i class="fas fa-user me-2"></i>
+                                                                    Full Name <span class="required-asterisk">*</span>
+                                                                </label>
+                                                                <input type="text" name="students[0][name]" required class="modern-form-control" placeholder="Enter full name">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <button type="button" id="add-student" class="modern-add-student-btn">
+                                                <i class="fas fa-plus me-2"></i>
+                                                Add Student
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-                                <!--/ End Button Widget -->
                             </div>
                         </div>
                     </div>
-                </form>
+                    
+                    <!-- Room Details Section -->
+                    <div class="col-lg-4 col-12">
+                        <div class="room-details-card">
+                            <div class="room-card-header">
+                                <h4 class="room-card-title">
+                                    <i class="fas fa-door-open me-2"></i>
+                                    Room Details
+                                </h4>
+                            </div>
+                            
+                            <div class="room-card-body">
+                                <div class="room-image-container">
+                                    @if ($room->image)
+                                        <img src="{{ asset('storage/' . $room->image) }}" class="room-image" alt="Room Image">
+                                    @else
+                                        <img src="{{ asset('images/ruang terbuka.jpg') }}" class="room-image" alt="No Image Available">
+                                    @endif
+                                </div>
+                                
+                                <div class="room-details-list">
+                                    <div class="room-detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-door-closed text-primary"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <small class="detail-label">Room Name</small>
+                                            <div class="detail-value">{{$room->name}}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="room-detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-users text-success"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <small class="detail-label">Capacity</small>
+                                            <div class="detail-value">{{$room->capacity}} Guests</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="room-detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-couch text-info"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <small class="detail-label">Furniture</small>
+                                            <div class="detail-value">{{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="room-detail-item">
+                                        <div class="detail-icon">
+                                            <i class="fas fa-tv text-warning"></i>
+                                        </div>
+                                        <div class="detail-content">
+                                            <small class="detail-label">Electronic Equipment</small>
+                                            <div class="detail-value">{{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="room-card-footer">
+                                <button type="submit" class="modern-submit-btn">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    Proceed to Checkout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-    </section>
-    <!--/ End Checkout -->
+    </div>
+    <!-- End Modern Checkout -->
 @endsection
-@push('styles')
-	<style>
-		li.shipping{
-			display: inline-flex;
-			width: 100%;
-			font-size: 14px;
-		}
-		li.shipping .input-group-icon {
-			width: 100%;
-			margin-left: 10px;
-		}
-		.input-group-icon .icon {
-			position: absolute;
-			left: 20px;
-			top: 0;
-			line-height: 40px;
-			z-index: 3;
-		}
-		.form-select {
-			height: 30px;
-			width: 100%;
-		}
-		.form-select .nice-select {
-			border: none;
-			border-radius: 0px;
-			height: 40px;
-			background: #f6f6f6 !important;
-			padding-left: 45px;
-			padding-right: 40px;
-			width: 100%;
-		}
-		.list li{
-			margin-bottom:0 !important;
-		}
-		.list li:hover{
-			background:#FF6F61 !important;
-			color:white !important;
-		}
-		.form-select .nice-select::after {
-			top: 14px;
-		}
-	</style>
-@endpush
 @push('scripts')
-	<script src="{{asset('frontend/js/nice-select/js/jquery.nice-select.min.js')}}"></script>
-	<script src="{{ asset('frontend/js/select2/js/select2.min.js') }}"></script>
-	<script>
-		$(document).ready(function() { $("select.select2").select2(); });
-  		$('select.nice-select').niceSelect();
-	</script>
-	<script>
-		function showMe(box){
-			var checkbox=document.getElementById('shipping').style.display;
-			// alert(checkbox);
-			var vis= 'none';
-			if(checkbox=="none"){
-				vis='block';
-			}
-			if(checkbox=="block"){
-				vis="none";
-			}
-			document.getElementById(box).style.display=vis;
-		}
-	</script>
-	<script>
-		$(document).ready(function(){
-			$('.shipping select[name=shipping]').change(function(){
-				let cost = parseFloat( $(this).find('option:selected').data('price') ) || 0;
-				let subtotal = parseFloat( $('.order_subtotal').data('price') ); 
-				let coupon = parseFloat( $('.coupon_price').data('price') ) || 0; 
-				// alert(coupon);
-				$('#order_total_price span').text('$'+(subtotal + cost-coupon).toFixed(2));
-			});
+<script src="{{asset('frontend/js/nice-select/js/jquery.nice-select.min.js')}}"></script>
+<script src="{{ asset('frontend/js/select2/js/select2.min.js') }}"></script>
+<script>
+    $(document).ready(function() { 
+        $("select.select2").select2(); 
+    });
+    $('select.nice-select').niceSelect();
+</script>
 
-		});
-
-	</script>
-    <script>
-            document.getElementById('add-student').addEventListener('click', function() {
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let studentCount = 1;
+        
+        document.getElementById('add-student').addEventListener('click', function() {
             const studentsList = document.getElementById('students-list');
-            const count = studentsList.children.length;
+            const currentCount = studentsList.children.length;
 
             // Check if the number of students is within the allowed range
-            if (count >= 10) {
+            if (currentCount >= 10) {
                 alert('You can only add a maximum of 10 students.');
                 return;
             }
 
             const studentEntry = document.createElement('div');
-            studentEntry.classList.add('student-entry');
+            studentEntry.classList.add('student-entry-card');
             studentEntry.innerHTML = `
-            <label class="col-form-label" for="students{${count}][no_matriks]">No Matriks:</label>
-            <input type="text" name="students[${count}][no_matriks]" required class="form-control">
-
-            <label for="students[${count}[name]" class="col-form-label"> Name:</label>
-            <input type="text" name="students[${count}][name]" required class="form-control">
+                <div class="student-entry-header">
+                    <h6 class="student-number">Student ${currentCount + 1}</h6>
+                    <button type="button" class="remove-student-btn" onclick="removeStudent(this)">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="modern-form-group">
+                            <label class="modern-form-label">
+                                <i class="fas fa-id-card me-2"></i>
+                                Matric Number <span class="required-asterisk">*</span>
+                            </label>
+                            <input type="text" name="students[${currentCount}][no_matriks]" required class="modern-form-control" placeholder="Enter matric number">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="modern-form-group">
+                            <label class="modern-form-label">
+                                <i class="fas fa-user me-2"></i>
+                                Full Name <span class="required-asterisk">*</span>
+                            </label>
+                            <input type="text" name="students[${currentCount}][name]" required class="modern-form-control" placeholder="Enter full name">
+                        </div>
+                    </div>
+                </div>
             `;
             studentsList.appendChild(studentEntry);
+            studentCount++;
+            updateStudentNumbers();
+            updateRemoveButtonsVisibility();
         });
+        
+        // Function to remove student
+        window.removeStudent = function(button) {
+            const studentEntry = button.closest('.student-entry-card');
+            const studentsList = document.getElementById('students-list');
+            
+            // Don't allow removal if only 1 student remains
+            if (studentsList.children.length <= 1) {
+                alert('You must have at least 1 student entry.');
+                return;
+            }
+            
+            studentEntry.remove();
+            updateStudentNumbers();
+            updateRemoveButtonsVisibility();
+        };
+        
+        // Function to update student numbers
+        function updateStudentNumbers() {
+            const studentEntries = document.querySelectorAll('.student-entry-card');
+            studentEntries.forEach((entry, index) => {
+                const studentNumber = entry.querySelector('.student-number');
+                studentNumber.textContent = `Student ${index + 1}`;
+                
+                // Update input names to maintain proper indexing
+                const inputs = entry.querySelectorAll('input');
+                inputs.forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name.includes('[no_matriks]')) {
+                        input.setAttribute('name', `students[${index}][no_matriks]`);
+                    } else if (name.includes('[name]')) {
+                        input.setAttribute('name', `students[${index}][name]`);
+                    }
+                });
+            });
+        }
+        
+        // Function to show/hide remove buttons
+        function updateRemoveButtonsVisibility() {
+            const removeButtons = document.querySelectorAll('.remove-student-btn');
+            const studentsList = document.getElementById('students-list');
+            
+            removeButtons.forEach(button => {
+                if (studentsList.children.length > 1) {
+                    button.style.display = 'flex';
+                } else {
+                    button.style.display = 'none';
+                }
+            });
+        }
 
-        // Ensure at least 4 students are present before form submission
-        document.getElementById('your-form-id').addEventListener('submit', function(event) {
+        // Initial call to set remove button visibility
+        updateRemoveButtonsVisibility();
+
+        // Form submission validation
+        document.querySelector('.modern-booking-form').addEventListener('submit', function(event) {
             const studentsList = document.getElementById('students-list');
             const count = studentsList.children.length;
 
@@ -245,7 +378,6 @@
                 event.preventDefault(); // Stop form submission
             }
         });
-
-    </script>
-
+    });
+</script>
 @endpush

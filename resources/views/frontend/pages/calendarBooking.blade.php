@@ -42,12 +42,38 @@
         </div>
     </div>
 </div>
+
+<!-- Event Details Modal (Static HTML) -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow modern-modal">
+            <div class="modal-header text-white modern-modal-header" id="modalHeader">
+                <h5 class="modal-title fw-bold d-flex align-items-center mx-3" id="modalTitle">
+                    <i class="fas fa-calendar me-2"></i>
+                    Event Details
+                </h5>
+                <button type="button" class="btn-close btn-close-white modern-close-btn" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body modern-modal-body" id="modalBody">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+            <div class="modal-footer border-0 modern-modal-footer">
+                <button type="button" class="btn btn-outline-secondary modern-btn-secondary" data-bs-dismiss="modal" id="closeModalBtn">
+                    <i class="fas fa-times me-1"></i>
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('styles')
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
 <style>
-* Modern Event Details Modal */
+/* Modern Event Details Modal */
 .modern-modal {
     border-radius: 20px;
     overflow: hidden;
@@ -57,10 +83,10 @@
 .modern-modal-header {
     background: linear-gradient(135deg, #1a1660 0%, #2d2b7a 100%);
     border: none;
-    padding: 1.5rem 2rem;
+    padding: 2rem 2rem;
     position: relative;
     overflow: hidden;
-    border-radius: 50px
+    border-radius: 20px 20px 20px 20px;
 }
 
 .modern-modal-header::before {
@@ -81,19 +107,29 @@
 .modern-close-btn {
     opacity: 0.9;
     transition: all 0.3s ease;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 50% !important;
+    width: 35px !important;
+    height: 35px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    color: white !important;
+    font-size: 14px !important;
 }
 
 .modern-close-btn:hover {
-    opacity: 1;
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.1);
+    opacity: 1 !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    transform: scale(1.1) !important;
+    color: white !important;
+}
+
+.modern-close-btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25) !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
 }
 
 .modern-modal-body {
@@ -209,22 +245,31 @@
 }
 
 .modern-btn-secondary {
-    border-radius: 50px;
-    padding: 0.75rem 1.5rem;
-    font-weight: 600;
-    border: 2px solid #dee2e6;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    border-radius: 50px !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 600 !important;
+    border: 2px solid #dee2e6 !important;
+    transition: all 0.3s ease !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    background: white !important;
+    color: #6c757d !important;
 }
 
 .modern-btn-secondary:hover {
-    background: red;
-    border-color: #adb5bd;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-   
+    background: red!important;
+    border-color: #adb5bd !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    color: white !important;
+}
+
+.modern-btn-secondary:focus {
+    background: #f8f9fa !important;
+    border-color: #adb5bd !important;
+    color: #495057 !important;
+    box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25) !important;
 }
 
 .modern-btn-primary {
@@ -253,21 +298,42 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
+    var eventModalElement = document.getElementById('eventModal');
+    var eventModal = new bootstrap.Modal(eventModalElement);
+    
+    // Add event listener for close button
+    document.getElementById('closeModalBtn').addEventListener('click', function() {
+        eventModal.hide();
+    });
+    
+    // Add event listener for X button in header
+    document.querySelector('.modern-close-btn').addEventListener('click', function() {
+        eventModal.hide();
+    });
+    
+    // Add event listener for clicking outside modal
+    eventModalElement.addEventListener('click', function(e) {
+        if (e.target === eventModalElement) {
+            eventModal.hide();
+        }
+    });
+    
     var calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'timeGridWeek',
         slotMinTime: '08:00:00',
         slotMaxTime: '19:00:00',
         events: @json($events),
         
-        
         eventClassNames: function(info) {
             const title = info.event.title || '';
-            if (title.startsWith('Invalid:')) {
-                return ['fc-event-invalid']; // red styling
-            } else if (title.startsWith('Booked:')) {
-                return ['fc-event-booked']; // blue styling
+            if (title.includes('Blocked:') || title.includes('Invalid:')) {
+                return ['fc-event-invalid']; 
+            } else if (title.includes('Booked:')) {
+                return ['fc-event-booked']; 
+            } else if (title.includes('Reserved:')) {
+                return ['fc-event-reserved'];
             }
-            return []; // default styling
+            return []; 
         },
         
         eventContent: function (info) {
@@ -277,6 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
             container.style.alignItems = 'flex-start';
             container.style.width = '100%';
             container.style.color = '#fff';
+            container.style.fontSize = '0.8rem';
             
             var timeEl = document.createElement('div');
             timeEl.className = 'fc-event-time';
@@ -284,13 +351,16 @@ document.addEventListener('DOMContentLoaded', function () {
             
             var titleEl = document.createElement('div');
             titleEl.className = 'fc-event-title';
+            titleEl.style.fontWeight = 'bold';
+            titleEl.style.marginTop = '2px';
             
-            // Add appropriate icon based on event type
             const title = info.event.title || 'No Title';
-            if (title.startsWith('Invalid:')) {
+            if (title.includes('Blocked:') || title.includes('Invalid:')) {
                 titleEl.innerHTML = `<i class="fas fa-exclamation-triangle me-1"></i>${title}`;
-            } else if (title.startsWith('Booked:')) {
+            } else if (title.includes('Booked:')) {
                 titleEl.innerHTML = `<i class="fas fa-bookmark me-1"></i>${title}`;
+            } else if (title.includes('Reserved:')) {
+                titleEl.innerHTML = `<i class="fas fa-calendar-check me-1"></i>${title}`;
             } else {
                 titleEl.innerHTML = `<i class="fas fa-calendar me-1"></i>${title}`;
             }
@@ -314,42 +384,21 @@ document.addEventListener('DOMContentLoaded', function () {
         loading: function(isLoading) {
             if (isLoading) {
                 document.querySelector('.modern-calendar').innerHTML =
-                    '<div class="calendar-loading"><i class="fas fa-spinner"></i>Loading calendar...</div>';
+                    '<div class="d-flex justify-content-center align-items-center" style="min-height: 300px;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>';
             }
         },
         
-        // Handle tooltips and click events
         eventDidMount: function(info) {
-            // Add tooltip with event details
             info.el.setAttribute(
                 'title',
                 `${info.event.title}\n${info.event.start.toLocaleString()} - ${info.event.end.toLocaleString()}`
             );
         },
         
-        // Add event click handler
         eventClick: function(info) {
             showEventDetails(info.event);
         }
     });
-    
-    
-    window.closeEventModal = function() {
-        const modalElement = document.getElementById('eventModal');
-        const backdrop = document.getElementById('eventModalBackdrop');
-        
-        if (modalElement) {
-            modalElement.style.opacity = '0';
-            setTimeout(() => {
-                modalElement.remove();
-                document.body.classList.remove('modal-open');
-            }, 300);
-        }
-        
-        if (backdrop) {
-            backdrop.remove();
-        }
-    };
     
     // Helper function to calculate duration
     function calculateDuration(start, end) {
@@ -368,168 +417,119 @@ document.addEventListener('DOMContentLoaded', function () {
     
     // Event Details Modal Function
     function showEventDetails(event) {
-        // Remove existing modal if present
-        const existingModal = document.getElementById('eventModal');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        
-        // Determine event type and styling
         const title = event.title || 'No Title';
-        let eventTypeClass = 'event-default';
+        let eventTypeClass = 'bg-primary';
         let eventTypeIcon = 'fas fa-calendar';
-        let headerClass = 'bg-gradient-primary';
+        let badgeClass = 'bg-secondary';
+        let eventType = 'Event';
         
-        if (title.startsWith('Invalid:')) {
-            eventTypeClass = 'event-invalid';
+        if (title.includes('Blocked:') || title.includes('Invalid:')) {
+            eventTypeClass = 'bg-danger';
             eventTypeIcon = 'fas fa-exclamation-triangle';
-            headerClass = 'bg-gradient-danger';
-        } else if (title.startsWith('Booked:')) {
-            eventTypeClass = 'event-booked';
+            badgeClass = 'bg-danger';
+            eventType = 'Blocked/Invalid';
+        } else if (title.includes('Booked:')) {
+            eventTypeClass = 'bg-success';
             eventTypeIcon = 'fas fa-bookmark';
-            headerClass = 'bg-gradient-primary';
+            badgeClass = 'bg-success';
+            eventType = 'Confirmed Booking';
+        } else if (title.includes('Reserved:')) {
+            eventTypeClass = 'bg-info';
+            eventTypeIcon = 'fas fa-calendar-check';
+            badgeClass = 'bg-info';
+            eventType = 'Facility Reserved';
         }
         
-        const modal = `
-            <div class="modal fade" id="eventModal" tabindex="-1">
-                <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content border-0 shadow-2xl modern-modal">
-                        <div class="modal-header ${headerClass} text-white modern-modal-header">
-                            <h5 class="modal-title fw-bold d-flex align-items-center mx-3">
-                                <i class="${eventTypeIcon} me-2"></i>
-                                Event Details
-                            </h5>
-                            <button type="button" class="modern-close-btn" onclick="closeEventModal()" aria-label="Close">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                        <div class="modal-body p-0 modern-modal-body">
-                            <div class="event-details-container p-4">
-                                <div class="event-title-section mb-4">
-                                    <div class="event-badge ${eventTypeClass} mb-2">
-                                        <i class="${eventTypeIcon} me-1"></i>
-                                        ${title.startsWith('Invalid:') ? 'Invalid Booking' : title.startsWith('Booked:') ? 'Confirmed Booking' : 'Event'}
-                                    </div>
-                                    <h4 class="event-title-text mb-0">${title}</h4>
-                                </div>
-                                
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <div class="detail-card">
-                                            <div class="detail-icon">
-                                                <i class="fas fa-play text-success"></i>
-                                            </div>
-                                            <div class="detail-content">
-                                                <small class="detail-label">Start Time</small>
-                                                <div class="detail-value">${event.start.toLocaleString()}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-md-6">
-                                        <div class="detail-card">
-                                            <div class="detail-icon">
-                                                <i class="fas fa-stop text-danger"></i>
-                                            </div>
-                                            <div class="detail-content">
-                                                <small class="detail-label">End Time</small>
-                                                <div class="detail-value">${event.end.toLocaleString()}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="col-12">
-                                        <div class="detail-card">
-                                            <div class="detail-icon">
-                                                <i class="fas fa-clock text-primary"></i>
-                                            </div>
-                                            <div class="detail-content">
-                                                <small class="detail-label">Duration</small>
-                                                <div class="detail-value">${calculateDuration(event.start, event.end)}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    ${event.extendedProps && event.extendedProps.room ? `
-                                    <div class="col-12">
-                                        <div class="detail-card">
-                                            <div class="detail-icon">
-                                                <i class="fas fa-door-open text-info"></i>
-                                            </div>
-                                            <div class="detail-content">
-                                                <small class="detail-label">Room</small>
-                                                <div class="detail-value">${event.extendedProps.room}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    ` : ''}
-                                    
-                                    ${event.extendedProps && event.extendedProps.description ? `
-                                    <div class="col-12">
-                                        <div class="detail-card">
-                                            <div class="detail-icon">
-                                                <i class="fas fa-align-left text-muted"></i>
-                                            </div>
-                                            <div class="detail-content">
-                                                <small class="detail-label">Description</small>
-                                                <div class="detail-value">${event.extendedProps.description}</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    ` : ''}
-                                </div>
+        // Update modal header
+        const modalHeader = document.getElementById('modalHeader');
+        modalHeader.className = `modal-header text-white modern-modal-header ${eventTypeClass}`;
+        
+        const modalTitle = document.getElementById('modalTitle');
+        modalTitle.innerHTML = `<i class="${eventTypeIcon} me-2"></i>Event Details`;
+        
+        // Update modal body
+        const modalBody = document.getElementById('modalBody');
+        modalBody.innerHTML = `
+            <div class="event-details-container p-4">
+                <div class="event-title-section mb-4">
+                    <div class="event-badge ${eventType === 'Blocked/Invalid' ? 'event-invalid' : eventType === 'Confirmed Booking' ? 'event-booked' : 'event-default'} mb-2">
+                        <i class="${eventTypeIcon} me-1"></i>
+                        ${eventType}
+                    </div>
+                    <h4 class="event-title-text mb-0">${title}</h4>
+                </div>
+                
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fas fa-play text-success"></i>
+                            </div>
+                            <div class="detail-content">
+                                <small class="detail-label">Start Time</small>
+                                <div class="detail-value">${event.start.toLocaleString()}</div>
                             </div>
                         </div>
-                        <div class="modal-footer border-0 modern-modal-footer">
-                            <button type="button" class="btn btn-outline-secondary modern-btn-secondary" onclick="closeEventModal()">
-                                <i class="fas fa-times me-1"></i>
-                                Close
-                            </button>
-                            ${title.startsWith('Booked:') ? `
-                            ` : ''}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fas fa-stop text-danger"></i>
+                            </div>
+                            <div class="detail-content">
+                                <small class="detail-label">End Time</small>
+                                <div class="detail-value">${event.end.toLocaleString()}</div>
+                            </div>
                         </div>
                     </div>
+                    
+                    <div class="col-12">
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fas fa-clock text-primary"></i>
+                            </div>
+                            <div class="detail-content">
+                                <small class="detail-label">Duration</small>
+                                <div class="detail-value">${calculateDuration(event.start, event.end)}</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${event.extendedProps && event.extendedProps.room ? `
+                    <div class="col-12">
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fas fa-door-open text-info"></i>
+                            </div>
+                            <div class="detail-content">
+                                <small class="detail-label">Room</small>
+                                <div class="detail-value">${event.extendedProps.room}</div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${event.extendedProps && event.extendedProps.description ? `
+                    <div class="col-12">
+                        <div class="detail-card">
+                            <div class="detail-icon">
+                                <i class="fas fa-align-left text-muted"></i>
+                            </div>
+                            <div class="detail-content">
+                                <small class="detail-label">Description</small>
+                                <div class="detail-value">${event.extendedProps.description}</div>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
             </div>
         `;
         
-        // Add modal to DOM
-        document.body.insertAdjacentHTML('beforeend', modal);
-        
-        // Show modal with manual display
-        const modalElement = document.getElementById('eventModal');
-        modalElement.style.display = 'block';
-        modalElement.classList.add('show');
-        document.body.classList.add('modal-open');
-        
-        // Add backdrop
-        const backdrop = document.createElement('div');
-        backdrop.className = 'modal-backdrop fade show';
-        backdrop.id = 'eventModalBackdrop';
-        backdrop.onclick = closeEventModal;
-        document.body.appendChild(backdrop);
-        
-        // FIXED: Add event listeners for close buttons instead of relying on onclick
-        const closeButtons = modalElement.querySelectorAll('[onclick="closeEventModal()"]');
-        closeButtons.forEach(button => {
-            button.addEventListener('click', closeEventModal);
-        });
-        
-        // Add fade-in animation
-        setTimeout(() => {
-            modalElement.style.opacity = '1';
-        }, 10);
+        // Show modal
+        eventModal.show();
     }
-    
-    // Add keyboard escape listener
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const modal = document.getElementById('eventModal');
-            if (modal) {
-                closeEventModal();
-            }
-        }
-    });
     
     calendar.render();
     
@@ -550,28 +550,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         document.getElementById(activeId).classList.add('active');
     }
-    
-    // Add smooth scroll to today button
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('fc-today-button')) {
-            setTimeout(() => {
-                const todayElement = document.querySelector('.fc-day-today');
-                if (todayElement) {
-                    todayElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }, 100);
-        }
-    });
-    
-    // Add loading state to navigation buttons
-    document.addEventListener('click', function(e) {
-        if (e.target.classList.contains('fc-button')) {
-            e.target.style.opacity = '0.7';
-            setTimeout(() => {
-                e.target.style.opacity = '1';
-            }, 300);
-        }
-    });
 });
 </script>
 @endpush
