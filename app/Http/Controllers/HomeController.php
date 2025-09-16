@@ -136,7 +136,7 @@ public function index(Request $request)
                     })
                     ->exists();
 
-                $conflictWithReserved = DB::table('facility_reservations')
+                $conflictWithReserved = DB::table('facility_reservation')
                     ->where('room_id', $roomId)
                     ->where(function ($q) use ($start_date, $end_date) {
                         $q->where(function ($subQ) use ($start_date, $end_date) {

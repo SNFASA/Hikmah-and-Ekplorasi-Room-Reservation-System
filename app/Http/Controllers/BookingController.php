@@ -520,24 +520,38 @@ public function filterAvailableRooms(Request $request)
  */
 public function showBookingForm($id, Request $request){
             $room = Room::findOrFail($id);
-            $rooms = Room::with(['furnitures', 'electronics'])->get();
+               $form = Room::join('type_rooms', 'rooms.type_room', '=', 'type_rooms.id')
+                ->where('rooms.no_room', $id) 
+                ->value('type_rooms.form_type');
             $furnitureCategories = Furniture::getFurnitureCategories();
             $electronicCategories = Electronic::getElectronicCategories();
-        
+            $start_date = $request->query('start_date');
+            $end_date = $request->query('end_date');
             $date = $request->query('date'); // Retrieves date from query string
             $start_time = $request->query('start_time');
             $end_time = $request->query('end_time');
         
             \Log::info("Booking Form Params:", compact('date', 'start_time', 'end_time')); // Debugging
-        
-            return view('frontend.pages.bookingform', [
-                'room' => $room,
-                'date' => $date,
-                'start_time' => $start_time,
-                'end_time' => $end_time,
-                'furnitureCategories' => $furnitureCategories,
-                'electronicCategories' => $electronicCategories,
-            ]);
+            if($form == 'standard'){
+                return view('frontend.pages.bookingform', [
+                    'room' => $room,
+                    'date' => $date,
+                    'start_time' => $start_time,
+                    'end_time' => $end_time,
+                    'furnitureCategories' => $furnitureCategories,
+                    'electronicCategories' => $electronicCategories,
+                ]);
+            }else{
+                return view('frontend.pages.reservationform',[
+                    'room' => $room,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'start_time' => $start_time,
+                    'end_time' => $end_time,
+                    'furnitureCategories' => $furnitureCategories,
+                    'electronicCategories' => $electronicCategories,
+                ]);
+            }
 }
     
 
