@@ -77,7 +77,7 @@
                                             type="text"
                                             name="name"
                                             class="form-control form-control-modern @error('name') is-invalid @enderror"
-                                            placeholder="Enter equipment name"
+                                            placeholder="Enter name"
                                             value="{{ old('name') }}"
                                             required
                                         >
@@ -86,6 +86,28 @@
                                             Type Room Name <span class="text-danger">*</span>
                                         </label>
                                         @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-floating">
+                                        <select id="form_type" name="form_type" class="form-control form-control-modern @error('form_type') is-invalid @enderror" required>
+                                            <option value="">-- Select Form Type --</option>
+                                            <option value="standard"
+                                                @if(old('form_type', isset($typeRoom) ? $typeRoom->form_type : '') == 'Standard') selected @endif>
+                                                Standard Form (Hikmah & Explorasi)
+                                            </option>
+                                            <option value="meeting_seminar"
+                                                @if(old('form_type', isset($typeRoom) ? $typeRoom->form_type : '') == 'Meeting seminar') selected @endif>
+                                                Meeting & Seminar Form
+                                            </option>
+                                        </select>
+                                        <label class="text-muted" for="form_type">
+                                            <i class="fas fa-file-alt me-2 "></i>
+                                            Form Type <span class="text-danger">*</span>
+                                        </label>
+                                        @error('form_type')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -226,6 +248,10 @@ $(document).ready(function() {
         // Validate equipment name
         if (!$('#inputName').val().trim()) {
             errors.push('Type Room name is required');
+            isValid = false;
+        }
+        if (!$('#form_type').val().trim()) {
+            errors.push('Type Form is required');
             isValid = false;
         }
         // Show errors if any

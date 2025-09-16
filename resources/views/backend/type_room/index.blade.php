@@ -67,6 +67,10 @@
                                         <span>Name</span>
                                         <i class="fas fa-sort sort-icon"></i>
                                     </th>
+                                    <th class="sortable" data-column="1">
+                                        <span>Form Type</span>
+                                        <i class="fas fa-sort sort-icon"></i>
+                                    </th>
                                     <th class="text-center">Actions</th>
                                 </tr>
                             </thead>
@@ -80,6 +84,12 @@
                                             <div class="device-info">
                                                 <i class="	fas fa-chalkboard-teacher me-2 text-primary"></i>
                                                 <span class="device-name">{{ $type->name }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="device-cell">
+                                            <div class="device-info">
+                                                <i class="	fas fa-form me-2 text-primary"></i>
+                                                <span class="device-name">{{ $type->form_type }}</span>
                                             </div>
                                         </td>
                                         <td class="action-cell">

@@ -16,13 +16,13 @@
             </div>
         </div>
     </div>
-    <!-- End Breadcrumbs -->          
+    <!-- End Breadcrumbs -->
     <!-- Start Checkout -->
     <section class="shop checkout section">
         <div class="container">
                 <form class="form" method="POST" action="{{route('bookingformStore', ['id' => $room->no_room])}}">
                     @csrf
-                    <div class="row"> 
+                    <div class="row">
 
                         <div class="col-lg-8 col-12">
                             <div class="checkout-form">

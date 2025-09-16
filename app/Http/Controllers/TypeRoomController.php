@@ -32,10 +32,12 @@ class TypeRoomController extends Controller
     {
         $request->validate([
             'name' => 'required|string|unique:type_rooms,name|max:255',
+            'form_type' => 'required|in:Standard,Meeting seminar',
         ]);
 
         TypeRooms::create([
             'name' => $request->name,
+            'form_type' => $request->form_type,
         ]);
 
         return redirect()->route('backend.type_room.index')->with('success', 'Room type added successfully.');
@@ -53,10 +55,12 @@ class TypeRoomController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255|unique:type_rooms,name,' . $id,
+            'form_type' => 'required|in:Standard,Meeting seminar',
         ]);
 
         $type->update([
             'name' => $request->name,
+            'form_type' => $request->form_type,
         ]);
 
         return redirect()->route('backend.type_room.index')->with('success', 'Room type updated successfully.');

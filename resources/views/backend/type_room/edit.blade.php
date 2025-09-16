@@ -95,6 +95,28 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                <div class="form-floating">
+                                    <select name="form_type" class="form-control form-control-modern @error('form_type') is-invalid @enderror" required>
+                                        <option value="">-- Select Form Type --</option>
+                                        <option value="Standard"
+                                            @if(old('form_type', $type->form_type) == 'Standard') selected @endif>
+                                            Standard Form (Hikmah & Explorasi)
+                                        </option>
+                                        <option value="Meeting seminar"
+                                            @if(old('form_type', $type->form_type) == 'Meeting seminar') selected @endif>
+                                            Meeting & Seminar Form
+                                        </option>
+                                    </select>
+                                    <label  for="form_type">
+                                        <i class="fas fa-file-alt me-2"></i>
+                                        Form Type <span class="text-danger">*</span>
+                                    </label>
+                                    @error('form_type')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                             </div>
                         </div>
 
@@ -109,7 +131,7 @@
                             </div>
 
                             <div class="card border-0 bg-white shadow-sm rounded-3">
-                                <div class="card-body p-4">
+                                <div class="card-body p-4 my-3">
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <div class="info-item">
@@ -118,6 +140,21 @@
                                                     <strong>Current Name:</strong>
                                                 </div>
                                                 <div class="info-value text-muted">{{ $type->name }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card border-0 bg-white shadow-sm rounded-3">
+                                <div class="card-body p-4 my-3">
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <div class="info-item">
+                                                <div class="info-label">
+                                                    <i class="fas fa-file-alt text-primary me-2"></i>
+                                                    <strong>Current Form Type:</strong>
+                                                </div>
+                                                <div class="info-value text-muted">{{ $type->form_type }}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -298,7 +335,10 @@ $(document).ready(function() {
             errors.push('Equipment name is required');
             isValid = false;
         }
-
+        if (!$('#form_type').val().trim()) {
+            errors.push('Type Form is required');
+            isValid = false;
+        }
         // Show errors if any
         if (!isValid) {
             showValidationErrors(errors);
