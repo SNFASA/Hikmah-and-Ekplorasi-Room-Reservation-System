@@ -2736,6 +2736,22 @@ select[data-choice] {
     box-shadow: 0 3px 15px rgba(108, 117, 125, 0.3);
 }
 
+
+
+.room-icon-container {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    position: relative;
+    z-index: 2;
+}
+
 /* Booking Image */
 .booking-image {
     height: 120px;
@@ -2758,29 +2774,36 @@ select[data-choice] {
 }
 
 .room-icon-container {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: white;
     position: relative;
     z-index: 2;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 2rem;
 }
 
 .booking-date-overlay {
     position: absolute;
-    top: 1rem;
-    left: 1rem;
+    top: 0.5rem;
     background: rgba(255, 255, 255, 0.95);
     border-radius: 12px;
     padding: 0.5rem;
     text-align: center;
     min-width: 50px;
     box-shadow: 0 3px 15px rgba(0, 0, 0, 0.2);
+    z-index: 3;
+}
+
+/* Default positioning for single date (bookings) */
+.booking-date-overlay:only-of-type {
+    left: 1rem;
+}
+
+/* Specific positioning for dual dates (reservations) */
+.booking-date-overlay:first-of-type {
+    left: 1.5rem;
+}
+
+.booking-date-overlay:last-of-type:not(:first-of-type) {
+    left: 1rem; /* Closer to first date with small gap */
 }
 
 .date-day {
@@ -2796,6 +2819,20 @@ select[data-choice] {
     font-size: 0.75rem;
     font-weight: 600;
     color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Additional styling for better visual separation */
+.booking-type-badge {
+    display: inline-block;
+    background: rgba(26, 22, 96, 0.1);
+    color: #1a1660;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    margin-left: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }

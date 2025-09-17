@@ -415,8 +415,15 @@ Route::post('/filter-available-rooms', [BookingController::class, 'filterAvailab
 Route::get('/room.reserve/{id}', [BookingController::class, 'showBookingForm'])->name('room.reserve');
 Route::post('/room.reserve/{id}', [BookingController::class, 'storeBookingForm'])->name('bookingformStore');
 
-// Reservation routes (reservation form) 
+// Reservation routes (reservation form)
 Route::post('/room.reservation/{id}', [FacilitiesReservationController::class, 'reservationformStore'])->name('reservationformStore');
+// cancel reservation
+Route::delete('/cancel-reservation/{id}', [FacilitiesReservationController::class, 'cancelreserved'])->name('cancel.reservation');
+//edit
+Route::get('reservation/{id}/edit', [FacilitiesReservationController::class, 'Formedit'])->name('reservation.edit');
+Route::put('reservation/{id}', [FacilitiesReservationController::class, 'Formupdate'])->name('reservation.update');
+
+
 // calander booking home page
 Route::get('/calendar', [BookingController::class, 'calendar'])->name('show.calendar');
 Route::get('/calendarAdmin', [BookingController::class, 'calendarAdmin'])->name('show.calendar.admin');

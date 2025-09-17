@@ -70,7 +70,7 @@
                 <li><strong>Reservation ID:</strong> #{{ $reservation->id }}</li>
                 <li><strong>Purpose/Program:</strong> {{ $reservation->purpose_program_name }}</li>
                 @if($reservation->room_id)
-                    <li><strong>Room ID:</strong> {{ $reservation->room_id }}</li>
+                    <li><strong>Room ID:</strong> {{ $reservation->room->name }}</li>
                 @endif
                 @if($reservation->other_room_description)
                     <li><strong>Room Description:</strong> {{ $reservation->other_room_description }}</li>
@@ -82,11 +82,11 @@
                 <li><strong>Duration:</strong> {{ $durationHours }} hour(s)</li>
                 <li><strong>Participants:</strong> {{ $reservation->no_of_participants }} ({{ $reservation->participant_category }})</li>
                 <li><strong>Event Type:</strong> {{ $reservation->event_type }}</li>
-                <li><strong>Status:</strong> 
-                    <span style="color: 
-                        @if($reservation->status == 'approved') green 
-                        @elseif($reservation->status == 'pending') orange 
-                        @elseif($reservation->status == 'rejected') red 
+                <li><strong>Status:</strong>
+                    <span style="color:
+                        @if($reservation->status == 'approved') green
+                        @elseif($reservation->status == 'pending') orange
+                        @elseif($reservation->status == 'rejected') red
                         @else gray @endif">
                         {{ ucfirst($reservation->status) }}
                     </span>

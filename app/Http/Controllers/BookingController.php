@@ -793,31 +793,41 @@ public function myBookings(Request $request)
     // Get the current user's no_matriks
     $userNoMatriks = auth()->user()->no_matriks;
     
-    // Fetch all reservations
-    $reservations = DB::table('facility_reservation')
-        ->join('rooms', 'facility_reservation.room_id', '=', 'rooms.no_room')
-        ->leftJoin('booking_user', 'facility_reservation.id', '=', 'booking_user.booking_id')
-        ->leftJoin('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
-        ->leftJoin('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
-        ->select(
-            'rooms.name as room_name',
-            'facility_reservation.id as reservation_id',
-            'facility_reservation.start_date',
-            'facility_reservation.start_time',
-            'facility_reservation.end_date',
-            'facility_reservation.end_time',
-            'users.name as student_name',
-            'users.no_matriks as student_no_matriks'
-        )
-        ->whereIn('facility_reservation.id', function ($query) use ($userNoMatriks) {
-            $query->select('booking_user.booking_id')
-                ->from('booking_user')
-                ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
-                ->where('list_student_booking.no_matriks', $userNoMatriks);
-        })
-        ->get();
-
-    // Fetch all bookings associated with the authenticated user
+    // First, get the list_student_booking.id for the current user
+    $userListStudentId = DB::table('list_student_booking')
+        ->where('no_matriks', $userNoMatriks)
+        ->value('id');
+    
+    \Log::info("Current user no_matriks: " . $userNoMatriks);
+    \Log::info("User list_student_booking ID: " . $userListStudentId);
+    
+    // Fetch reservations - these link directly via created_by_matric_no
+    $reservations = collect();
+    if ($userListStudentId) {
+        $reservations = DB::table('facility_reservation')
+            ->join('rooms', 'facility_reservation.room_id', '=', 'rooms.no_room')
+            ->where('facility_reservation.created_by_matric_no', $userListStudentId)
+            ->select(
+                'rooms.name as room_name',
+                'facility_reservation.id as reservation_id',
+                'facility_reservation.start_date',
+                'facility_reservation.start_time',
+                'facility_reservation.end_date',
+                'facility_reservation.end_time',
+                'facility_reservation.name as creator_name',
+                'facility_reservation.purpose_program_name'
+            )
+            ->get();
+    }
+    
+    \Log::info("Reservations found: " . $reservations->count());
+    
+    // Fetch bookings - these use the booking_user intermediary table
+    $userBookingIds = DB::table('booking_user')
+        ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+        ->where('list_student_booking.no_matriks', $userNoMatriks)
+        ->pluck('booking_user.booking_id');
+    
     $bookings = DB::table('bookings')
         ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
         ->leftJoin('booking_user', 'bookings.id', '=', 'booking_user.booking_id')
@@ -829,31 +839,34 @@ public function myBookings(Request $request)
             'bookings.booking_date',
             'bookings.booking_time_start',
             'bookings.booking_time_end',
+            'bookings.purpose',
             'users.name as student_name',
             'users.no_matriks as student_no_matriks'
         )
-        ->whereIn('bookings.id', function ($query) use ($userNoMatriks) {
-            $query->select('booking_user.booking_id')
-                ->from('booking_user')
-                ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
-                ->where('list_student_booking.no_matriks', $userNoMatriks);
-        })
+        ->whereIn('bookings.id', $userBookingIds)
         ->get();
-
-    // Group bookings by booking ID
+    
+    \Log::info("Bookings found: " . $bookings->count());
+    
+    // Group bookings by booking ID and attach students
     $groupedBookings = $bookings->groupBy('booking_id')->map(function ($group) {
-        $details = $group->first(); // Get the details for the booking
-        $details->students = $group->pluck('student_name')->filter()->unique()->toArray(); // Collect unique student names
+        $details = $group->first();
+        $details->students = $group->pluck('student_name')->filter()->unique()->toArray();
         return $details;
     });
-
-    // Group reservations by reservation ID
-    $groupedReservations = $reservations->groupBy('reservation_id')->map(function ($group) {
-        $details = $group->first(); // Get the details for the reservation
-        $details->students = $group->pluck('student_name')->filter()->unique()->toArray(); // Collect unique student names
-        return $details;
-    });
-
+    
+    // For reservations, we need to get participants differently
+    // Since reservations are individual, we'll create a students array with the creator
+    $groupedReservations = $reservations->map(function ($reservation) {
+        // For reservations, the "students" would be the creator and any participants
+        // Since the table doesn't store individual participants, we'll use the creator name
+        $reservation->students = [$reservation->creator_name];
+        return $reservation;
+    })->keyBy('reservation_id');
+    
+    \Log::info("Final grouped reservations count: " . $groupedReservations->count());
+    \Log::info("Final grouped bookings count: " . $groupedBookings->count());
+    
     // Pass data to the view
     return view('frontend.pages.Mybooking', [
         'bookingDetails' => $groupedBookings,
