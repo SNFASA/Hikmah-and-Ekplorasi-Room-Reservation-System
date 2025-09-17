@@ -21,6 +21,7 @@ use App\Notifications\NewBookingNotification;
 use Illuminate\Support\Facades\Notification;
 use App\Jobs\SendBookingReminderMail;
 use App\Services\ActivityLogger;
+use App\Models\faculty_offices;
 
 
 class BookingController extends Controller
@@ -518,43 +519,64 @@ public function filterAvailableRooms(Request $request)
  * and any date and time parameters from the query string. It then logs these parameters
  * for debugging purposes and returns the booking form view with the relevant data.
  */
-public function showBookingForm($id, Request $request){
-            $room = Room::findOrFail($id);
-               $form = Room::join('type_rooms', 'rooms.type_room', '=', 'type_rooms.id')
-                ->where('rooms.no_room', $id) 
-                ->value('type_rooms.form_type');
-            $furnitureCategories = Furniture::getFurnitureCategories();
-            $electronicCategories = Electronic::getElectronicCategories();
-            $start_date = $request->query('start_date');
-            $end_date = $request->query('end_date');
-            $date = $request->query('date'); // Retrieves date from query string
-            $start_time = $request->query('start_time');
-            $end_time = $request->query('end_time');
-        
-            \Log::info("Booking Form Params:", compact('date', 'start_time', 'end_time')); // Debugging
-            if($form == 'standard'){
-                return view('frontend.pages.bookingform', [
-                    'room' => $room,
-                    'date' => $date,
-                    'start_time' => $start_time,
-                    'end_time' => $end_time,
-                    'furnitureCategories' => $furnitureCategories,
-                    'electronicCategories' => $electronicCategories,
-                ]);
-            }else{
-                return view('frontend.pages.reservationform',[
-                    'room' => $room,
-                    'start_date' => $start_date,
-                    'end_date' => $end_date,
-                    'start_time' => $start_time,
-                    'end_time' => $end_time,
-                    'furnitureCategories' => $furnitureCategories,
-                    'electronicCategories' => $electronicCategories,
-                ]);
-            }
-}
+public function showBookingForm($id, Request $request)
+{
+    $room = Room::findOrFail($id);
+    $rooms = Room::join('type_rooms', 'type_rooms.id', '=', 'rooms.type_room')
+        ->select('rooms.*', 'type_rooms.name as type_room_name')
+        ->get();
+    // Get form type from the room's type_room relationship
+    $roomTypeData = Room::join('type_rooms', 'rooms.type_room', '=', 'type_rooms.id')
+        ->where('rooms.no_room', $id)
+        ->select('type_rooms.form_type', 'type_rooms.name')
+        ->first();
+    $participant_category = ['Staff', 'VVIP', 'Public', 'Student', 'Other'];
+    $event_type = ['Physical','Online'];
+    $form = $roomTypeData ? $roomTypeData->form_type : 'Standard';
+    $roomTypeName = $roomTypeData ? $roomTypeData->name : '';
+    $facultie = faculty_offices::all();
+    $furnitureCategories = Furniture::getFurnitureCategories();
+    $electronicCategories = Electronic::getElectronicCategories();
     
-
+    // Get parameters from request
+    $start_date = $request->query('start_date');
+    $end_date = $request->query('end_date');
+    $date = $request->query('date');
+    $start_time = $request->query('start_time');
+    $end_time = $request->query('end_time');
+    
+    \Log::info("Room Type Name: " . $roomTypeName);
+    \Log::info("Form Type from DB: " . $form);
+    \Log::info("Reservation Form Params:", compact('start_date', 'end_date', 'start_time', 'end_time', 'form'));
+    \Log::info("Booking Form Params:", compact('date', 'start_time', 'end_time', 'form'));
+    
+    // Check form type - compare with database enum values
+    if ($form == 'Standard') {
+        return view('frontend.pages.bookingform', [
+            'room' => $room,
+            'date' => $date,
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'furnitureCategories' => $furnitureCategories,
+            'electronicCategories' => $electronicCategories,
+        ]);
+    } else { // 'Meeting seminar'
+        return view('frontend.pages.reservationform', [
+            'room' => $room,
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'start_time' => $start_time,
+            'end_time' => $end_time,
+            'furnitureCategories' => $furnitureCategories,
+            'electronicCategories' => $electronicCategories,
+            'form' => $form,
+            'facultie' => $facultie,
+            'rooms' => $rooms,
+            'participant_category' => $participant_category,
+            'event_type' => $event_type,
+        ]);
+    }
+}
 /**
  * Store a new booking in the database.
  * 
@@ -767,43 +789,76 @@ public function calendar()
  * @return \Illuminate\View\View The view displaying the user's bookings.
  */
 public function myBookings(Request $request)
-     {
-         // Get the current user's no_matriks
-         $userNoMatriks = auth()->user()->no_matriks;
-     
-         // Fetch all bookings associated with the authenticated user
-         $bookings = DB::table('bookings')
-             ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
-             ->leftJoin('booking_user', 'bookings.id', '=', 'booking_user.booking_id')
-             ->leftJoin('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
-             ->leftJoin('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
-             ->select(
-                 'rooms.name as room_name',
-                 'bookings.id as booking_id',
-                 'bookings.booking_date',
-                 'bookings.booking_time_start',
-                 'bookings.booking_time_end',
-                 'users.name as student_name', // Fetch all student names
-                 'users.no_matriks as student_no_matriks'
-             )
-             ->whereIn('bookings.id', function ($query) use ($userNoMatriks) {
-                 $query->select('booking_user.booking_id')
-                     ->from('booking_user')
-                     ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
-                     ->where('list_student_booking.no_matriks', $userNoMatriks);
-             })
-             ->get();
-     
-         // Group bookings by booking ID
-         $groupedBookings = $bookings->groupBy('booking_id')->map(function ($group) {
-             $details = $group->first(); // Get the details for the booking
-             $details->students = $group->pluck('student_name')->filter()->unique()->toArray(); // Collect unique student names
-             return $details;
-         });
-        // dd($bookings);
+{
+    // Get the current user's no_matriks
+    $userNoMatriks = auth()->user()->no_matriks;
+    
+    // Fetch all reservations
+    $reservations = DB::table('facility_reservation')
+        ->join('rooms', 'facility_reservation.room_id', '=', 'rooms.no_room')
+        ->leftJoin('booking_user', 'facility_reservation.id', '=', 'booking_user.booking_id')
+        ->leftJoin('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+        ->leftJoin('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
+        ->select(
+            'rooms.name as room_name',
+            'facility_reservation.id as reservation_id',
+            'facility_reservation.start_date',
+            'facility_reservation.start_time',
+            'facility_reservation.end_date',
+            'facility_reservation.end_time',
+            'users.name as student_name',
+            'users.no_matriks as student_no_matriks'
+        )
+        ->whereIn('facility_reservation.id', function ($query) use ($userNoMatriks) {
+            $query->select('booking_user.booking_id')
+                ->from('booking_user')
+                ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+                ->where('list_student_booking.no_matriks', $userNoMatriks);
+        })
+        ->get();
 
-         // Pass data to the view
-         return view('frontend.pages.Mybooking', ['bookingDetails' => $groupedBookings]);
+    // Fetch all bookings associated with the authenticated user
+    $bookings = DB::table('bookings')
+        ->join('rooms', 'bookings.no_room', '=', 'rooms.no_room')
+        ->leftJoin('booking_user', 'bookings.id', '=', 'booking_user.booking_id')
+        ->leftJoin('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+        ->leftJoin('users', 'list_student_booking.no_matriks', '=', 'users.no_matriks')
+        ->select(
+            'rooms.name as room_name',
+            'bookings.id as booking_id',
+            'bookings.booking_date',
+            'bookings.booking_time_start',
+            'bookings.booking_time_end',
+            'users.name as student_name',
+            'users.no_matriks as student_no_matriks'
+        )
+        ->whereIn('bookings.id', function ($query) use ($userNoMatriks) {
+            $query->select('booking_user.booking_id')
+                ->from('booking_user')
+                ->join('list_student_booking', 'booking_user.list_student_booking_id', '=', 'list_student_booking.id')
+                ->where('list_student_booking.no_matriks', $userNoMatriks);
+        })
+        ->get();
+
+    // Group bookings by booking ID
+    $groupedBookings = $bookings->groupBy('booking_id')->map(function ($group) {
+        $details = $group->first(); // Get the details for the booking
+        $details->students = $group->pluck('student_name')->filter()->unique()->toArray(); // Collect unique student names
+        return $details;
+    });
+
+    // Group reservations by reservation ID
+    $groupedReservations = $reservations->groupBy('reservation_id')->map(function ($group) {
+        $details = $group->first(); // Get the details for the reservation
+        $details->students = $group->pluck('student_name')->filter()->unique()->toArray(); // Collect unique student names
+        return $details;
+    });
+
+    // Pass data to the view
+    return view('frontend.pages.Mybooking', [
+        'bookingDetails' => $groupedBookings,
+        'reservationDetails' => $groupedReservations
+    ]);
 }
 public function cancelBooking($id){
     $booking = Bookings::findOrFail($id);

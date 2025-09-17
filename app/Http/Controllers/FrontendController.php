@@ -51,24 +51,36 @@ class FrontendController extends Controller
      *
      * @return \Illuminate\View\View The view for the home page with the initialized data.
      */
-    public function home()
+    public function home(Request $request)
     {
-    
-        $rooms = collect(); // Empty collection as a placeholder
-        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get(); // Default value for type_room
+        // If there are filter parameters, use BookingController logic
+        if ($request->hasAny(['type_room', 'date', 'start_date', 'end_date', 'start_time', 'end_time', 'furniture_category', 'electronic_category'])) {
+            $bookingController = new BookingController();
+            return $bookingController->index($request);
+        }
+        
+        // Default empty state
+        $rooms = collect();
+        $type_room = 'All';
+        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get();
         $date = null;
+        $start_date = null;
+        $end_date = null;
         $start_time = null;
         $end_time = null;
         $furniture_category = [];
         $electronic_category = [];
+        $selectedRoomTypeName = 'All';
+        
         $furnitureCategories = CategoryEquipment::whereHas('furniture')->orderBy('name')->get();
         $electronicCategories = CategoryEquipment::whereHas('electronics')->orderBy('name')->get();
-        return view('frontend.index', compact('rooms', 'type_rooms',
-        'date', 'start_time', 'end_time', 'furniture_category', 'electronic_category',
-        'furnitureCategories', 'electronicCategories'));
+        
+        return view('frontend.index', compact(
+            'rooms', 'type_rooms', 'type_room', 'date', 'start_date', 'end_date',
+            'start_time', 'end_time', 'furniture_category', 'electronic_category',
+            'furnitureCategories', 'electronicCategories', 'selectedRoomTypeName'
+        ));
     }
-    
-    
     public function bookingform(){
         
         return view('frontend.pages.bookingform');

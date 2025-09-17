@@ -71,7 +71,7 @@
                                 <i class="fas fa-calendar-alt"></i>
                                 Date
                             </label>
-                            <input type="date" name="date" class="form-control" value="{{ $date }}" required>
+                            <input type="date" name="date" class="form-control" value="{{ $date }}">
                         </div>
                     @elseif($showDateRange)
                         <!-- Date Range for Courses, Meeting & Seminar -->
@@ -80,14 +80,14 @@
                                 <i class="fas fa-calendar-alt"></i>
                                 Start Date
                             </label>
-                            <input type="date" name="start_date" class="form-control" value="{{ $start_date }}" required>
+                            <input type="date" name="start_date" class="form-control" value="{{ $start_date }}">
                         </div>
                         <div class="form-group">
                             <label class="form-label">
                                 <i class="fas fa-calendar-alt"></i>
                                 End Date
                             </label>
-                            <input type="date" name="end_date" class="form-control" value="{{ $end_date }}" required>
+                            <input type="date" name="end_date" class="form-control" value="{{ $end_date }}">
                         </div>
                     @else
                         <!-- All Room Types - Show single date as default -->
@@ -108,14 +108,14 @@
                             <i class="fas fa-clock"></i>
                             Start Time
                         </label>
-                        <input type="time" name="start_time" class="form-control" value="{{ $start_time }}" required>
+                        <input type="time" name="start_time" class="form-control" value="{{ $start_time }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">
                             <i class="fas fa-clock"></i>
                             End Time
                         </label>
-                        <input type="time" name="end_time" class="form-control" value="{{ $end_time }}" required>
+                        <input type="time" name="end_time" class="form-control" value="{{ $end_time }}">
                     </div>
                 </div>
 

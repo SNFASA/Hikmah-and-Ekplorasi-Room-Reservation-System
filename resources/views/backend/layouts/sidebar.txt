@@ -1,251 +1,299 @@
-<?php
+// BookingController
 
-// ========================================
-// HomeController.php
-// ========================================
-
-class HomeController extends Controller
+public function filterAvailableRooms(Request $request)
 {
-    /**
-     * Display the home page with room availability and filters.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\View\View
-     */
-    public function index(Request $request)
-    {
-        $type_room = $request->input('type_room', 'All');
-        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get();
-        
-        // Standard room fields
-        $date = $request->input('date');
-        $start_time = $request->input('start_time');
-        $end_time = $request->input('end_time');
-        
-        // Meeting room fields
-        $start_date = $request->input('start_date');
-        $end_date = $request->input('end_date');
-        $meeting_start_time = $request->input('meeting_start_time');
-        $meeting_end_time = $request->input('meeting_end_time');
-        $participant_category = $request->input('participant_category');
-        
-        $furniture_category = $request->input('furniture_category', []);
-        $electronic_category = $request->input('electronic_category', []);
-
-        // Build rooms query
-        $rooms = room::query()
-            ->where('status', 'valid')
-            ->when($type_room !== 'All', function ($query) use ($type_room) {
-                $query->where('type_room', $type_room);
-            })
-            ->when(!empty($furniture_category), function ($query) use ($furniture_category) {
-                $query->whereHas('furnitures', function ($q) use ($furniture_category) {
-                    $q->whereIn('category_id', $furniture_category);
-                });
-            })
-            ->when(!empty($electronic_category), function ($query) use ($electronic_category) {
-                $query->whereHas('electronics', function ($q) use ($electronic_category) {
-                    $q->whereIn('category_id', $electronic_category);
-                });
-            })
-            ->get();
-
-        $furnitureCategories = CategoryEquipment::whereHas('furniture')->orderBy('name')->get();
-        $electronicCategories = CategoryEquipment::whereHas('electronics')->orderBy('name')->get();
-
-        return view('frontend.index', compact(
-            'rooms', 'furnitureCategories', 'electronicCategories',
-            'type_rooms', 'type_room', 'date', 'start_time', 'end_time',
-            'start_date', 'end_date', 'meeting_start_time', 'meeting_end_time',
-            'participant_category', 'furniture_category', 'electronic_category'
-        ));
+    $type_room = $request->input('type_room');
+    
+    // Get the room type name if a specific room type is selected
+    $roomTypeName = 'All';
+    if ($type_room && $type_room !== 'All') {
+        $roomType = \App\Models\TypeRooms::find($type_room);
+        $roomTypeName = $roomType ? $roomType->name : 'All';
     }
+    
+    // Base validation rules
+    $rules = [
+        'type_room' => 'nullable|string',
+        'start_time' => 'nullable|date_format:H:i',
+        'end_time' => 'nullable|date_format:H:i',
+        'furniture_category' => 'nullable|array',
+        'furniture_category.*' => 'nullable|string',
+        'electronic_category' => 'nullable|array',
+        'electronic_category.*' => 'nullable|string',
+    ];
+
+    // Conditional validation based on room type name
+    if ($roomTypeName == 'Courses, Meeting & Seminar') {
+        $rules['start_date'] = 'nullable|date';
+        $rules['end_date'] = 'nullable|date|after_or_equal:start_date';
+    } elseif (in_array($roomTypeName, ['HIKMAH', 'EKSPLORASI'])) {
+        $rules['date'] = 'nullable|date';
+    } else { // For "All" room types
+        $rules['date'] = 'nullable|date';
+        $rules['start_date'] = 'nullable|date';
+        $rules['end_date'] = 'nullable|date|after_or_equal:start_date';
+    }
+
+    $validated = $request->validate($rules);
+
+    // Pass the request data as query parameters when redirecting back to the home route
+    return redirect()->route('home', $request->all());
 }
 
-// ========================================
-// BookingController.php
-// ========================================
+public function showBookingForm($id, Request $request){
+            $room = Room::findOrFail($id);
+               $form = Room::join('type_rooms', 'rooms.type_room', '=', 'type_rooms.id')
+                ->where('rooms.no_room', $id)
+                ->value('type_rooms.form_type');
+            $furnitureCategories = Furniture::getFurnitureCategories();
+            $electronicCategories = Electronic::getElectronicCategories();
+            $start_date = $request->query('start_date');
+            $end_date = $request->query('end_date');
+            $date = $request->query('date'); // Retrieves date from query string
+            $start_time = $request->query('start_time');
+            $end_time = $request->query('end_time');
+            \Log::info("Reseervation Form Params:", compact('start_date','end_date', 'start_time', 'end_time', 'form')); // Debugging
+            \Log::info("Booking Form Params:", compact('date', 'start_time', 'end_time', 'form')); // Debugging
+            if($form == 'standard'){
+                return view('frontend.pages.bookingform', [
+                    'room' => $room,
+                    'date' => $date,
+                    'start_time' => $start_time,
+                    'end_time' => $end_time,
+                    'furnitureCategories' => $furnitureCategories,
+                    'electronicCategories' => $electronicCategories,
+                ]);
+            }else{
+                return view('frontend.pages.reservationform',[
+                    'room' => $room,
+                    'start_date' => $start_date,
+                    'end_date' => $end_date,
+                    'start_time' => $start_time,
+                    'end_time' => $end_time,
+                    'furnitureCategories' => $furnitureCategories,
+                    'electronicCategories' => $electronicCategories,
+                    'form' => $form,
+                ]);
+            }
+}
 
-class BookingController extends Controller
+public function index(Request $request)
 {
-    /**
-     * Filter available rooms based on provided criteria.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function filterAvailableRooms(Request $request)
-    {
-        $validated = $request->validate([
-            'type_room' => 'nullable|string',
-            'date' => 'nullable|date|after_or_equal:today',
-            'start_time' => 'nullable|date_format:H:i',
-            'end_time' => 'nullable|date_format:H:i',
-            'start_date' => 'nullable|date|after_or_equal:today',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-            'meeting_start_time' => 'nullable|date_format:H:i',
-            'meeting_end_time' => 'nullable|date_format:H:i',
-            'participant_category' => 'nullable|string|in:Staff,VVIP,Public,Student,Other',
-            'furniture_category' => 'nullable|array',
-            'furniture_category.*' => 'nullable|string',
-            'electronic_category' => 'nullable|array',
-            'electronic_category.*' => 'nullable|string',
-        ]);
+    $type_room = $request->input('type_room', 'All'); // selected value from filter
+    $type_rooms = \App\Models\TypeRooms::orderBy('name')->get(); // dropdown values
+    $date = $request->input('date');
+    $start_date = $request->input('start_date');
+    $end_date = $request->input('end_date');
+    $start_time = $request->input('start_time');
+    $end_time = $request->input('end_time');
+    $furniture_category = $request->input('furniture_category', []);
+    $electronic_category = $request->input('electronic_category', []);
 
-        // Get room types to determine if it's a meeting type
-        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get();
-        $isMeetingType = $this->isMeetingRoomType($validated['type_room'] ?? null, $type_rooms);
-        
-        // Validate time inputs based on room type
-        if ($isMeetingType) {
-            if (($validated['meeting_start_time'] ?? null) && ($validated['meeting_end_time'] ?? null)) {
-                if (($validated['start_date'] ?? null) === ($validated['end_date'] ?? null) && 
-                    $validated['meeting_start_time'] >= $validated['meeting_end_time']) {
-                    return redirect()->back()->with('error', 'End time must be after start time for same day bookings.');
+    if (($start_time && !$end_time) || (!$start_time && $end_time)) {
+        request()->session()->flash('error', 'Both start and end time must be provided.');
+        return redirect()->back();
+    }
+
+    // Get the selected room type name
+    $selectedRoomTypeName = 'All';
+    if ($type_room !== 'All') {
+        $selectedRoomType = \App\Models\TypeRooms::find($type_room);
+        $selectedRoomTypeName = $selectedRoomType ? $selectedRoomType->name : 'All';
+    }
+
+    // Check if room type is "Courses, Meeting & Seminar" and validate date range
+    if ($selectedRoomTypeName == 'Courses, Meeting & Seminar') {
+        if ($start_date && $end_date && $start_date > $end_date) {
+            request()->session()->flash('error', 'Start date must be before or equal to end date.');
+            return redirect()->back();
+        }
+    }
+
+    $rooms = room::query()
+        ->where('status', 'valid')
+        ->when($type_room !== 'All', function ($query) use ($type_room) {
+            $query->where('type_room', $type_room);
+        })
+        ->when(!empty($furniture_category), function ($query) use ($furniture_category) {
+            $query->whereHas('furnitures', function ($q) use ($furniture_category) {
+                $q->whereIn('category_id', $furniture_category);
+            });
+        })
+        ->when(!empty($electronic_category), function ($query) use ($electronic_category) {
+            $query->whereHas('electronics', function ($q) use ($electronic_category) {
+                $q->whereIn('category_id', $electronic_category);
+            });
+        })
+        ->get();
+
+    // Availability checking logic
+    if ($start_time && $end_time) {
+        foreach ($rooms as $room) {
+            $roomId = $room->no_room;
+
+            // For "Courses, Meeting & Seminar" room type - use date range
+            if ($selectedRoomTypeName == 'Courses, Meeting & Seminar' && $start_date && $end_date) {
+                $conflictWithUnavailable = DB::table('schedule_booking')
+                    ->where('roomid', $roomId)
+                    ->whereBetween('invalid_date', [$start_date, $end_date])
+                    ->where(function ($q) use ($start_time, $end_time) {
+                        $q->where('invalid_time_start', '<', $end_time)
+                          ->where('invalid_time_end', '>', $start_time);
+                    })
+                    ->exists();
+
+                if ($conflictWithUnavailable) {
+                    request()->session()->flash('error', "Room $roomId is unavailable during the selected date range.");
+                    return redirect()->back();
+                }
+                $conflictWithReserved = DB::table('facility_reservation')
+                    ->where('room_id', $roomId)
+                    ->where(function ($q) use ($start_date, $end_date) {
+                        $q->where(function ($subQ) use ($start_date, $end_date) {
+                            $subQ->where('start_date', '<=', $end_date)
+                                 ->where('end_date', '>=', $start_date);
+                        });
+                    })
+                    ->where(function ($q) use ($start_time, $end_time) {
+                        $q->where('start_time', '<', $end_time)
+                          ->where('end_time', '>', $start_time);
+                    })
+                    ->exists();
+
+                if ($conflictWithUnavailable || $conflictWithReserved) {
+                    request()->session()->flash('error', "Room $roomId is already booked during the selected date range.");
+                    return redirect()->back();
                 }
             }
-        } else {
-            if (($validated['start_time'] ?? null) && ($validated['end_time'] ?? null) && 
-                $validated['start_time'] >= $validated['end_time']) {
-                return redirect()->back()->with('error', 'End time must be after start time.');
+            // For "HIKMAH" and "EKSPLORASI" room types - use single date
+            elseif ($date && in_array($selectedRoomTypeName, ['HIKMAH', 'EKSPLORASI'])) {
+                $conflictWithUnavailable = DB::table('schedule_booking')
+                    ->where('roomid', $roomId)
+                    ->where('invalid_date', $date)
+                    ->where(function ($q) use ($start_time, $end_time) {
+                        $q->where('invalid_time_start', '<', $end_time)
+                          ->where('invalid_time_end', '>', $start_time);
+                    })
+                    ->exists();
+
+                if ($conflictWithUnavailable) {
+                    request()->session()->flash('error', "Room $roomId is unavailable at the selected time.");
+                    return redirect()->back();
+                }
+
+                $conflictWithBooked = DB::table('bookings')
+                    ->where('no_room', $roomId)
+                    ->where('booking_date', $date)
+                    ->where(function ($q) use ($start_time, $end_time) {
+                        $q->where('booking_time_start', '<', $end_time)
+                          ->where('booking_time_end', '>', $start_time);
+                    })
+                    ->exists();
+
+                if ($conflictWithBooked) {
+                    request()->session()->flash('error', "Room $roomId is already booked at the selected time.");
+                    return redirect()->back();
+                }
+            }
+            // For "All" room types - handle based on what date fields are provided
+            elseif ($selectedRoomTypeName == 'All') {
+                // If date range is provided, use date range logic
+                if ($start_date && $end_date) {
+                    $conflictWithUnavailable = DB::table('schedule_booking')
+                        ->where('roomid', $roomId)
+                        ->whereBetween('invalid_date', [$start_date, $end_date])
+                        ->where(function ($q) use ($start_time, $end_time) {
+                            $q->where('invalid_time_start', '<', $end_time)
+                              ->where('invalid_time_end', '>', $start_time);
+                        })
+                        ->exists();
+
+                    $conflictWithBooked = DB::table('bookings')
+                        ->where('no_room', $roomId)
+                        ->whereBetween('booking_date', [$start_date, $end_date])
+                        ->where(function ($q) use ($start_time, $end_time) {
+                            $q->where('booking_time_start', '<', $end_time)
+                              ->where('booking_time_end', '>', $start_time);
+                        })
+                        ->exists();
+
+                    $conflictWithReserved = DB::table('facility_reservations')
+                        ->where('room_id', $roomId)
+                        ->where(function ($q) use ($start_date, $end_date) {
+                            $q->where(function ($subQ) use ($start_date, $end_date) {
+                                $subQ->where('start_date', '<=', $end_date)
+                                     ->where('end_date', '>=', $start_date);
+                            });
+                        })
+                        ->where(function ($q) use ($start_time, $end_time) {
+                            $q->where('start_time', '<', $end_time)
+                              ->where('end_time', '>', $start_time);
+                        })
+                        ->exists();
+
+                    if ($conflictWithUnavailable || $conflictWithBooked || $conflictWithReserved) {
+                        request()->session()->flash('error', "Room $roomId is not available during the selected date range.");
+                        return redirect()->back();
+                    }
+                }
+                // If single date is provided, use single date logic
+                elseif ($date) {
+                    $conflictWithUnavailable = DB::table('schedule_booking')
+                        ->where('roomid', $roomId)
+                        ->where('invalid_date', $date)
+                        ->where(function ($q) use ($start_time, $end_time) {
+                            $q->where('invalid_time_start', '<', $end_time)
+                              ->where('invalid_time_end', '>', $start_time);
+                        })
+                        ->exists();
+
+                    $conflictWithBooked = DB::table('bookings')
+                        ->where('no_room', $roomId)
+                        ->where('booking_date', $date)
+                        ->where(function ($q) use ($start_time, $end_time) {
+                            $q->where('booking_time_start', '<', $end_time)
+                              ->where('booking_time_end', '>', $start_time);
+                        })
+                        ->exists();
+
+                    if ($conflictWithUnavailable || $conflictWithBooked) {
+                        request()->session()->flash('error', "Room $roomId is not available at the selected time.");
+                        return redirect()->back();
+                    }
+                }
             }
         }
-
-        // Filter rooms for availability
-        $rooms = room::query()
-            ->where('status', 'valid')
-            ->when(($validated['type_room'] ?? 'All') !== 'All', function ($query) use ($validated) {
-                $query->where('type_room', $validated['type_room']);
-            })
-            ->when(!empty($validated['furniture_category'] ?? []), function ($query) use ($validated) {
-                $query->whereHas('furnitures', function ($q) use ($validated) {
-                    $q->whereIn('category_id', $validated['furniture_category']);
-                });
-            })
-            ->when(!empty($validated['electronic_category'] ?? []), function ($query) use ($validated) {
-                $query->whereHas('electronics', function ($q) use ($validated) {
-                    $q->whereIn('category_id', $validated['electronic_category']);
-                });
-            });
-
-        // Apply availability filtering based on room type
-        if ($isMeetingType && 
-            ($validated['start_date'] ?? null) && 
-            ($validated['end_date'] ?? null) && 
-            ($validated['meeting_start_time'] ?? null) && 
-            ($validated['meeting_end_time'] ?? null)) {
-            
-            $rooms = $this->filterMeetingRoomAvailability(
-                $rooms, 
-                $validated['start_date'], 
-                $validated['end_date'], 
-                $validated['meeting_start_time'], 
-                $validated['meeting_end_time']
-            );
-        } elseif (!$isMeetingType && 
-                  ($validated['date'] ?? null) && 
-                  ($validated['start_time'] ?? null) && 
-                  ($validated['end_time'] ?? null)) {
-            
-            $rooms = $this->filterStandardRoomAvailability(
-                $rooms, 
-                $validated['date'], 
-                $validated['start_time'], 
-                $validated['end_time']
-            );
-        }
-        
-        $validated['rooms'] = $rooms->get();
-
-        // Pass the validated data as query parameters when redirecting back to the home route
-        return redirect()->route('home', $validated);
     }
 
-    /**
-     * Check if the selected room type is a meeting/seminar type
-     *
-     * @param string|null $type_room_id
-     * @param \Illuminate\Database\Eloquent\Collection $type_rooms
-     * @return bool
-     */
-    private function isMeetingRoomType($type_room_id, $type_rooms)
-    {
-        if (!$type_room_id || $type_room_id === 'All') {
-            return false;
-        }
-        
-        $selectedType = $type_rooms->where('id', $type_room_id)->first();
-        
-        if (!$selectedType) {
-            return false;
-        }
-        
-        $roomTypeName = strtolower($selectedType->name);
-        
-        // Based on your room types: HIKMAH, EKPLORASI, Courses, Meeting & Seminar
-        return str_contains($roomTypeName, 'course') || 
-               str_contains($roomTypeName, 'meeting') || 
-               str_contains($roomTypeName, 'seminar');
-    }
+    $furnitureCategories = CategoryEquipment::whereHas('furniture')->orderBy('name')->get();
+    $electronicCategories = CategoryEquipment::whereHas('electronics')->orderBy('name')->get();
 
-    /**
-     * Filter rooms based on standard availability (single day)
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $roomsQuery
-     * @param string $date
-     * @param string $start_time
-     * @param string $end_time
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    private function filterStandardRoomAvailability($roomsQuery, $date, $start_time, $end_time)
-    {
-        return $roomsQuery->whereNotExists(function ($query) use ($date, $start_time, $end_time) {
-            // Check for conflicts with unavailable times
-            $query->select(DB::raw(1))
-                  ->from('schedule_booking')
-                  ->whereRaw('schedule_booking.roomid = rooms.no_room')
-                  ->where('invalid_date', $date)
-                  ->where('invalid_time_start', '<', $end_time)
-                  ->where('invalid_time_end', '>', $start_time);
-        })->whereNotExists(function ($query) use ($date, $start_time, $end_time) {
-            // Check for conflicts with existing bookings
-            $query->select(DB::raw(1))
-                  ->from('bookings')
-                  ->whereRaw('bookings.no_room = rooms.no_room')
-                  ->where('booking_date', $date)
-                  ->where('booking_time_start', '<', $end_time)
-                  ->where('booking_time_end', '>', $start_time);
-        });
-    }
-
-    /**
-     * Filter rooms based on meeting availability (potentially multiple days)
-     *
-     * @param \Illuminate\Database\Eloquent\Builder $roomsQuery
-     * @param string $start_date
-     * @param string $end_date
-     * @param string $start_time
-     * @param string $end_time
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    private function filterMeetingRoomAvailability($roomsQuery, $start_date, $end_date, $start_time, $end_time)
-    {
-        return $roomsQuery->whereNotExists(function ($query) use ($start_date, $end_date, $start_time, $end_time) {
-            // Check for conflicts with unavailable times across the date range
-            $query->select(DB::raw(1))
-                  ->from('schedule_booking')
-                  ->whereRaw('schedule_booking.roomid = rooms.no_room')
-                  ->whereBetween('invalid_date', [$start_date, $end_date])
-                  ->where('invalid_time_start', '<', $end_time)
-                  ->where('invalid_time_end', '>', $start_time);
-        })->whereNotExists(function ($query) use ($start_date, $end_date, $start_time, $end_time) {
-            // Check for conflicts with existing bookings across the date range
-            $query->select(DB::raw(1))
-                  ->from('bookings')
-                  ->whereRaw('bookings.no_room = rooms.no_room')
-                  ->whereBetween('booking_date', [$start_date, $end_date])
-                  ->where('booking_time_start', '<', $end_time)
-                  ->where('booking_time_end', '>', $start_time);
-        });
-    }
+    return view('frontend.index', compact(
+        'rooms', 'furnitureCategories', 'electronicCategories',
+        'type_rooms', 'type_room', 'date', 'start_date', 'end_date',
+        'start_time', 'end_time', 'furniture_category', 'electronic_category',
+        'selectedRoomTypeName'
+    ));
 }
+
+
+//FrontendController
+
+    public function home()
+    {
+    
+        $rooms = collect(); // Empty collection as a placeholder
+        $type_rooms = \App\Models\TypeRooms::orderBy('name')->get(); // Default value for type_room
+        $date = null;
+        $start_time = null;
+        $end_time = null;
+        $furniture_category = [];
+        $electronic_category = [];
+        $furnitureCategories = CategoryEquipment::whereHas('furniture')->orderBy('name')->get();
+        $electronicCategories = CategoryEquipment::whereHas('electronics')->orderBy('name')->get();
+        return view('frontend.index', compact('rooms', 'type_rooms',
+        'date', 'start_time', 'end_time', 'furniture_category', 'electronic_category',
+        'furnitureCategories', 'electronicCategories'));
+    }
+
+
