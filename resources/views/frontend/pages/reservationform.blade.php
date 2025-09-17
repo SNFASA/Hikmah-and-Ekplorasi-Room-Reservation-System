@@ -201,7 +201,7 @@
                                                 <div class="row g-3">
                                                     <div class="col-md-12">
                                                         <div class="form-floating">
-                                                            <input type="text" class="form-control disabled-field" 
+                                                            <input type="text" class="form-control disabled-field"
                                                                    value="{{ $room->name }}" readonly>
                                                             <label>
                                                                 <i class="fas fa-door-open me-2"></i>
@@ -245,7 +245,7 @@
 
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="date" class="form-control disabled-field" 
+                                            <input type="date" class="form-control disabled-field"
                                                    value="{{ $end_date }}" readonly>
                                             <label>End Date</label>
                                             <input type="hidden" name="end_date" value="{{ $end_date }}">
@@ -254,7 +254,7 @@
 
                                     <div class="col-md-6">
                                         <div class="form-floating">
-                                            <input type="time" class="form-control disabled-field" 
+                                            <input type="time" class="form-control disabled-field"
                                                    value="{{ $start_time }}" readonly>
                                             <label>Start Time</label>
                                             <input type="hidden" name="start_time" value="{{ $start_time }}">
@@ -285,7 +285,7 @@
                                     <div class="col-md-4">
                                         <div class="form-floating">
                                             <input type="number" name="no_of_participants" class="form-control @error('no_of_participants') is-invalid @enderror" 
-                                                   placeholder="Enter number" 
+                                                   placeholder="Enter number"
                                                    value="{{ old('no_of_participants') }}" min="1" required>
                                             <label>
                                                 <i class="fas fa-users me-2"></i>
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add room functionality
     document.getElementById('add-room-btn').addEventListener('click', function() {
-        const availableRooms = availableRoomsData.filter(room => 
+        const availableRooms = availableRoomsData.filter(room =>
             !selectedRooms.has(room.no_room.toString())
         );
         
