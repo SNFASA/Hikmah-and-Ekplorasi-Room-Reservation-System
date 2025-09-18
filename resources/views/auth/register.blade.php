@@ -1,127 +1,614 @@
 @extends('layouts.app')
 
 @section('content')
-<section class="shop login section">
-    <div class="container">
-        <div class="row"> 
-            <div class="col-lg-6 offset-lg-3 col-12">
-                <div class="login-form">
-                    <h2>Register</h2>
-                    <p>Please register in order to checkout more quickly</p>
-                    <!-- Form -->
-                    <form class="form" method="post" action="{{route('register')}}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>PTTA Reservation || Register Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <div class="modern-login-container">
+        <div class="modern-login-card">
+            <div class="modern-login-row">
+                <!-- Left Side - Logo Section -->
+                <div class="modern-logo-section">
+                    <div class="logo-container">
+                        <img src="/images/PTTA Logo Footer.png" alt="PTTA Logo" class="img-fluid">
+                        <div class="brand-text">PTTA Reservation</div>
+                        <div class="brand-subtitle"></div>
+                    </div>
+                </div>
+                
+                <!-- Right Side - Register Form -->
+                <div class="modern-form-section">
+                    <div class="form-header">
+                        <h1 class="form-title">Create Account</h1>
+                        <p class="form-subtitle">Register for PTTA Reservation System</p>
+                    </div>
+                    
+                    <form class="modern-form" method="POST" action="{{ route('register') }}">
                         @csrf
                         <input type="text" name="role" placeholder="" required="required" value="user" hidden>
 
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="col-form-label">Your Name<span>*</span></label>
-                                    <input class="form-control" type="text" name="name" placeholder="" required="required" value="{{old('name')}}">
-                                    @error('name')
-                                        <span class="text-danger">{{$message}}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="col-form-label">No. Matriks<span>*</span></label>
-                                    <input class="form-control" type="text" name="no_matriks" placeholder="" required="required" value="{{old('no_matriks')}}">
-                                    @error('no_matriks')
-                                        <span class="text-danger">{{$message}}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="col-form-label">Your Email<span>*</span></label>
-                                    <input class="form-control" type="email" name="email" placeholder="" required="required" value="{{old('email')}}">
-                                    @error('email')
-                                        <span class="text-danger">{{$message}}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="col-form-label">Password<span>*</span></label>
-                                    <input  class="form-control" type="password" name="password" placeholder="" required="required">
-                                    @error('password')
-                                        <span class="text-danger">{{$message}}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="col-form-label">Confirm Password<span>*</span></label>
-                                    <input class="form-control" type="password" name="password_confirmation" placeholder="" required="required">
-                                    @error('password_confirmation')
-                                        <span class="text-danger">{{$message}}</span>
-                                    @enderror
-                                </div>
-                            </div>
-                            <!-- Additional fields based on user type -->
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="facultyOffice" class="col-form-label">Faculty Office</label>
-                                        <select name="facultyOffice" id="" class="form-control">
-                                            <option value="">-----Select Role-----</option>
-                                            @foreach($facultyOffices as $office)
-                                                <option value="{{ $office->no_facultyOffice }}">{{ $office->name }}</option>
-                                            @endforeach
-                                        </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label for="course" class="col-form-label">Course</label>
-                                        <select name="course" id="" class="form-control">
-                                            <option value="">-----Select course-----</option>
-                                                @foreach($courses as $course)
-                                                    <option value="{{ $course->no_course }}">{{ $course->name }}</option>
-                                                @endforeach
-                                        </select>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group login-btn">
-                                    <button class="btn" type="submit">Register</button>
-                                    <a href="{{route('login')}}" class="btn">Login</a>
-                                </div>
-                            </div>
+                        <!-- Name Input -->
+                        <div class="modern-form-group">
+                            <input type="text"
+                                   class="modern-input @error('name') is-invalid @enderror"
+                                   name="name"
+                                   value="{{ old('name') }}"
+                                   placeholder="Enter your full name..."
+                                   required>
+                            @error('name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
                         </div>
+
+                        <!-- No. Matriks Input -->
+                        <div class="modern-form-group">
+                            <input type="text"
+                                   class="modern-input @error('no_matriks') is-invalid @enderror"
+                                   name="no_matriks"
+                                   value="{{ old('no_matriks') }}"
+                                   placeholder="Enter your matrix number..."
+                                   required>
+                            @error('no_matriks')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        
+                        <!-- Email Input -->
+                        <div class="modern-form-group">
+                            <input type="email"
+                                   class="modern-input @error('email') is-invalid @enderror"
+                                   name="email"
+                                   value="{{ old('email') }}"
+                                   placeholder="Enter your email address..."
+                                   required>
+                            @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        
+                        <!-- Password Input -->
+                        <div class="modern-form-group">
+                            <input type="password"
+                                   class="modern-input @error('password') is-invalid @enderror"
+                                   name="password"
+                                   placeholder="Enter your password..."
+                                   required>
+                            @error('password')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <!-- Confirm Password Input -->
+                        <div class="modern-form-group">
+                            <input type="password"
+                                   class="modern-input @error('password_confirmation') is-invalid @enderror"
+                                   name="password_confirmation"
+                                   placeholder="Confirm your password..."
+                                   required>
+                            @error('password_confirmation')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <!-- Faculty Office Dropdown -->
+                        <div class="modern-form-group">
+                            <select name="facultyOffice" class="modern-select @error('facultyOffice') is-invalid @enderror">
+                                <option value="">Select Faculty Office...</option>
+                                @foreach($facultyOffices as $office)
+                                    <option value="{{ $office->no_facultyOffice }}" {{ old('facultyOffice') == $office->no_facultyOffice ? 'selected' : '' }}>
+                                        {{ $office->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('facultyOffice')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+
+                        <!-- Course Dropdown -->
+                        <div class="modern-form-group">
+                            <select name="course" class="modern-select @error('course') is-invalid @enderror">
+                                <option value="">Select Course...</option>
+                                @foreach($courses as $course)
+                                    <option value="{{ $course->no_course }}" {{ old('course') == $course->no_course ? 'selected' : '' }}>
+                                        {{ $course->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('course')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                        
+                        <!-- Register Button -->
+                        <button type="submit" class="modern-login-btn">
+                            Create Account
+                        </button>
+
+                        <!-- Login Button (Secondary Style) -->
+                        <a href="{{ route('login') }}" class="modern-secondary-btn">
+                            Already have an account? Sign In
+                        </a>
                     </form>
-                    <!--/ End Form -->
                 </div>
             </div>
         </div>
     </div>
-</section>
-@endsection
-@push('styles')
+</body>
 <style>
-    .shop.login .form .btn{
-        margin-right:0;
+/* Reset and Base Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    min-height: 100vh;
+}
+
+/* Modern Container */
+.modern-login-container {
+    width: 100%;
+    max-width: 1000px;
+    min-height: calc(100vh - 2rem);
+    margin: 0 auto;
+}
+
+.modern-login-card {
+    background: white;
+    border-radius: 25px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    position: relative;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.4s ease;
+    min-height: 700px;
+    display: flex;
+    flex-direction: column;
+}
+
+.modern-login-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+}
+
+.modern-login-row {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+
+/* Left Side - Logo/Branding */
+.modern-logo-section {
+    flex: 1;
+    background: linear-gradient(135deg, #1a1660 0%, #2d2b7a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    min-height: 0;
+}
+
+.modern-logo-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.logo-container {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 100%;
+}
+
+.logo-container img {
+    max-width: 220px;
+    width: 100%;
+    height: auto;
+    transition: all 0.3s ease;
+}
+
+.logo-container img:hover {
+    transform: scale(1.05);
+}
+
+.brand-text {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    text-align: center;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.brand-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+/* Right Side - Register Form */
+.modern-form-section {
+    flex: 1;
+    padding: 2rem 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: linear-gradient(135deg, #fafbff 0%, #f8f9ff 100%);
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.form-title {
+    color: #1a1660;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.form-title::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 3px;
+    background: linear-gradient(135deg, #1a1660 0%, #2d2b7a 100%);
+    border-radius: 2px;
+}
+
+.form-subtitle {
+    color: #6c757d;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+/* Modern Form Styles */
+.modern-form {
+    width: 100%;
+}
+
+.modern-form-group {
+    margin-bottom: 1.2rem;
+    position: relative;
+}
+
+.modern-input, .modern-select {
+    width: 100%;
+    padding: 0.9rem 1.1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 15px;
+    background: white;
+    font-size: 0.95rem;
+    color: #1a1660;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 10px rgba(26, 22, 96, 0.05);
+    appearance: none;
+}
+
+.modern-select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    cursor: pointer;
+}
+
+.modern-input:focus, .modern-select:focus {
+    outline: none;
+    border-color: #1a1660;
+    background: #fafbff;
+    box-shadow: 0 4px 20px rgba(26, 22, 96, 0.15);
+    transform: translateY(-1px);
+}
+
+.modern-input::placeholder {
+    color: #adb5bd;
+    font-weight: 400;
+}
+
+.modern-input.is-invalid, .modern-select.is-invalid {
+    border-color: #dc3545;
+    background: #fef7f7;
+    box-shadow: 0 4px 20px rgba(220, 53, 69, 0.15);
+}
+
+.modern-input.is-invalid:focus, .modern-select.is-invalid:focus {
+    box-shadow: 0 4px 20px rgba(220, 53, 69, 0.25);
+}
+
+/* Error Messages */
+.invalid-feedback {
+    display: flex;
+    align-items: center;
+    color: #dc3545;
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #fef7f7;
+    border-radius: 8px;
+    border-left: 4px solid #dc3545;
+}
+
+.invalid-feedback::before {
+    content: "⚠";
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Register Button */
+.modern-login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #1a1660 0%, #2d2b7a 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(26, 22, 96, 0.3);
+    margin-bottom: 1rem;
+}
+
+.modern-login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s;
+}
+
+.modern-login-btn:hover::before {
+    left: 100%;
+}
+
+.modern-login-btn:hover {
+    background: linear-gradient(135deg, #141050 0%, #252269 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(26, 22, 96, 0.4);
+}
+
+.modern-login-btn:active {
+    transform: translateY(-1px);
+}
+
+/* Secondary Button (Login Link) */
+.modern-secondary-btn {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: #1a1660;
+    border: 2px solid #1a1660;
+    border-radius: 15px;
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-secondary-btn:hover {
+    background: #1a1660;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(26, 22, 96, 0.3);
+    text-decoration: none;
+}
+
+.modern-secondary-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .modern-logo-section {
+        display: none;
     }
-    .btn-facebook{
-        background:#39579A;
+    
+    .modern-form-section {
+        flex: none;
+        width: 100%;
     }
-    .btn-facebook:hover{
-        background:#073088 !important;
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0.5rem;
     }
-    .btn-github{
-        background:#444444;
-        color:white;
+    
+    .modern-login-container {
+        min-height: calc(100vh - 1rem);
     }
-    .btn-github:hover{
-        background:black !important;
+    
+    .modern-login-card {
+        border-radius: 20px;
+        min-height: auto;
     }
-    .btn-google{
-        background:#ea4335;
-        color:white;
+    
+    .modern-form-section {
+        padding: 1.5rem 1.2rem;
     }
-    .btn-google:hover{
-        background:rgb(243, 26, 26) !important;
+    
+    .form-title {
+        font-size: 1.6rem;
     }
+    
+    .form-header {
+        margin-bottom: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    body {
+        padding: 0.25rem;
+    }
+
+    .modern-login-container {
+        min-height: calc(100vh - 0.5rem);
+    }
+    
+    .modern-form-section {
+        padding: 1.2rem 1rem;
+    }
+    
+    .form-title {
+        font-size: 1.4rem;
+    }
+    
+    .modern-input, .modern-select {
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .modern-login-btn, .modern-secondary-btn {
+        padding: 0.8rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    .modern-form-group {
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-height: 700px) {
+    .modern-form-section {
+        overflow-y: auto;
+        padding: 1.5rem 2rem;
+    }
+
+    .form-header {
+        margin-bottom: 1rem;
+    }
+
+    .modern-form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* Very small height devices */
+@media (max-height: 600px) {
+    .modern-form-section {
+        padding: 1rem;
+    }
+
+    .form-header {
+        margin-bottom: 0.75rem;
+    }
+
+    .form-title {
+        font-size: 1.3rem;
+    }
+
+    .form-subtitle {
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+    }
+
+    .modern-form-group {
+        margin-bottom: 0.75rem;
+    }
+
+    .modern-login-btn {
+        margin-bottom: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .modern-secondary-btn {
+        padding: 0.75rem 1rem;
+    }
+}
+
+/* Override any existing container styles */
+.container {
+    max-width: none !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.row {
+    width: 100% !important;
+    margin: 0 !important;
+    height: auto !important;
+}
+
+/* Hide any conflicting styles */
+.section {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.shop.login {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.login-form {
+    display: none !important;
+}
 </style>
-@endpush
+</html>
+@endsection
