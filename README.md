@@ -118,7 +118,7 @@ It is tailored for academic institutions and organizations to manage resources e
 7. **Reservation** – date, time, purpose, room  
 8. **Log Activity** – record of admin/user actions  
 
-📄 [View the EER Diagram](./EERD%20librarRoom%20reservation%20system%20PDF.pdf)
+📄 [View the EER Diagram](./doc/EERD%20librarRoom%20reservation%20system%20PDF.pdf)
 
 ---
 
