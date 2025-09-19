@@ -1,16 +1,16 @@
 <div align="center">
 
-# HIKMAH-AND-EKPLORASI-ROOM-RESERVATION-SYSTEM
+# 🏫 PTTA-RESERVATION-SYSTEM  
 
-_Empower Your Space, Effortlessly Reserve and Manage_
+_Empower Your Space – Effortlessly Reserve and Manage_
 
-[![Last Commit](https://img.shields.io/github/last-commit/SNFASA/Hikmah-and-Ekplorasi-Room-Reservation-System)](https://github.com/SNFASA/Hikmah-and-Ekplorasi-Room-Reservation-System/commits)
-![JavaScript](https://img.shields.io/badge/javascript-70.9%25-yellow)
+[![Last Commit](https://img.shields.io/github/last-commit/SNFASA/Hikmah-and-Ekplorasi-Room-Reservation-System)](https://github.com/SNFASA/Hikmah-and-Ekplorasi-Room-Reservation-System/commits)  
+![JavaScript](https://img.shields.io/badge/JavaScript-70.9%25-yellow)  
 ![Languages](https://img.shields.io/github/languages/count/SNFASA/Hikmah-and-Ekplorasi-Room-Reservation-System)
 
 ---
 
-## 🔧 Built with the tools and technologies:
+## 🔧 Built With
 
 ![JSON](https://img.shields.io/badge/-JSON-black?logo=json&logoColor=white)
 ![Markdown](https://img.shields.io/badge/-Markdown-000?logo=markdown)
@@ -30,71 +30,78 @@ _Empower Your Space, Effortlessly Reserve and Manage_
 
 </div>
 
+---
 
 ## 📝 Overview
 
-The **Booking Management System** allows users to manage room and equipment bookings. It also facilitates user account management, maintenance scheduling, and booking records.
+The **Room & Equipment Reservation System** is designed to streamline **room reservations, equipment bookings, maintenance scheduling, and feedback management**.  
+It is tailored for academic institutions and organizations to manage resources efficiently.
 
 ---
 
 ## 🔑 Features
 
 ### 👤 User Management
-- Create, view, edit, and delete user accounts
-- Change password functionality
-- Role and faculty/office assignment
-- Course management
+- CRUD operations for users (Create, Read, Update, Delete)  
+- Password reset and role assignment  
+- Faculty/office and course management  
 
 ### 🗓 Booking Management
-- Create and manage bookings for rooms and equipment
-- Attach users to bookings
-- View bookings by month and purpose
-- Cancel bookings
-- Email reminders for upcoming bookings
-- Admin notification on new bookings
+- Create, update, and cancel room/equipment bookings  
+- Attach users to bookings  
+- Calendar view by month & purpose  
+- Email reminders & admin notifications  
 
 ### 🏢 Room Management
-- Add, edit, view, and delete rooms
-- Track room capacity and status
-- Associate equipment with rooms
+- Add, edit, view, and delete rooms  
+- Track capacity & availability  
+- Link equipment to specific rooms  
 
 ### 🖥 Equipment Management
-- Add, edit, view, and delete equipment
-- Categorize and track equipment status
+- Manage equipment lifecycle (CRUD)  
+- Categorize & track usage status  
 
 ### 🛠 Maintenance
-- Schedule maintenance for rooms and equipment
-- Record maintenance details and track progress
+- Schedule maintenance sessions  
+- Track progress & record maintenance logs  
 
 ### 💬 Feedback
-- Only the user who booked the room can manage feedback
-- Admin can review feedback and reports
-- Damage reports are sent directly to maintenance
+- Booking users can submit feedback  
+- Admin reviews feedback & reports  
+- Automatic damage reports sent to maintenance  
+
+### 📅 Reservation
+- Similar to booking, but with extra admin features  
+- Admin can add notes & update reservation status  
+- Notifications for both users & admins  
+
+### 📜 Activity Log
+- Admin dashboard shows detailed system activity  
 
 ---
 
-## 📊 Dashboards & Interface
+## 📊 Dashboards & Interfaces
 
-### Admin Dashboard  
+### 🔹 Admin Dashboard  
 ![Admin Dashboard](./public/images/1.png)
 
-### PPP Staff Dashboard  
+### 🔹 PPP Staff Dashboard  
 ![PPP Staff](./public/images/2.png)
 
-### Home Page  
+### 🔹 Home Page  
 ![Home Page 1](./public/images/3.png)  
 ![Home Page 2](./public/images/4.png)
 
-### My Booking List  
+### 🔹 My Booking List  
 ![Booking List](./public/images/13.png)
 
-### Booking Checkout Form  
+### 🔹 Booking Checkout Form  
 ![Checkout Form](./public/images/7.png)
 
-### User Profile  
+### 🔹 User Profile  
 ![User Profile](./public/images/6.png)
 
-### Feedback Page  
+### 🔹 Feedback Page  
 ![Feedback](./public/images/9.png)
 
 ---
@@ -102,33 +109,32 @@ The **Booking Management System** allows users to manage room and equipment book
 ## 🗃 Database Design
 
 ### Key Entities:
-
 1. **User** – name, email, role, faculty/office  
-2. **Booking** – date, time, purpose, associated room  
+2. **Booking** – date, time, purpose, room  
 3. **Room** – capacity, status, equipment associations  
 4. **Equipment** – name, category, status  
-5. **Schedule Booking** – invalid/blocked booking times  
-6. **Maintenance** – logs and statuses for rooms and equipment
+5. **Schedule Booking** – blocked booking times  
+6. **Maintenance** – logs and statuses  
+7. **Reservation** – date, time, purpose, room  
+8. **Log Activity** – record of admin/user actions  
 
 📄 [View the EER Diagram](./EERD%20librarRoom%20reservation%20system%20PDF.pdf)
 
 ---
 
-## 🧱 Class Diagram
+## 🧱 Class Diagram  
 
 ![Class Diagram](./public/images/8.png)
 
 ---
 
-## 🚀 Installation & Running the System
-
-Follow these steps to install dependencies and run the system:
+## 🚀 Installation & Running  
 
 ```bash
 # Clone the repository
 git clone https://github.com/SNFASA/Hikmah-and-Ekplorasi-Room-Reservation-System
 
-# Navigate to the project directory
+# Navigate into project folder
 cd Hikmah-and-Ekplorasi-Room-Reservation-System
 
 # Install PHP dependencies
@@ -137,21 +143,21 @@ composer install
 # Install frontend dependencies
 npm install
 
-# Copy and configure the .env file
+# Copy environment file & configure DB credentials
 cp .env.example .env
-# (Edit .env with your DB credentials)
 
-# Generate application key (if Laravel)
+# Generate Laravel app key
 php artisan key:generate
 
-# Run migrations (optional)
+# Run database migrations
 php artisan migrate
 
-# Run backend server
+# Start backend server
 php -S localhost:8000 -t public
 
-# Run frontend build tool
+# Run frontend dev server
 npm run dev
+
 # Run backend tests
 vendor/bin/phpunit
 
