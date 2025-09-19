@@ -93,13 +93,16 @@ It is tailored for academic institutions and organizations to manage resources e
 ![Home Page 2](./public/images/4.png)
 
 ### 🔹 My Booking List  
-![Booking List](./public/images/13.png)
+![Booking List](./public/images/5.png)
 
 ### 🔹 Booking Checkout Form  
+![Checkout Form](./public/images/6.png)
+
+### 🔹 Reservation Checkout Form  
 ![Checkout Form](./public/images/7.png)
 
 ### 🔹 User Profile  
-![User Profile](./public/images/6.png)
+![User Profile](./public/images/8.png)
 
 ### 🔹 Feedback Page  
 ![Feedback](./public/images/9.png)
@@ -120,9 +123,11 @@ It is tailored for academic institutions and organizations to manage resources e
 
 📄 [View the EER Diagram](./doc/EERD%20librarRoom%20reservation%20system%20PDF.pdf)
 
+![EERD](./doc/EERD-librarRoom-reservation-system.png)
+
 ---
 
-## 🧱 Class Diagram  
+## 🧱 Class Diagram (version 2)
 
 ![Class Diagram](./public/images/8.png)
 
