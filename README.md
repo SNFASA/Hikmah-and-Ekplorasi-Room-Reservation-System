@@ -123,7 +123,7 @@ It is tailored for academic institutions and organizations to manage resources e
 
 📄 [View the EER Diagram](./doc/EERD%20librarRoom%20reservation%20system%20PDF.pdf)
 
-![EERD](./doc/EERD-librarRoom-reservation-system.png)
+![EERD](./doc/EERD.png)
 
 ---
 
