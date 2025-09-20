@@ -89,11 +89,10 @@ It is tailored for academic institutions and organizations to manage resources e
 ![PPP Staff](./public/images/2.png)
 
 ### 🔹 Home Page  
-![Home Page 1](./public/images/3.png)  
-![Home Page 2](./public/images/4.png)
+![Home Page 1](./public/images/20.png)  
 
 ### 🔹 My Booking List  
-![Booking List](./public/images/5.png)
+![Booking List](./public/images/4.png)
 
 ### 🔹 Booking Checkout Form  
 ![Checkout Form](./public/images/6.png)
