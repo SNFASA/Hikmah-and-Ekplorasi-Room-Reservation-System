@@ -65,7 +65,7 @@
                             <div class="modern-checkbox">
                                 <input type="checkbox"
                                        name="remember"
-                                       id="remember">
+                                       id="remember" {{ old('remember') ? 'checked' : '' }}>
                                 <div class="checkbox-custom"></div>
                             </div>
                             <label class="checkbox-label" for="remember">

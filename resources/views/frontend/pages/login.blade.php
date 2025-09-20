@@ -61,7 +61,7 @@
                                     </div>
                                     <div class="checkbox">
                                         <label class="checkbox-inline" for="remember">
-                                            <input name="remember" id="remember" type="checkbox"> Remember me
+                                            <input name="remember" id="remember" type="checkbox" {{ old('remember') ? 'checked' : '' }}> Remember me
                                         </label>
                                     </div>
                                     @if (Route::has('password.request'))

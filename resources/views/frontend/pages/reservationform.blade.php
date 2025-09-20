@@ -512,28 +512,25 @@
                                         <div class="detail-value">{{ $room->capacity }} Guests</div>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="room-detail-item">
-                                <div class="detail-icon">
-                                    <i class="fas fa-couch text-info"></i>
+                                <div class="room-detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-couch text-info"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <small class="detail-label">Furniture</small>
+                                            <div class="detail-value">{{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}</div>
+                                    </div>
                                 </div>
-                                <div class="detail-content">
-                                    <small class="detail-label">Furniture</small>
-                                        <div class="detail-value">{{ implode(', ', $room->furnitures->pluck('name')->toArray()) ?: 'N/A' }}</div>
-                                </div>
-                            </div>
-                                    
-                            <div class="room-detail-item">
-                                <div class="detail-icon">
-                                    <i class="fas fa-tv text-warning"></i>
-                                </div>
-                                 <div class="detail-content">
-                                    <small class="detail-label">Electronic Equipment</small>
-                                    <div class="detail-value">{{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}</div>
+                                <div class="room-detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-tv text-warning"></i>
+                                    </div>
+                                    <div class="detail-content">
+                                        <small class="detail-label">Electronic Equipment</small>
+                                        <div class="detail-value">{{ implode(', ', $room->electronics->pluck('name')->toArray()) ?: 'N/A' }}</div>
+                                    </div>
                                 </div>
                             </div>
-
                             <div class="mt-4 p-3 bg-light rounded-3">
                                 <h6 class="text-primary fw-bold mb-2">
                                     <i class="fas fa-lightbulb me-2"></i>
