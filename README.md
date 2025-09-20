@@ -129,7 +129,7 @@ It is tailored for academic institutions and organizations to manage resources e
 
 ## 🧱 Class Diagram (version 2)
 
-![Class Diagram](./public/images/8.png)
+![Class Diagram](./public/images/10.png)
 
 ---
 
