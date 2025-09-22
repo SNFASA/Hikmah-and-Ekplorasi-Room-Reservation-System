@@ -186,11 +186,11 @@
                 </li>
                 <li><strong>Event Type:</strong> {{ $reservation->event_type }}</li>
                 <li><strong>Reservation Created:</strong> {{ $reservation->created_at->format('F j, Y \a\t g:i A') }}</li>
-                <li><strong>Current Status:</strong> 
-                    <span style="color: 
-                        @if($reservation->status == 'approved') green 
-                        @elseif($reservation->status == 'pending') orange 
-                        @elseif($reservation->status == 'rejected') red 
+                <li><strong>Current Status:</strong>
+                    <span style="color:
+                        @if($reservation->status == 'approved') green
+                        @elseif($reservation->status == 'pending') orange
+                        @elseif($reservation->status == 'rejected') red
                         @elseif($reservation->status == 'cancelled') #856404
                         @else gray @endif; font-weight: bold;">
                         {{ ucfirst($reservation->status) }}
