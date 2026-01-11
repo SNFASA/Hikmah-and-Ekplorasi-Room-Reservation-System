@@ -167,3 +167,9 @@ vendor/bin/phpunit
 
 # Run frontend tests
 npm test
+
+website : http://pttareservation.lamanrasmi.com  
+can create user 
+admin :-
+username : nabil@gmail.com
+password : 1234
